@@ -34,7 +34,7 @@ points, spreads).
 -   [Financial derivatives](#derivatives)
     -   [Options](#options)
         -   [Call Option](#call)
-        -   [Put Option](#put)
+        -   [Put Option](#put-option)
         -   [Delta, Implied Volatility](#deltaImpliedVol)
         -   [Strategies](#strategies)
         -   [Options and Hedging](#optionsHedging)
@@ -176,7 +176,7 @@ charts. On the X-axes of the charts we have the price of the underlying
 
 [![](http://3.bp.blogspot.com/-znT9o03MB0Y/VXm6BgdFg7I/AAAAAAAAEW8/xlkpg8cFW-I/s320/call_payoff.PNG)](http://3.bp.blogspot.com/-znT9o03MB0Y/VXm6BgdFg7I/AAAAAAAAEW8/xlkpg8cFW-I/s1600/call_payoff.PNG)
 
-### Put option {#put}
+### Put option
 
 Put option gives the owner the right to sell the stock for given strike
 price, otherwise all other parameters are the same.
