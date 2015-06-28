@@ -1,0 +1,14 @@
+---
+layout: post
+title: Change path of included DLL in Visual Studio 2010
+date: '2011-03-14T14:44:00.000-07:00'
+author: Jan Fajfr
+tags:
+- Visual Studio
+- Source Control
+modified_time: '2012-10-27T06:42:43.340-07:00'
+blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-8712663878438153595
+blogger_orig_url: http://hoonzis.blogspot.com/2011/03/change-path-of-included-dll-in-visual.html
+---
+
+Visual Studio 2010 remembers the previous locations of the DLL, and in some cases prefers the "standard" locations of the assemblies.<br />In one of our projects we have to add System.Windows.Interaction assembly which you can find in the .NET tab of the Add Reference dialog (well only if you had installed Expression studio before).<br />But we use Team Foundation Server as Source Control and Continous Integration solution and while this assembly was missing on the TFS server, the "after commit" build did not succeed.<br /><br />So we took out the reference, copied the DLL to the Source Control and added the reference directly to this DLL. But somehow Visual Studio remembers the original location of the DLL and always points the PATH property of the reference to the original position.<br /><br />The solution is to change the Project file and add manually the PATH to the DLL file<br /><br />So instead of:<br /><pre class="brush:xml"><reference Include="System.Runtime.Serialization" /><br />    <reference Include="System.ServiceModel" /><br />    <reference Include="System.Windows" /><br />    <reference Include="system" /><br />    <reference Include="System.Core" /><br />    <reference Include="System.Net" /><br />    <reference Include="System.Xml" /><br />    <reference Include="System.Windows.Browser" /><br />    <reference Include="System.Windows.Controls" /><br />    <reference Include="System.Windows.Controls.Navigation" /><br />    <reference Include="System.Windows.Interactivity"/><br /></pre><br /><br />you can change the reference of the interactivity dll to:<br /><br /><pre class="brush:xml"><reference Include="System.Windows.Interactivity, Version=4.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL"><br />   <hintpath>..\Libraries\System.Windows.Interactivity.dll</HintPath><br /></Reference><br /></pre>
