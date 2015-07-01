@@ -76,3 +76,4 @@ exclude:
     - README.md
     - CNAME
     - bloggerfiles
+    - sources

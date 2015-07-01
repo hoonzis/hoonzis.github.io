@@ -1,0 +1,17 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="en"><head>
+    <title>AssetManagement: manage your properties with RavenDB + WebAPI and KnockoutJS and more</title></head>
+	<body>
+	<p>Everyone ranting an appartment are any other property knows that it might be quite difficult to track the depenses and income in order to assure himself of the rentability of the given property. I have created an applications which helps with just that and thanks to this applications I was able to play with the following technologies:</p>
+	<ul>
+		<li>RavenDB - to stored the data</li>
+		<li>WebAPI - to serve the data through REST services</li>
+		<li>KnockoutJS - to glue the interaction on the client side</li>
+		<li>Bootstrap - to give it a decent GUI</li>
+		<li>gRaphael - to visualize data using charts</li>
+	</ul>
+	RavenDB is a document database, which seamlessly integrates into any C# project. WebAPI is a quite new technology from MS which is meant to provide better support for building REST services. Ofcourse we have build REST services with WCF before, so the questions is why should we change to WebAPI?
+	
+	
+	</body>
+</html>

@@ -32,12 +32,12 @@ but you might get confused by the way it is priced – that is the way
 that the brokers and investors agree on prices (percentage, basis
 points, spreads).
 
--   [Basic vocabulary and terms](#vocabulary)
--   [Financial instruments](#financialInstruments)
+-   [Basic vocabulary and terms](#vocabulary-and-terms)
+-   [Financial instruments](#financial-instruments)
 -   [Financial derivatives](#derivatives)
     -   [Options](#options)
         -   [Call Option](#call)
-        -   [Put Option](#put)
+        -   [Put Option](#put-option)
         -   [Delta, Implied Volatility](#deltaImpliedVol)
         -   [Strategies](#strategies)
         -   [Options and Hedging](#optionsHedging)
@@ -60,7 +60,7 @@ points, spreads).
         -   [Autocallables](autocallables)
         -   [Program Trading](programTrading)
 
-Basic vocabulary and terms {#vocabulary}
+Vocabulary and terms
 ==========================
 
 There are two entities in this business:
@@ -97,8 +97,8 @@ underlying.
 **Long** - means to buy, being long in something means to buy and
 underlying and keep it.
 
-List of financial instruments {#financialInstruments}
-=============================
+Financial instruments
+=====================
 
 Financial instruments are anything that you can trade on the markets.
 Derivatives as such as one category of financial instruments but unlike
@@ -174,17 +174,11 @@ larger number of shares. That is why we talk about leverage.
     expiration date ("Physical") or money is exchanged in place of the
     underlying ("Cash").
 
-To visualize the options and other derivatives one can use the pay-off
-charts. On the X-axes of the charts we have the price of the underlying
-(commodity or stock) and on the Y-axes we have the total profit.
+To visualize the options and other derivatives one can use the pay-off charts. On the X-axes of the charts we have the price of the underlying (commodity or stock) and on the Y-axes we have the total profit.
 
+![Call Option](../images/finderivatives/call_payoff.PNG)
 
-
-[![](http://3.bp.blogspot.com/-znT9o03MB0Y/VXm6BgdFg7I/AAAAAAAAEW8/xlkpg8cFW-I/s320/call_payoff.PNG)](http://3.bp.blogspot.com/-znT9o03MB0Y/VXm6BgdFg7I/AAAAAAAAEW8/xlkpg8cFW-I/s1600/call_payoff.PNG)
-
-
-
-### Put option {#put}
+### Put option
 
 Put option gives the owner the right to sell the stock for given strike
 price, otherwise all other parameters are the same.
@@ -204,21 +198,12 @@ is 90, you didn't lose anything but did not get anything either. On the
 other hand if the price did not move and it is still 100, you lost your
 10 dollars. That shall be clear from the pay-off chart.
 
+![Put Option](../images/finderivates/put_payoff.PNG)
 
-
-[![](http://1.bp.blogspot.com/-H3q4OAgy_l8/VXm6CIBejJI/AAAAAAAAEWg/NH_ibW6DlpM/s320/put_payoff.PNG)](http://1.bp.blogspot.com/-H3q4OAgy_l8/VXm6CIBejJI/AAAAAAAAEWg/NH_ibW6DlpM/s1600/put_payoff.PNG)
-
-
-
-One has to understand, one the market one can buy or sell both types
-CALLs and PUTs. The outcome of each operation is different. The
+One has to understand, one the market one can buy or sell both types CALLs and PUTs. The outcome of each operation is different. The
 following chart, shows all 4 operations that can be done.
 
-
-
-[![](http://3.bp.blogspot.com/-DSMhwtzLdVU/VXm6BH0zk-I/AAAAAAAAEW0/NffArJIvaxo/s320/all_payoffs.PNG)](http://3.bp.blogspot.com/-DSMhwtzLdVU/VXm6BH0zk-I/AAAAAAAAEW0/NffArJIvaxo/s1600/all_payoffs.PNG)
-
-
+![All payoffs](../images/finderivates/all_payoffs.PNG)
 
 ### Delta and Implied Volatility {#deltaImpliedVol}
 
@@ -323,11 +308,7 @@ expiries and it is profitable if the price of the underlying does not
 move much and the profit is limitted to the premiums obtained, otherwise
 the potential loss is unlimited.
 
-
-
-[![](http://2.bp.blogspot.com/-5YjyfVWz7fk/VXm6C8vJ_oI/AAAAAAAAEWo/ZNOZMT2-Y4s/s320/strangle.png)](http://2.bp.blogspot.com/-5YjyfVWz7fk/VXm6C8vJ_oI/AAAAAAAAEWo/ZNOZMT2-Y4s/s1600/strangle.png)
-
-
+![Strangle](../images/finderivates/strangle.png)
 
 #### Straddle {##straddle}
 
@@ -345,11 +326,7 @@ Again Short straddle is like short strangle, but strike is the same. The
 price has to stay very close to the strike for a profit based on
 premiums.
 
-
-
-[![](http://4.bp.blogspot.com/-zvmUDEx8xE4/VXm6Ct29PgI/AAAAAAAAEWs/VemGJjea6tI/s320/straddle.png)](http://4.bp.blogspot.com/-zvmUDEx8xE4/VXm6Ct29PgI/AAAAAAAAEWs/VemGJjea6tI/s1600/straddle.png)
-
-
+![Straddle](../images/finderivates/straddle.png)
 
 #### Butterfly
 
@@ -358,11 +335,7 @@ a large probability of earning a limited profit when the future
 volatility of the underlying asset is expected to be lower than the
 implied volatility.
 
-
-
-[![](http://2.bp.blogspot.com/-712cpdnmm9I/VXm6BA4iW8I/AAAAAAAAEW4/N3tVYsFOJiA/s320/butterfly.png)](http://2.bp.blogspot.com/-712cpdnmm9I/VXm6BA4iW8I/AAAAAAAAEW4/N3tVYsFOJiA/s1600/butterfly.png)
-
-
+![Butterfly](../images/finderivates/butterfly.png)
 
 #### Risk reversal {#riskReversal}
 
@@ -379,14 +352,9 @@ The pay-off is exactly the same us holding the underlying stock. One
 could use risk reversal to speculate on a stock without holding the
 stock.
 
-
-
-[![](http://1.bp.blogspot.com/-SUxiloivMjI/VXm6CWQFzfI/AAAAAAAAEWc/EKV5K3THQgk/s320/riskReversal.PNG)](http://1.bp.blogspot.com/-SUxiloivMjI/VXm6CWQFzfI/AAAAAAAAEWc/EKV5K3THQgk/s1600/riskReversal.PNG)
-
-
+![Risk Reversal](../images/finderivates/riskReversal.PNG)
 
 #### Collar
-
 -   Long the underlying
 -   Long a put option at strike price X (called the "floor")
 -   Short a call option at strike price (X+a) (called the "cap")
@@ -395,14 +363,9 @@ Latter two are a short Risk reversal position,so we can say Underlying -
 Risk reversal = Collar. The profit or loss on underlying are very
 limited.
 
-The premium income from selling the call reduces the cost of purchasing
-the put.
+The premium income from selling the call reduces the cost of purchasing the put.
 
-
-
-[![](http://4.bp.blogspot.com/-iQJYEdpaBQg/VXm6Bt_iPaI/AAAAAAAAEWk/0A75pMbjois/s320/collar.PNG)](http://4.bp.blogspot.com/-iQJYEdpaBQg/VXm6Bt_iPaI/AAAAAAAAEWk/0A75pMbjois/s1600/collar.PNG)
-
-
+![Collar](../images/finderivates/collar.PNG)
 
 #### Condor
 
@@ -421,16 +384,11 @@ derived that the maximum profit is equal to the difference in strike
 prices of the 2 lower striking calls less the initial debit taken to
 enter the trade.
 
+![Condor](../images/finderivates/condor.PNG)
 
+#### Box option
 
-[![](http://2.bp.blogspot.com/-VzWZ06U0J4Y/VXm6B3ReBcI/AAAAAAAAEWw/Lq4lDOTZ5Iw/s320/condor.PNG)](http://2.bp.blogspot.com/-VzWZ06U0J4Y/VXm6B3ReBcI/AAAAAAAAEWw/Lq4lDOTZ5Iw/s1600/condor.PNG)
-
-
-
-#### Box option {#boxOption}
-
-Combination of 4 basic legs, that achieves neutral interest rate
-position - riskless payoff.
+Combination of 4 basic legs, that achieves neutral interest rate position - riskless payoff.
 
 -   Long call strike 10
 -   Short call strike 15
@@ -442,13 +400,9 @@ the strategy should be equal to the payoff. However the comission will
 reduce the profitability to nothing. Might be seen as a form of lending
 money on markets.
 
+![Box Option](../images/finderivates/box.PNG)
 
-
-[![](http://3.bp.blogspot.com/-dTtURx5_4vM/VXm6BKO1foI/AAAAAAAAEXA/JRid5mPlp1Q/s320/box.PNG)](http://3.bp.blogspot.com/-dTtURx5_4vM/VXm6BKO1foI/AAAAAAAAEXA/JRid5mPlp1Q/s1600/box.PNG)
-
-
-
-### Barrier options {#barrierOptions}
+### Barrier options
 
 TODO!!!
 
