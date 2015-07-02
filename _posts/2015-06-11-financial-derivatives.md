@@ -37,7 +37,7 @@ points, spreads).
 -   [Financial derivatives](#derivatives)
     -   [Options](#options)
         -   [Call Option](#call)
-        -   [Put Option](#put-option)
+        -   [Put Option](#put)
         -   [Delta, Implied Volatility](#deltaImpliedVol)
         -   [Strategies](#strategies)
         -   [Options and Hedging](#optionsHedging)
@@ -60,8 +60,8 @@ points, spreads).
         -   [Autocallables](autocallables)
         -   [Program Trading](programTrading)
 
-Vocabulary and terms
-==========================
+Vocabulary and terms <a name="vocabulary-and-terms"></a>
+====================
 
 There are two entities in this business:
 
@@ -97,7 +97,7 @@ underlying.
 **Long** - means to buy, being long in something means to buy and
 underlying and keep it.
 
-Financial instruments
+Financial instruments <a name="financial-instruments"></a>
 =====================
 
 Financial instruments are anything that you can trade on the markets.
@@ -116,7 +116,7 @@ the basic once, they are "made of" them.
     derived from all of the other once with additional conditions and
     rules
 
-Financial Derivatives {#derivatives}
+Financial Derivatives <a name="derivatives"></a>
 =====================
 
 This list of financial derivatives is definitely not complete and it is
@@ -136,7 +136,7 @@ hard in this field)
 -   Others: Autocallables, Accumulators, Program Trading and many other
     magic stuff
 
-Options
+Options <a name="options"></a>
 -------
 
 There are two basic types of Options: **CALL** which gives the owner the
@@ -146,7 +146,7 @@ just a fancy world used for buying or selling two options at the same
 time. As you can see later one can choose to do that for multiple
 reasons.
 
-### Call Option {#call}
+### <a name="call"></a>Call Option 
 
 Call is the right, but not the obligation to buy given underlying (stock
 or commodity) at given price until given date.
@@ -178,10 +178,9 @@ To visualize the options and other derivatives one can use the pay-off charts. O
 
 ![Call Option](../images/finderivatives/call_payoff.PNG)
 
-### Put option
+### <a name="put"></a>Put option
 
-Put option gives the owner the right to sell the stock for given strike
-price, otherwise all other parameters are the same.
+Put option gives the owner the right to sell the stock for given strike price, otherwise all other parameters are the same.
 
 A trader who believes that a stock's price will decrease can buy the
 right to sell the stock at Strike price. He will be under no obligation
@@ -198,14 +197,14 @@ is 90, you didn't lose anything but did not get anything either. On the
 other hand if the price did not move and it is still 100, you lost your
 10 dollars. That shall be clear from the pay-off chart.
 
-![Put Option](../images/finderivates/put_payoff.PNG)
+![Put Option](../images/finderivatives/put_payoff.PNG)
 
 One has to understand, one the market one can buy or sell both types CALLs and PUTs. The outcome of each operation is different. The
 following chart, shows all 4 operations that can be done.
 
-![All payoffs](../images/finderivates/all_payoffs.PNG)
+![All payoffs](../images/finderivatives/all_payoffs.PNG)
 
-### Delta and Implied Volatility {#deltaImpliedVol}
+### <a name="deltaImpliedVol"></a>Delta and Implied Volatility
 
 Delta always and implied volatility sometimes are parameters that the
 brokers provide with the price of the option, when they want to sell you
@@ -247,7 +246,7 @@ broker has any shares of the given underlying already. But in theory,
 the broker could just provide the estimated volatility that he puts into
 his model and that is enought to calculate the price.
 
-### Options trading and hedging against delta adjustment {#optionsHedging}
+### <a name="optionsHedging"></a>Options trading and hedging against delta adjustment
 
 When a trader wants to obtain an option, he will specify the parameters
 and ask brokers whether they can give him such contract. The broker will
@@ -266,7 +265,7 @@ broker will buy from the buyer of the option such amount of shares of
 the given underlying, so the change of the price of the option contract
 will be completely mitigated by this operation.
 
-### Strategies based on options {#strategies}
+### <a name="strategies"></a>Strategies based on options
 
 Calls and Puts can be bought or selled in the same time with diferent
 parameters. This results in diferent pay-offs of such operations. Buying
@@ -283,7 +282,7 @@ strategies:
 -   Condor
 -   [Box Option](#boxOption)
 
-#### Call spread
+#### <a name="callSpread"></a>Call spread
 
 This strategy consists of two calls with the same expiry. The first one
 with smaller strike is sold and other with higher strike is bought.
@@ -295,7 +294,7 @@ prices of the calls.
 Analogically to call spread, put spread is a strategy composed of two
 put options, with the same expiries and different strikes.
 
-#### Strangle
+#### <a name="strangle"></a>Strangle
 
 Strangle allows the holder to profit based on how much the price of the
 underlying security moves, with relatively minimal exposure to the
@@ -308,9 +307,9 @@ expiries and it is profitable if the price of the underlying does not
 move much and the profit is limitted to the premiums obtained, otherwise
 the potential loss is unlimited.
 
-![Strangle](../images/finderivates/strangle.png)
+![Strangle](../images/finderivatives/strangle.png)
 
-#### Straddle {##straddle}
+#### <a name="straddle"></a>Straddle
 
 Very similar to strangle, Long Straddle is a long call with a long put,
 with same strikes and expiries.
@@ -326,18 +325,18 @@ Again Short straddle is like short strangle, but strike is the same. The
 price has to stay very close to the strike for a profit based on
 premiums.
 
-![Straddle](../images/finderivates/straddle.png)
+![Straddle](../images/finderivatives/straddle.png)
 
-#### Butterfly
+#### <a name="butterfly"></a>Butterfly
 
 Limited risk, non-directional options strategy that is designed to have
 a large probability of earning a limited profit when the future
 volatility of the underlying asset is expected to be lower than the
 implied volatility.
 
-![Butterfly](../images/finderivates/butterfly.png)
+![Butterfly](../images/finderivatives/butterfly.png)
 
-#### Risk reversal {#riskReversal}
+#### <a name="riskReversal"></a>Risk reversal
 
 Selling an out of money put and buy out of money call with same
 maturity. An investor wants to go long in the underlying but instead of
@@ -352,9 +351,9 @@ The pay-off is exactly the same us holding the underlying stock. One
 could use risk reversal to speculate on a stock without holding the
 stock.
 
-![Risk Reversal](../images/finderivates/riskReversal.PNG)
+![Risk Reversal](../images/finderivatives/riskReversal.PNG)
 
-#### Collar
+#### <a name="collar"></a>Collar
 -   Long the underlying
 -   Long a put option at strike price X (called the "floor")
 -   Short a call option at strike price (X+a) (called the "cap")
@@ -365,11 +364,11 @@ limited.
 
 The premium income from selling the call reduces the cost of purchasing the put.
 
-![Collar](../images/finderivates/collar.PNG)
+![Collar](../images/finderivatives/collar.PNG)
 
-#### Condor
+#### <a name="condor"></a>Condor
 
-Stragy with limited risk, non-directional (the same result if underlying
+Strategy with limited risk, non-directional (the same result if underlying
 moves either way) with limited profit when the underlying security is
 perceived to have little volatility.
 
@@ -384,9 +383,9 @@ derived that the maximum profit is equal to the difference in strike
 prices of the 2 lower striking calls less the initial debit taken to
 enter the trade.
 
-![Condor](../images/finderivates/condor.PNG)
+![Condor](../images/finderivatives/condor.PNG)
 
-#### Box option
+#### <a name="boxOption"></a>Box option
 
 Combination of 4 basic legs, that achieves neutral interest rate position - riskless payoff.
 
@@ -400,7 +399,7 @@ the strategy should be equal to the payoff. However the comission will
 reduce the profitability to nothing. Might be seen as a form of lending
 money on markets.
 
-![Box Option](../images/finderivates/box.PNG)
+![Box Option](../images/finderivatives/box.PNG)
 
 ### Barrier options
 
@@ -418,7 +417,7 @@ are few differences:
     writer of the option has to buy them on the market.
 -   -   Often used as alternative to employees stock options.
 
-### Specifying option and it's price {#pricing}
+### <a name="pricing"></a>Specifying option and it's price
 
 This part is not about the actual pricing of options, that is
 determining the price. This is more about how options are exchanged on
@@ -430,7 +429,7 @@ the market, in what units the prices as exchanged.
 -   Pricing by strike
 -   Total premium for multilegs
 
-Forwards & Futures {#futfwd}
+Forwards & Futures <a name="futfwd"></a>
 ------------------
 
 By buying a forward or future, you have the right but also the
@@ -447,7 +446,7 @@ defined solely by the market. Typically futures prices are listed on the
 market. For instance the current price of SPX Indice might be 2000 and
 the future which expires next month might be at 2050.
 
-### Pricing of futures {#futPricing}
+### <a name="futPricing"></a>Pricing of futures
 
 Futures are delta-one derivatives. The price of the future changes hand
 in hand with the price of the underlying (if the stock goes up one
@@ -456,15 +455,13 @@ one dollar). That affects the way that futures are priced. Since
 typically the future price is always specicied with respect to the
 current stock price, there are 2 common ways of pricing futures:
 
-TODO!!!
-
 -   Net Basis - the difference between stock price and future price is
     given by the broker in basis points.
 -   In Percentage - the future price is given as the percentage of
     current price. For bullish stock that will be greater than 100% and
     for bearish stocks that will be lower than 100%.
 
-### Future and Forward Rolls {#futRolls}
+### <a name="futRolls"></a>Future and Forward Rolls
 
 Rolls enable the holder of given future to keep the position in the
 underlying when his future is about to expire.
@@ -475,7 +472,7 @@ Convertible Bonds, Reverse Convertible Bonds {#bondStuff}
 These two derivatives at some point allow or force the holder to convert
 bonds into shares.
 
-### Convertible Bonds {#convertibleBonds}
+### <a name="convertibleBonds"></a>Convertible Bonds
 
 Convertible Bond is a contract which allows the conversion of listed
 corporate bonds into the underlying equity. This is available only on
@@ -494,7 +491,7 @@ Convertible bond thus has the power of option and can be leveraged to
 obtain the underlying equity. It will be however more expensive than
 CALL option becase one pays for the bond as well.
 
-### Reverse Convertibles {#reverseConvertibles}
+### <a name="reverseConvertibles"></a>Reverse Convertibles
 
 Holder of a Reverse convertible is regulary paid a coupon as if he would
 be holding a standard bond. On the upside if the shares of the
@@ -502,7 +499,7 @@ underlying company (and that can be any company, not just the issuer of
 the original bonds) fall bellow certain PUT like Strike. His bonds will
 convert into the stocks of this company
 
-Swaps
+Swaps <a name="swaps"></a>
 -----
 
 Swaps as the name suggest are contracts that specify an exchange between
@@ -510,7 +507,7 @@ the buyer and the seller of the contract. There are various types,
 depending on what is exchanged: Commodity, Interest Rate, Volatility or
 Variance.
 
-### Variance and Volatility Swaps {#varSwaps}
+### <a name="varSwaps"></a>Variance and Volatility Swaps
 
 Volatility measures the magnitude of movements for given stock. Standard
 deviation is used to express the volatility of the stock. Variance is
@@ -531,7 +528,7 @@ the greeks which meassures the sensitivity of an option to the change in
 the volatility of the option. There is however no connection here. It's
 just the term used on the markets for this multiplier.
 
-### Total Return Swaps {#trs}
+### <a name="trs"></a>Total Return Swaps
 
 TRS allows the buyer to exchange the performance of certain stock for
 the performance of standard interest rate. The buyer can for instance
@@ -543,7 +540,7 @@ and asks the seller to pay him the difference if that is the case. The
 seller, for certain comission will do that. That allows the asset
 manager to bet on performance without owning the underlying shares.
 
-ETFs
+ETFs <a name="etf"></a>
 ----
 
 Exchange Traded Funds are compositions of stocks, that usually track an
@@ -552,7 +549,7 @@ companies that emit ETFs thus enable the asset managers to invest into
 whole sectors or regions, without the need of knowing the details of the
 markets.
 
-### Net Asset Value {#nav}
+### <a name="nav"></a>Net Asset Value
 
 Common to all funds which invest into stocks. At the end of the day the
 NAV of the fund is calculated as the sum of all the stocks own by the
@@ -568,7 +565,7 @@ The date when you need to the money to buy your ETF or when you will
 receive the money for selling. For ETFs it is 3 days after the deal (for
 some traditional reasons, I suppose).
 
-### Creation Redemption {#creationRedemption}
+### <a name="creationRedemption"></a>Creation Redemption
 
 **Creation** is the process of emission of ETF shares. ETF is supposed
 to track a sector or index and has exact composition. The company
@@ -593,11 +590,11 @@ ETFs and stabilize the price which would go down too much otherwise.
 Other crazy stuff {#otherStuff}
 -----------------
 
-### Autocallables
+### <a name="autocallables"></a>Autocallables
 
 TODO!!!
 
-### Program Trading {#programTrading}
+### <a name="programTrading"></a>Program Trading
 
 An asset manager might interested in investing in sectors or countries,
 not exact shares. ETFs are one way to get there, Program Trading might
