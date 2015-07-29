@@ -1,13 +1,13 @@
 Fluent C# interface for ElasticSearch on top of NEST
 ====================================================
 NEST already provides a Fluent like interface for querying ElastiSearch, but for my taste it stays too close to ElastiSearch json query format. The result is reduced readability of NEST queries and too much technical noise. I have come up with set of extensions methods which just wrap NEST and improve the readability and add a bit of expresiveness (by my ambiased judgement of course). I have only developed filters, queries and aggregations that I am using in my projects.
-You can get the code on GitHub or the library directly on NuGet.
+You can get the code on GitHub ([https://github.com/hoonzis/fluentnest](https://github.com/hoonzis/fluentnest)) or the library directly on NuGet ([https://www.nuget.org/packages/FluentNest/](https://www.nuget.org/packages/FluentNest/)).
 
 Nested Grouping
 ---------------
 One type of aggregations that I use quite often are Sums (or other statistics) nested in groups. Typically you might want get a sum of each group based on some criteria.
 
-```
+```Csharp
 var result = client.Search<Car>(s => s
 	.Aggregations(fstAgg => fstAgg
 		.Terms("firstLevel", f => f
@@ -29,9 +29,11 @@ foreach (var carType in carTypes.Items)
 }
 
 ```
+
 This is hard to read, specially because one needs to name every aggregations, in order to retrieve it later. Also in order to nest the sum inside the group-by, a call to *Aggregations* method is required.
 
-The same query using *FluentNest* extensios methods looks like this:
+The same query using **FluentNest** extensios methods looks like this:
+
 ```
 groupedSum = Statistics
 	.SumBy<Car>(s => s.Price)
@@ -39,7 +41,9 @@ groupedSum = Statistics
 	
 var result = client.Search<Car>(search => search.Aggregations(x => groupedSum);
 ```
+
 We can as well nest the GroupBy term. Imagine you want to sum prices based on the car type and engine type. Here the query becomes even scarier:
+
 ```
 var result = client.Search<Car>(s => s
 	.Aggregations(fstAgg => fstAgg
@@ -57,14 +61,18 @@ var result = client.Search<Car>(s => s
 	)
 );
 ```
+
 Now to define the aggregation, we can just add another GroupBy to the existing aggregation in this way.
+
 ```
 groupedSum = Statistics
 	.SumBy<Car>(s => s.Price)
 	.GroupBy(s => s.CarType)
 	.GroupBy(s => s.EngineType)
 ```
+
 Other helper methods will allow you to unwrap what you need from the ElastiSearch query result.
+
 ```
 var carTypes = result.Aggs.GetGroupBy<Car>(x => x.CarType);
 foreach (var carType in carTypes)
@@ -73,11 +81,15 @@ foreach (var carType in carTypes)
 	//do somethign with nested types
 }
 ```
+
 If it is preferable, one can obtain a Dictionary directly from the result, instead of a List<BucketItem>.
+
 ```
 var engineTypes = result.Aggs.GetDictioanry<Car>(x => x.EngineType);
 ```
+
 Another overload can give you an enumerable of predefined types if you pass the mapper function.
+
 ```
 var types = result.Aggs.GetGroupBy<Car, CarType>(x => x.CarType, k => new CarType
 {
@@ -85,7 +97,8 @@ var types = result.Aggs.GetGroupBy<Car, CarType>(x => x.CarType, k => new CarTyp
 	Price = k.GetSum<Car,Decimal>(x=>x.Price).Value
 });
 ```
-Notice also that in this example a different overload of GetSum is used. This one takes two generic parameters. Since the *Price* field is decimal, the GetSum method shall return decimal as well. Ideally I would like the type to be inferred from the lambda. However since the compiler cannot infer the Car type passed in, one has to specify the Decimal parameter as well. There is some place for improovement here.
+
+Notice also that in this example a different overload of *GetSum* is used. This one takes two generic parameters. Since the *Price* field is decimal, the *GetSum* method shall return decimal as well. Ideally I would like the type to be inferred from the lambda. However since the compiler cannot infer the Car type passed in, one has to specify the Decimal parameter as well. There is some place for improovement here.
 
 Dynamic nested grouping
 -----------------------
@@ -157,7 +170,21 @@ var aggs = Statistics
 
 Hitograms
 ---------
-Histogram is another useful aggregation supported by ElasticSearch. One option is to simply get documents into buckets using some criteria, other option that I have been using quite a lot is computing some statistics on each bucket. For instance calculating a sum monthly sales, might be done using a histogram with nested aggregation.
+Histogram is another useful aggregation supported by ElasticSearch. One typical usage is to simply get documents into buckets using some criteria, other usage that I have been using quite a lot is computing some statistics on each bucket. For instance calculating a sum monthly sales, might be done using a histogram with nested aggregation.
+
+```
+var result = client.Search<Car>(s => s.Aggregations(a => a.DateHistogram("by_month",
+		d => d.Field(x => x.Timestamp)
+				.Interval(DateInterval.Month)
+				.Aggregations(
+					aggs => aggs.Sum("priceSum", dField => dField.Field(field => field.Price))))));
+
+var histogram = result.Aggs.DateHistogram("by_month");
+Check.That(histogram.Items).HasSize(10);
+var firstMonth = histogram.Items[0];
+var priceSum = firstMonth.Sum("priceSum");
+Check.That(priceSum.Value.Value).Equals(10d);
+```
 
 Again here is simplified syntax using *FluentNest*:
 ```
