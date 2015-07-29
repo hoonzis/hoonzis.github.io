@@ -42,7 +42,7 @@ This is hard to read, specially because one needs to name every aggregations, in
 
 The same query using **FluentNest** extensios methods looks like this:
 
-```
+```Csharp
 groupedSum = Statistics
 	.SumBy<Car>(s => s.Price)
 	.GroupBy(s => s.EngineType);
@@ -52,7 +52,7 @@ var result = client.Search<Car>(search => search.Aggregations(x => groupedSum);
 
 We can as well nest the GroupBy term. Imagine you want to sum prices based on the car type and engine type. Here the query becomes even scarier:
 
-```
+```Csharp
 var result = client.Search<Car>(s => s
 	.Aggregations(fstAgg => fstAgg
 		.Terms("firstLevel", f => f
@@ -72,7 +72,7 @@ var result = client.Search<Car>(s => s
 
 Now to define the aggregation, we can just add another GroupBy to the existing aggregation in this way.
 
-```
+```Csharp
 groupedSum = Statistics
 	.SumBy<Car>(s => s.Price)
 	.GroupBy(s => s.CarType)
@@ -81,7 +81,7 @@ groupedSum = Statistics
 
 Other helper methods will allow you to unwrap what you need from the ElastiSearch query result.
 
-```
+```Csharp
 var carTypes = result.Aggs.GetGroupBy<Car>(x => x.CarType);
 foreach (var carType in carTypes)
 {
@@ -92,13 +92,13 @@ foreach (var carType in carTypes)
 
 If it is preferable, one can obtain a Dictionary directly from the result, instead of a List<BucketItem>.
 
-```
+```Csharp
 var engineTypes = result.Aggs.GetDictioanry<Car>(x => x.EngineType);
 ```
 
 Another overload can give you an enumerable of predefined types if you pass the mapper function.
 
-```
+```Csharp
 var types = result.Aggs.GetGroupBy<Car, CarType>(x => x.CarType, k => new CarType
 {
 	Type = k.Key,
@@ -112,26 +112,36 @@ Dynamic nested grouping
 -----------------------
 In some cases you might need to group dynamically on multiple criteria specified at run-time. For such cases there is an overload of GroupBy which takes the name of the field to used for grouping. This overload can be used to obtain nested grouping on a list of fields:
 
+```Csharp
+var agg = Statistics
+	.SumBy<Car>(s => s.Price)
+	.GroupBy(new List<string> {"engineType", "carType"});
+
+var result = client.Search<Car>(search => search.Aggregations(x => agg));
+```
 
 Conditional statistics
 ----------------------
 There are multiple ways to calculate a conditional sum or conditional count. One can always apply a filter on the whole query and add a sum aggregation:
-``` 
+
+```Csharp
 var result = client.Search<Car>(search => search
 	.Filter("filter", fd=>fd.Term(fd=>fd.EngineType,"Engine1"))
 	.Aggregations(x =>x.Sum("sumAgg",f=>f.Field(x=>x.Price))));
-``` 
+```
+ 
 This can be rewriten as a very simple query:
-``` 
+
+```Csharp
 client.Search<Car>(search => search
 	.FilteredOn(x=>x.EngineType == "Engine1")
 	.Aggregations(a=>priceSum);
 ```
 
 The filter is however applied on all the data so all aggregations will be affected. If you want multiple conditional aggregations based on different conditions, you need to define a Terms bucket for each conditional count or sum and then add an inner aggregation. This starts to get really hard to read:
-
 The same can be done very easily:
-```
+
+```Csharp
 var aggs = Statistics
 	.CondSumBy<Car>(x=>x.Price, c=>c.EngineType == "Engine1")
 	.AndCondSumBy<Car>(x=>x.Sales, c=>c.CarType == "Car1");
@@ -144,7 +154,8 @@ Expressions to queries
 ElasticSearch provides several ways of data filtering. Equality, Ranges, Minimal values and others are supported. The only downside that I see with NEST is that the query is quite complicated compared to standard LINQ query.
 
 Here is a query which tests on a timestamp field, here getting only documents in given range. The date is compared to some fixed dates:
-```
+
+```Csharp
 var startDate = new DateTime(2010, 1, 1);
 var endDate = new DateTime(2010, 5, 1);
 
@@ -160,7 +171,8 @@ var result = client.Search<Car>(s => s.Query(
 ```
 
 With FluentNest you can write this query simply as:
-```
+
+```Csharp
 result = client.Search<Car>(s => s.FilteredOn(f => f.Timestamp > startDate && f.Timestamp < endDate));
 ```
 
@@ -169,7 +181,8 @@ This is achieved of course by the analysis of the lambda expression and it's rec
 Multiple statistics
 -------------------
 You can defined and obtain multiple statistics in the same time. This has been already shown in the previous snippet of code. The "And" notation can be used to obtain multiple statistics on the same level:
-```
+
+```Csharp
 var aggs = Statistics
 	.SumBy(x=>x.Price)
 	.AndCardinalityBy(x=>x.EngineType)
@@ -180,7 +193,7 @@ Hitograms
 ---------
 Histogram is another useful aggregation supported by ElasticSearch. One typical usage is to simply get documents into buckets using some criteria, other usage that I have been using quite a lot is computing some statistics on each bucket. For instance calculating a sum monthly sales, might be done using a histogram with nested aggregation.
 
-```
+```Csharp
 var result = client.Search<Car>(s => s.Aggregations(a => a.DateHistogram("by_month",
 		d => d.Field(x => x.Timestamp)
 				.Interval(DateInterval.Month)
@@ -195,7 +208,8 @@ Check.That(priceSum.Value.Value).Equals(10d);
 ```
 
 Again here is simplified syntax using *FluentNest*:
-```
+
+```Csharp
 var agg = Statistics
 	.SumBy<Car>(x => x.Price)
 	.IntoDateHistogram(date => date.Timestamp, DateInterval.Month);
@@ -210,7 +224,7 @@ Composing Filters and Aggregations
 ----------------------------------
 Filtering and aggregations are two separate things and can be done in the same time. The filter limits the set of all documents taken into account and then the aggregations are applied. As mentioned before on can define filters inside each aggregation (typically for computing multiple conditional sums). Histogram is just standard aggregation so we can filter the data as well before applying the histogram aggregation.
 
-```
+```Csharp
 var agg = ...define aggregation here
 var result = client.Search<Car>(s => s.FilteredOn(f => f.Timestamp < end && f.Timestamp > start).Aggregations(x =>agg);
 var histogram = result.Aggs.GetDateHistogram<Car>(x => x.Timestamp);
