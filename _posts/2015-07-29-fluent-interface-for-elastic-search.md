@@ -1,3 +1,13 @@
+---
+layout: post
+title: C# Fluent Interface for ElasticSearch
+date: '2015-07-29T09:44:00.000-07:00'
+author: Jan Fajfr
+tags:
+- Csharp, ElasticSearch
+modified_time: '2015-07-29T01:07:44.866-07:00'
+---
+
 NEST already provides a Fluent like interface for querying ElastiSearch, but for my taste it stays too close to ElastiSearch json query format. The result is reduced readability of NEST queries and too much technical noise. I have come up with set of extensions methods which just wrap NEST and improve the readability and add a bit of expresiveness (by my ambiased judgement of course). I have only developed filters, queries and aggregations that I am using in my projects.
 You can get the code on GitHub ([https://github.com/hoonzis/fluentnest](https://github.com/hoonzis/fluentnest)) or the library directly on NuGet ([https://www.nuget.org/packages/FluentNest/](https://www.nuget.org/packages/FluentNest/)).
 
