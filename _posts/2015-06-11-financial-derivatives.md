@@ -10,11 +10,7 @@ thumbnail: http://3.bp.blogspot.com/-znT9o03MB0Y/VXm6BgdFg7I/AAAAAAAAEW8/xlkpg8c
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-4807406569027602477
 blogger_orig_url: http://hoonzis.blogspot.com/2015/06/financial-derivatives.html
 ---
-When I started to work for my current company, I have struggled to get
-one simple overview of this universe. Instead I had to consult many
-sources, lot of them were going deep into details of one particular
-financial product. An I was not and still I am not interested in details
-of investment banking but just needed simple overview.
+When I started to work for my current company, I have struggled to get one simple overview of this universe. Instead I had to consult many sources, lot of them were going deep into details of one particular financial product. An I was not and still I am not interested in details of investment banking but just needed simple overview.
 
 Over the time I took notes, and kept them for myself, getting
 information mostly from wikipedia or investopedia. I have posted it
