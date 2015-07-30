@@ -19,18 +19,13 @@ and see how easy it can be to write Machine Learning code in F\#.
 
 I present here two examples of NN in F\#:
 
--   XOR classifier - sort of Hello World of NN. A simple composition of
-    2 input nodes, 2 hidden nodes and 1 output node which learns the
-    XOR function.
--   Solution to TSP using Hopfield NN. More complex network which
-    evolves over time in it's configuration space to it's local minima,
-    which shall correspond to optimal TSP tour.
+* XOR classifier - sort of Hello World of NN. A simple composition of 2 input nodes, 2 hidden nodes and 1 output node which learns the XOR function.
+* Solution to TSP using Hopfield NN. More complex network which evolves over time in it's configuration space to it's local minima, which shall correspond to optimal TSP tour.
 
-Both working examples are [available at my
-GitHub](https://github.com/hoonzis/MachineLearning)
+Both working examples are [at GitHub](https://github.com/hoonzis/MachineLearning)
 
 Neural Networks
----------------
+===============
 
 Artificial neural networks are computational models with particular
 properties such as the ability to adapt or learn, to generalise or to
@@ -54,11 +49,7 @@ multiple input nodes and a decision node. Perceptron is a single layer
 network. Input values are linked directly to the output node, connected
 by edges with certain weights.
 
-
-
 [![](http://3.bp.blogspot.com/-VReCg6iqrF0/VQmuBdLVLvI/AAAAAAAAEOw/-wxaOWzU26U/s320/perceptron.PNG)](http://3.bp.blogspot.com/-VReCg6iqrF0/VQmuBdLVLvI/AAAAAAAAEOw/-wxaOWzU26U/s1600/perceptron.PNG)
-
-
 
 The ouput node takes the incomming values, sums them and based on the
 result returns an output. The output could be binary or continous value.
@@ -78,11 +69,7 @@ separate the cluster by drawing direct line between the data points, the
 data is linearly seperable. The same can be applied on multi-dimensional
 data
 
-
-
 [![](http://4.bp.blogspot.com/-Tgaknx4kIHg/VQmuFgc67JI/AAAAAAAAEPA/kaqHsNBCuBE/s320/separable_data.PNG)](http://4.bp.blogspot.com/-Tgaknx4kIHg/VQmuFgc67JI/AAAAAAAAEPA/kaqHsNBCuBE/s1600/separable_data.PNG)
-
-
 
 In a world of logical functions (we are building XOR classifier), this
 limitation means that a single layer perceptron is able to learn AND or
@@ -147,7 +134,7 @@ incomming to a single node and passes the value to the activation
 function. The activation function here can be any function, as it is
 passed as parameter but here Sigmoid is used.
 
-``` 
+```fsharp
 let pass (input:float[]) (weights:float[,]) activation =
 let length = weights |> Array2D.length2
 seq {
@@ -165,7 +152,7 @@ composed as sequence of **pass** functions.
 The following function is the main loop of the XOR network and we
 iterate over until we obtain good results and the network is adapted.
 
-``` 
+```fsharp
 let train network rate input target =
     let n1 = completepass input network
     let delta = deltaOutput n1.output target
