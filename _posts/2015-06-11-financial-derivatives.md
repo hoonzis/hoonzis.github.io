@@ -12,22 +12,13 @@ blogger_orig_url: http://hoonzis.blogspot.com/2015/06/financial-derivatives.html
 ---
 When I started to work for my current company, I have struggled to get one simple overview of this universe. Instead I had to consult many sources, lot of them were going deep into details of one particular financial product. An I was not and still I am not interested in details of investment banking but just needed simple overview.
 
-Over the time I took notes, and kept them for myself, getting
-information mostly from wikipedia or investopedia. I have posted it
-here, just in case that it might help someone in the same position that
-I was.
+Over the time I took notes, and kept them for myself, getting information mostly from wikipedia or investopedia. I have also wrote some F# code to generate payoff charts for arbitrary options, which are used bellow:
 
-The world of derivative products is not that complicated. From my
-(developer's point of view) understanding the basics of derivatives is
-easy. The finance guys make it bit more complicated by using special
-vocabulary. For instance selling and option might be called "writing an
-option". The price of the stock at the time that the broker and the
-investor exchange the option might be called "Final Reference" or "Spot
-Price" and so on. You might also understand a product (such as future)
-but you might get confused by the way it is priced – that is the way
-that the brokers and investors agree on prices (percentage, basis
-points, spreads).
+The world of derivative products is not that complicated. From my (developer's point of view) understanding the basics of derivatives is easy. The finance guys make it bit more complicated by using special vocabulary. For instance selling and option might be called "writing an option". The price of the stock at the time that the broker and the investor exchange the option might be called "Final Reference" or "Spot Price" and so on.
+You might also understand a product (such as future) but you might get confused by the way it is priced – that is the way that the brokers and investors agree on prices (percentage, basis points, spreads).
 
+Content
+=======
 -   [Basic vocabulary and terms](#vocabulary-and-terms)
 -   [Financial instruments](#financial-instruments)
 -   [Financial derivatives](#derivatives)
