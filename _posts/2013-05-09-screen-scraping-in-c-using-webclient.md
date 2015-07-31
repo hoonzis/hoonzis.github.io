@@ -227,5 +227,4 @@ client.Headers.Add("User-Agent", mozilaAgent);
 Summary
 -------
 
-If there is any other way to obtain the data, than it is probably better
-way. If you cannnot avoid it, I hope this gave you couple hints.
+If there is any other way to obtain the data, than it is probably better way. If you cannot avoid it, I hope this gave you couple hints.
