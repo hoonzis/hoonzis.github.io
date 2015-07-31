@@ -12,21 +12,12 @@ thumbnail: http://2.bp.blogspot.com/-AoNjM2nFFJw/U8f0UVShq3I/AAAAAAAABZU/hNoyXOi
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-8299090897609303371
 blogger_orig_url: http://hoonzis.blogspot.com/2014/07/unit-testing-knockout-applications.html
 ---
-In ideal case any View Model in Knockout based application should be
-completely unit-testable. The View Model ofcourse interacts with other
-code but in majority of cases this would be either some UI code or the
-server side code, probably over REST API. The UI interaction should be
-minimal. If possible, the binding capabilities of Knockout should be
-leveraged. The REST API is not available while unit testing and thus has
-to be mocked or hidden by an abstraction layer. I went for the first
-option and this blog describes how to mock the AJAX calls while unit
-testing Knockout View Models. At the end I also provide information
-about the [ChutzPah](http://chutzpah.codeplex.com/) test runner and the
-way that the tests can be run from within Visual Studio.
+In ideal case any View Model in Knockout based application should be completely unit-testable. The View Model of course interacts with other code but in majority of cases this would be either some UI code or the server side code, probably over REST API. The UI interaction should be minimal. If possible, the binding capabilities of Knockout should be leveraged. The REST API is not available while unit testing and thus has
+to be mocked or hidden by an abstraction layer. I went for the first option and this blog describes how to mock the AJAX calls while unit testing Knockout View Models. At the end I also provide information about the [ChutzPah](http://chutzpah.codeplex.com/) test runner and the way that the tests can be run from within Visual Studio.
 
 The typical view model that I am using looks like the following one.
 
-``` 
+```javascript
 function AssetViewModel(){
     var self = this;
     self.city = ko.observable();
@@ -275,8 +266,6 @@ tests.
 
 [![](http://2.bp.blogspot.com/-AoNjM2nFFJw/U8f0UVShq3I/AAAAAAAABZU/hNoyXOi-Mj4/s320/vs_structure.PNG)](http://2.bp.blogspot.com/-AoNjM2nFFJw/U8f0UVShq3I/AAAAAAAABZU/hNoyXOi-Mj4/s1600/vs_structure.PNG)
 
-
-
 JSON DateTime serialization
 ---------------------------
 
@@ -291,7 +280,7 @@ Any time that you are mocking backend which handles dates you have to be
 aware of this fact. Remember the mock of the back-end which inserts the
 object to a dummy array that I have used above:
 
-``` 
+```javascript
 function initTest() {
       $.mockjax({
         url: '/api/assets',

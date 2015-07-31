@@ -62,7 +62,7 @@ Without further introduction let's take a look at the classical "Hello
 World" of GPGPU programming: Addition of elements of two vectors (here
 without the boiler plate code).
 
-``` 
+```cpp
 parallel_for_each(e,[=](index<2>idx) restrict(amp){
  c[idx] = a[idx] + b[idx];
 });
@@ -150,59 +150,19 @@ loads.
 The programming models comparison:
 ----------------------------------
 
-These architectural concepts are used by NVIDIA and ATI. Each of the 3
+These asrchitectural concepts are used by NVIDIA and ATI. Each of the 3
 GPU programming models (CUDA, OpenCL, AMP) can has its own dialects and
 namings. The following table shows the terms used by all three
 technologies. We will discuss the AMP terms used in this table later in
 the article.
 
-Term
-
-CUDA
-
-AMP C++
-
-OpenCL
-
-Basic unit of work
-
-thread
-
-thread
-
-work-item
-
-The code executed on one item
-
-kernel
-
-kernel
-
-kernel
-
-The unit processing one group of working units
-
-Streaming multiprocessor
-
--
-
-Compute unit
-
-Cache-style memory accessible by grouped threads
-
-shared memory
-
-tile static memory
-
-local memory
-
-Group of working units sharing local memory
-
-warp
-
-tile
-
-work-group
+|Term                                            |CUDA|AMP C++|OpenCL|
+|------------------------------------------------|----|-------|------|
+|Basic unit of work                              |thread|thread|work-item|
+|The code executed on one item                   |kernel|kernel|kernel
+|The unit processing one group of working units  |Streaming multiprocessor|-|Compute unit|
+|Cache-style memory accessible by grouped threads|shared memory|tile static memory|local memory|
+|Group of working units sharing local memory     |warp|tile|work-group|
 
 ### The tools offered by each framework
 
@@ -222,7 +182,7 @@ article I will try to describe how AMP adresses these issues.
 Here is again the first example with the little of boiler plate code
 that we have to write to make it work:
 
-``` 
+```cpp
 void vectorsAddition_Parallel(vector<float> vA, vector<float> vB, vector<float>vC, int M, int N){
  extent<2> e(M,N);
  array_view<float,2> a(e, vA), b(e,vB);
@@ -274,7 +234,7 @@ demonstrates the principles of parallelization. Several techniques to
 parallelize the task are described in [this
 article](http://blogs.msdn.com/b/nativeconcurrency/archive/2012/03/08/parallel-reduction-using-c-amp.aspx).
 
-``` 
+```cpp
 float sumArray_NaiveAMP(std::vector<float> items){
  auto size = items.size();
  array_view<float, 1> aV (size, items);
@@ -307,7 +267,7 @@ the distance of each element from the average. Once we have the distance
 of each element, we have to make another addition before taking the
 final square root and obtaining the standard deviation.
 
-``` 
+```cpp
 float standatd_deviation(vector<float> vA) {
  
  float size = vA.size();
@@ -344,7 +304,7 @@ Looking at both of the preceding examples, you might be wondering why
 the code is so complex and you might think that the sum of the elements
 in the array could be just written as:
 
-``` 
+```cpp
 float sum = 0;
 parallel_for_each(
  e, 
@@ -368,7 +328,7 @@ is the second hello world of parallel computing: matrix multiplication.
 This example come from [this MSDN
 page](http://msdn.microsoft.com/en-us/library/hh873134.aspx).
 
-``` 
+```cpp
 void matrixMultiplicationWithAMP(vector<float> &vC, vector<float> vA, vector<float> vB, int M, int N) {
  
  extent<2> e(M,N);

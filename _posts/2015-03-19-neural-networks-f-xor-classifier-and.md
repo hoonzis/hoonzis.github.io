@@ -11,13 +11,7 @@ thumbnail: http://3.bp.blogspot.com/-VReCg6iqrF0/VQmuBdLVLvI/AAAAAAAAEOw/-wxaOWz
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-286840343880955613
 blogger_orig_url: http://hoonzis.blogspot.com/2015/03/neural-networks-f-xor-classifier-and.html
 ---
-It seems that recently thanks to the buzz around Deep Learning, Neural
-Networks are getting back the attention that they once had. This post
-contains just a very short introduction to Neural Networks, just enough
-to understand the F\# code which follows. The aim for me is to learn F\#
-and see how easy it can be to write Machine Learning code in F\#.
-
-I present here two examples of NN in F\#:
+It seems that recently thanks to the buzz around Deep Learning, Neural Networks are getting back the attention that they once had. This post contains just a very short introduction to Neural Networks, just enough to understand the F\# code which follows. The aim for me was to learn F\# and see how easy it can be to write Machine Learning code in F\#. Here are two examples of NN in F\#:
 
 * XOR classifier - sort of Hello World of NN. A simple composition of 2 input nodes, 2 hidden nodes and 1 output node which learns the XOR function.
 * Solution to TSP using Hopfield NN. More complex network which evolves over time in it's configuration space to it's local minima, which shall correspond to optimal TSP tour.
@@ -26,21 +20,9 @@ Both working examples are [at GitHub](https://github.com/hoonzis/MachineLearning
 
 Neural Networks
 ===============
+Artificial neural networks are computational models with particular properties such as the ability to adapt or learn, to generalize or to cluster and organize data. These models are inspired by the way that the human brain works. The building blocks of Neural Networks are inspired by Neurons - the building blocks of our brain. Neural Network can be seen as interconnected graph of nodes, where each node takes a role of a neuron. Each neuron can receive multiple signals, modify it and send it to other neurons to which it is connected. In this graph some vertexes are used to set the input, some of them are used to perform the computation and other onces will hold the output values.
 
-Artificial neural networks are computational models with particular
-properties such as the ability to adapt or learn, to generalise or to
-cluster and organise data. These models are inspired by the way that the
-human brain works. The building blocks of Neural Networks are inspired
-by Neurons - the building blocks of our brain. Neural Network can be
-seen as interconnected graph of nodes, where each node takes a role of a
-neuron. Each neuron can receive multiple signals, modify it and send it
-to other neurons to which it is connected. In this graph some vertexes
-are used to set the input, some of them are used to perform the
-computation and other onces will hold the output values.
-
-Nodes are connected by edges which have different weights. The weight of
-the edge specifies how the signals is modified when passing from one
-node to another.
+Nodes are connected by edges which have different weights. The weight of the edge specifies how the signals is modified when passing from one node to another.
 
 ### Perceptron
 
@@ -51,23 +33,14 @@ by edges with certain weights.
 
 [![](http://3.bp.blogspot.com/-VReCg6iqrF0/VQmuBdLVLvI/AAAAAAAAEOw/-wxaOWzU26U/s320/perceptron.PNG)](http://3.bp.blogspot.com/-VReCg6iqrF0/VQmuBdLVLvI/AAAAAAAAEOw/-wxaOWzU26U/s1600/perceptron.PNG)
 
-The ouput node takes the incomming values, sums them and based on the
-result returns an output. The output could be binary or continous value.
-For instance a threashold can be used to say whether the output is 1 or
-0.
+The output node takes the incoming values, sums them and based on the result returns an output. The output could be binary or continuous value. For instance a threshold can be used to say whether the output is 1 or 0.
 
-In practice, very often the Sigmoid or also called logistic function is
-used to output value within the interval \[0,1\].
+In practice, very often the Sigmoid (logistic) function is used to output value within the interval \[0,1\].
 
 ### Linear separability
-
 Single layer perceptrons can only learn linerearly separable data.
 
-Imagine we want to separate a set of datapoints into multiple clusters.
-We visualize the data in 2-dimensional euclidian space. If we can
-separate the cluster by drawing direct line between the data points, the
-data is linearly seperable. The same can be applied on multi-dimensional
-data
+Imagine we want to separate a set of datapoints into multiple clusters. We visualize the data in 2-dimensional euclidean space. If we can separate the cluster by drawing direct line between the data points, the data is linearly separable. The same can be applied on multi-dimensional data.
 
 [![](http://4.bp.blogspot.com/-Tgaknx4kIHg/VQmuFgc67JI/AAAAAAAAEPA/kaqHsNBCuBE/s320/separable_data.PNG)](http://4.bp.blogspot.com/-Tgaknx4kIHg/VQmuFgc67JI/AAAAAAAAEPA/kaqHsNBCuBE/s1600/separable_data.PNG)
 
@@ -76,13 +49,12 @@ limitation means that a single layer perceptron is able to learn AND or
 OR function but it won't be able to learn XOR function.
 
 One can easily imagine a line that separates all OR positive results
-from the negatives once. On the other hand there is no streight line
+from the negatives once. On the other hand there is no straight line
 that separates the positive XOR results (\[0,1\] and \[1,0\]) from the
 negatives (\[0,0\] and \[1,1\])
 
-  ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  [![](http://1.bp.blogspot.com/-b-Xq2GIIKys/VQmuFkN4K9I/AAAAAAAAEPE/Ctj9PiGYGQI/s320/or_data.PNG)](http://1.bp.blogspot.com/-b-Xq2GIIKys/VQmuFkN4K9I/AAAAAAAAEPE/Ctj9PiGYGQI/s1600/or_data.PNG)   [![](http://3.bp.blogspot.com/-b0rzcCZmOD0/VQmuOlXpDRI/AAAAAAAAEP8/oEwEPTO8JK8/s320/xor_data.PNG)](http://3.bp.blogspot.com/-b0rzcCZmOD0/VQmuOlXpDRI/AAAAAAAAEP8/oEwEPTO8JK8/s1600/xor_data.PNG)
-  ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+[![](http://1.bp.blogspot.com/-b-Xq2GIIKys/VQmuFkN4K9I/AAAAAAAAEPE/Ctj9PiGYGQI/s320/or_data.PNG)](http://1.bp.blogspot.com/-b-Xq2GIIKys/VQmuFkN4K9I/AAAAAAAAEPE/Ctj9PiGYGQI/s1600/or_data.PNG)
+[![](http://3.bp.blogspot.com/-b0rzcCZmOD0/VQmuOlXpDRI/AAAAAAAAEP8/oEwEPTO8JK8/s320/xor_data.PNG)](http://3.bp.blogspot.com/-b0rzcCZmOD0/VQmuOlXpDRI/AAAAAAAAEP8/oEwEPTO8JK8/s1600/xor_data.PNG)
 
 ### Feed forward multilayer networks
 
@@ -181,7 +153,7 @@ Ouput). This value is multiplied by value **o\*(1-o)** which is the
 derivation of the Sigmoid function. The resulting array contains for
 each node a delta value, which shall be used to adjust the weights.
 
-``` 
+```fsharp
 let deltaOutput (output:array<float>) (target:array<float>) =
  (Array.zip output target) |> Array.map (fun (o,t) -> o * (1.0 - o) * (t - o))
 ```
@@ -193,7 +165,7 @@ correct all the weights in the network, the delta has to be propagated
 to the lower layers of the network, so that we can update the weights on
 the input - hidden connections.
 
-``` 
+```fsharp
 let passDelta (outputs:float[]) (delta:float[]) (weights:float[,]) =
     let length = weights |> Array2D.length1
     seq {
@@ -250,13 +222,11 @@ connected with any other node). The connection matrix is symetric, that
 is the weights on the edges are the same in both directions.
 
 The initial Hopfied network had only binary values (0/1) but to solve
-TSP and for other problems continous version of the network is used,
+TSP and for other problems continuous version of the network is used,
 where every node has value in range \[0,1\].
 
 The value of each node depends on the input potential of the node (Ui)
 and in order to keep it between (0,1) the **tanh** function is used:
-
-
 
 [![](http://3.bp.blogspot.com/-sevgaBZmgyA/VQmuOLH8rQI/AAAAAAAAEP4/zN6-0N-n2OA/s320/v_value.PNG)](http://3.bp.blogspot.com/-sevgaBZmgyA/VQmuOLH8rQI/AAAAAAAAEP4/zN6-0N-n2OA/s1600/v_value.PNG)
 
@@ -267,18 +237,13 @@ all nodes that are connected to it and the values of the connections
 weights. This is actually identical to the way that the nodes in the XOR
 classifier behaved.
 
-
-
 [![](http://3.bp.blogspot.com/-xL811LPVs7c/VQmuMjXklkI/AAAAAAAAEPc/60g9vj-Bs9c/s400/u_value.PNG)](http://3.bp.blogspot.com/-xL811LPVs7c/VQmuMjXklkI/AAAAAAAAEPc/60g9vj-Bs9c/s1600/u_value.PNG)
-
-
-
 ### Network energy
 
 Each state of the HNN can be described by a single value called
 [Energy](http://en.wikipedia.org/wiki/Hopfield_network#Energy). While
 iterating and changing the state, the energy of HNN will either stay the
-same or will get smaller. The energy of the network will evenutelly
+same or will get smaller. The energy of the network will eventually
 convert to a local minimum - the state of the HNN that we target to
 solve the TSP
 
@@ -313,11 +278,8 @@ algorithm finishes and the network converges to it's final state, each
 node will have value of either 0 or 1. As said the network in fully
 inter-connected so there is an edges between each node, which is not
 shown in the image bellow.
-
-  -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   [![](http://3.bp.blogspot.com/-W5MfCdp_WGY/VQmuMPTrzMI/AAAAAAAAEPU/oZgvGO84YbA/s320/tsp_example.PNG)](http://3.bp.blogspot.com/-W5MfCdp_WGY/VQmuMPTrzMI/AAAAAAAAEPU/oZgvGO84YbA/s1600/tsp_example.PNG)   [![](http://2.bp.blogspot.com/-rD5N9wFRJhk/VQmuMK4h2BI/AAAAAAAAEQM/2M8lzPis1C8/s320/tsp_solution.PNG)](http://2.bp.blogspot.com/-rD5N9wFRJhk/VQmuMK4h2BI/AAAAAAAAEQM/2M8lzPis1C8/s1600/tsp_solution.PNG)
-  -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
+ 
 If the node in i-th row and j-th column has value 1, the city (i) will
 be in the tour on position (j).
 
@@ -330,25 +292,15 @@ rule that at the end the matrix of nodes will follow these criteria:
 -   There will be exactly N nodes having value 1
 -   The distances of the tour will be minimal
 
-To come up with such update rule, Energy function has to be determine
-which will attain it's minimum for optimal solution of TSP. The energy
-function has to take into account the above specified rules. The
-following definition will satisfy the rules. Note that the following
-equations were taken from the [J.Y Potvin's -
-paper](http://www.iro.umontreal.ca/~dift6751/paper_potvin_nn_tsp.pdf)
-
-
+To come up with such update rule, Energy function has to be determine which will attain it's minimum for optimal solution of TSP. The energy function has to take into account the above specified rules. The following definition will satisfy the rules. Note that the following equations were taken from the [J.Y Potvin's -paper](http://www.iro.umontreal.ca/~dift6751/paper_potvin_nn_tsp.pdf)
 
 [![](http://3.bp.blogspot.com/--B-tqg70mjU/VQqJ_Sj7YpI/AAAAAAAAEQk/9hHlQfEADHs/s400/energy.PNG)](http://3.bp.blogspot.com/--B-tqg70mjU/VQqJ_Sj7YpI/AAAAAAAAEQk/9hHlQfEADHs/s1600/energy.PNG)
 
-
-
-A,B,C and D are constants and the 4 sumations here correspond to the 4
-above mentioned points.
+A,B,C and D are constants and the 4 summations here correspond to the 4 above mentioned points.
 
 ### Describing the dynamic of the network
 
-There are two ways to describe the behaviour and the dynamic of the
+There are two ways to describe the behavior and the dynamic of the
 network:
 
 -   From the TSP energy function and the standard Hopfield network
@@ -425,7 +377,7 @@ The following code is the calculation of the input potential change of
 single node at coordinates **(city,position)**. This is just
 retranscription of the equation above.
 
-``` 
+```fsharp
 let singlePass (distances:float[,]) (u:float[,]) pms city position = 
     let n = Array2D.length2 u
     
@@ -458,9 +410,9 @@ array. The **sumAllBut** method adds all elements of one-dimensional
 array except an element at position which is passed to the method. The
 **dSumCalc** method is the only one with a bit more compexity and it
 calculates the D value of the equation above (the one that assures the
-minimalization of the TSP circuit)
+minimization of the TSP circuit)
 
-``` 
+```fsharp
 let rowi row (network:float[,]) = 
     network.[row,*] |> Array.mapi (fun j e -> (e,j))
 
@@ -485,13 +437,9 @@ let toValues (pms:HopfieldTspParams) u =
 let v (ui:float) (parameters:HopfieldTspParams) = (1.0 + tanh(ui*parameters.alfa))/2.0
 ```
 
-The method which updates the input potential of single node can be
-called in 2 different ways. Either we pick the nodes randomly multiple
-times or we loop over all the nodes serially. If the update is serial
-then the only random element of the algorithm is the initialization of
-the netwok.
+The method which updates the input potential of single node can be called in 2 different ways. Either we pick the nodes randomly multiple times or we loop over all the nodes serially. If the update is serial then the only random element of the algorithm is the initialization of the network.
 
-``` 
+```fsharp
 let serialIteration u pms distances = 
     u |> Array2D.mapi (fun i j x -> singlePass distances u pms i j)
 
@@ -510,7 +458,7 @@ number of cities, which is probably more than enough since the network
 seems to converge much sooner. Just for the sake of completeness, here
 is the method that runs 10 times either serial or random iteration.
 
-``` 
+```fsharp
 let initAndRunUntilStable cities pms distances = 
     let u = initialize cities pms
     {1 .. 10} |> Seq.fold (fun uNext i -> 
@@ -525,7 +473,7 @@ problem, calculates distances between all cities and runs the algorithm
 until a stable and correct solution is found. That is until the network
 returns feasable solution.
 
-``` 
+```fsharp 
 let sampleRun (pms:HopfieldTspParams ) (n:int) =
     let cities = generateRandomCities n
     let distances = calculateDistances cities
@@ -565,7 +513,7 @@ values that I ended up using:
 I have also used the standard update rule to obtain new value of the
 input potential which takes into account the current input potential.
 
-``` 
+```fsharp
      let dudt = -pms.A*aSum - pms.B*bSum - pms.C*cSum - pms.D*dSum
     //value of input potential in t+ delta_t
     u.[city,position] = u.[city,position] + pms.dTime*(-u.[city,position] + dudt)
@@ -575,17 +523,14 @@ According to the paper by Jacek Mandziuk one can just use the updated
 values as the new input potential, so that the update rule would become
 only:
 
-``` 
+```fsharp
     let dudt = -pms.A*aSum - pms.B*bSum - pms.C*cSum - pms.D*dSum
     u.[city,position] = dudt;
 ```
 
-This rule didn't work for me. The convergance rate wasn't better neither
-were the tours lengths. Of course for such version, different values for
-network parameters have to be used.
+This rule didn't work for me. The convergence rate wasn't better neither were the tours lengths. Of course for such version, different values for network parameters have to be used.
 
-Note that GitHub repostity and specifialy the Hopfield module contais
-more code:
+Note that GitHub repository and specifically the Hopfield module contains more code:
 
 -   Method to determine the correct parameters. The performance of the
     algorithm greatly depends on the parameters of the Energy function
@@ -593,4 +538,3 @@ more code:
     input potential on the value of given node.
 -   Few lines are also available to draw the solution using Windows
     Forms Charts, through F\#
-

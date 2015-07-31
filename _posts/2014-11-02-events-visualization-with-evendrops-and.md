@@ -12,24 +12,14 @@ thumbnail: http://1.bp.blogspot.com/-Uq06dPrA0nk/VFa78Ko291I/AAAAAAAAEAE/AAyc-A9
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-8504375191575189411
 blogger_orig_url: http://hoonzis.blogspot.com/2014/11/events-visualization-with-evendrops-and.html
 ---
-I have recently needed to visualize a set of events which occurred
-within a certain interval. Each event would have couple parameters and
-there would be multiple event lines. Let's say that you want to
-visualize the occurences of car sales in couple countries. For each sale
-you would also want to visualize the price and the mark of the sold car.
-Before writing everything from scratch, I have found
-[EventDrops](https://github.com/marmelab/EventDrops) project which
-responded to the majority of my requirements. It had just one flaw and
-that is that there is no way to chart another characteristics for each
-event.
+I have recently needed to visualize a set of events which occurred within a certain interval. Each event would have couple parameters and there would be multiple event lines. Let's say that you want to
+visualize the occurrences of car sales in couple countries. For each sale you would also want to visualize the price and the mark of the sold car. Before writing everything from scratch, I have found
+[EventDrops](https://github.com/marmelab/EventDrops) project which responded to the majority of my requirements. It had just one flaw and that is that there is no way to chart another characteristics for each event.
 
-I have decided to add such possibility and since I am using KnockoutJS
-and binding to create all of my charts I have also decided to add
-EventDrops to my [KoExtensions](https://github.com/hoonzis/KoExtensions)
-project - in order to make it's usage simplier. The resulting chart
-looks like this:
+EventDrops KnockoutJS integration
+=================================
 
-
+I have decided to add such possibility and since I am using KnockoutJS and binding to create all of my charts I have also decided to add EventDrops to my [KoExtensions](https://github.com/hoonzis/KoExtensions) project - in order to make it's usage simpler. The resulting chart looks like this:
 
 [![](http://1.bp.blogspot.com/-Uq06dPrA0nk/VFa78Ko291I/AAAAAAAAEAE/AAyc-A9AhCY/s320/eventDrops.PNG)](http://1.bp.blogspot.com/-Uq06dPrA0nk/VFa78Ko291I/AAAAAAAAEAE/AAyc-A9AhCY/s1600/eventDrops.PNG)
 
@@ -53,14 +43,14 @@ possibilities:
 
 The html is now really straightforward:
 
-``` 
-
+```html 
+<div data-bind="eventDrops: carSales, chartOptions: carSalesOptions"></div>
 ```
 
 The javascript behind this page contains a bit more to generate the
 data:
 
-``` 
+```javascript 
 require(['knockout-3.2.0.debug', 'KoExtensions/koextbindings', 'KoExtensions/Charts/linechart', 'KoExtensions/Charts/piechart', 'KoExtensions/Charts/barchart'], function(ko) {
  function createRundomSales(country) {
   var event = {};
@@ -117,19 +107,10 @@ require(['knockout-3.2.0.debug', 'KoExtensions/koextbindings', 'KoExtensions/Cha
 });
 ```
 
-In this example the **createSales** and **createRandomSales** methods
-are just use to get testing data. Once the testing data is generated it
-is stored to the **carSales** observable collection. Any time this
-collection is changed the chart would be updated.
+In this example the **createSales** and **createRandomSales** methods are just use to get testing data. Once the testing data is generated it is stored to the **carSales** observable collection. Any time this collection is changed the chart would be updated.
 
 The sales collection looks a bit like this:
 
-
-
 [![](http://3.bp.blogspot.com/-TdC5QSwU6gk/VFa_ve8kWXI/AAAAAAAAEAQ/2w9F3cFbACE/s320/eventDropsstruc.PNG)](http://3.bp.blogspot.com/-TdC5QSwU6gk/VFa_ve8kWXI/AAAAAAAAEAQ/2w9F3cFbACE/s1600/eventDropsstruc.PNG)
 
-
-
-The **carSalesOptions** object contains the charting options. These tell
-to the event drops chart the necessary information to specify how big
-and which color should be used for the given event.
+The **carSalesOptions** object contains the charting options. These tell to the event drops chart the necessary information to specify how big and which color should be used for the given event.

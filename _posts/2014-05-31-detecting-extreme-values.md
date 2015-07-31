@@ -13,12 +13,10 @@ thumbnail: http://1.bp.blogspot.com/-bKsNqVzq2vk/U4jKN6pXL7I/AAAAAAAABWg/a8qKYBO
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-2362328728927650794
 blogger_orig_url: http://hoonzis.blogspot.com/2014/05/detecting-extreme-values.html
 ---
-In a set of data points, outliers are such values that theoretically
-should not appear in the dataset. Typically these can be measurement
-errors or values caused by human mistakes. In some cases outliers are
-not caused by errors. These values affect the way that the data is
-treated and any statistics or report based on data containing outliers
-are erroneaus.
+In a set of data points, outliers are such values that theoretically should not appear in the dataset. Typically these can be measurement errors or values caused by human mistakes. In some cases outliers are not caused by errors. These values affect the way that the data is treated and any statistics or report based on data containing outliers are erroneous.
+
+Background
+==========
 
 Detecting these values might be very hard or even impossible and a whole
 field of statistics called Robust Statistics covers this subject. If you
@@ -44,7 +42,7 @@ only the standard distribution for our case.
 
 In the Gaussian distribution the data points are somehow gathered around
 the "center", and most values fall not far. Rare are the values really
-far away from the center. Intuitively the ouliers are points very far
+far away from the center. Intuitively the outliers are points very far
 from the center. Consider the following set of numbers which represent
 in minutes the length of a popular song:
 
@@ -65,11 +63,7 @@ values are scattered from the center.
 The probability that a point has a given value, provided that the data
 has the Gaussian distribution is given by this equation:
 
-
-
 [![](http://1.bp.blogspot.com/-bKsNqVzq2vk/U4jKN6pXL7I/AAAAAAAABWg/a8qKYBO5_1o/s320/probability_function.PNG)](http://1.bp.blogspot.com/-bKsNqVzq2vk/U4jKN6pXL7I/AAAAAAAABWg/a8qKYBO5_1o/s1600/probability_function.PNG)
-
-
 
 We can visualize both the theoretical and the real distribution of data.
 The distribution probability density function is continuous and thus can
@@ -80,11 +74,7 @@ The following graphics were created using
 [KoExtensions](https://github.com/hoonzis/KoExtensions) project, which
 is a small mediator project making Knockout and D3 work nicely together.
 
-
-
 [![](http://4.bp.blogspot.com/-vFOpquu3CQs/U4jGhS5Es6I/AAAAAAAABV4/WyalvP48fho/s320/histogram1.PNG)](http://4.bp.blogspot.com/-vFOpquu3CQs/U4jGhS5Es6I/AAAAAAAABV4/WyalvP48fho/s1600/histogram1.PNG)
-
-
 
 In perfect world the center is the mean value. That value is probably
 not a part of a data set but represents the typical value. The seconds
@@ -125,8 +115,6 @@ by the outliers.
 
 [![](http://4.bp.blogspot.com/-6cVOJuJQ82c/U4jGjZPoWPI/AAAAAAAABWA/ojvFIGU0lF8/s320/histogram2.PNG)](http://4.bp.blogspot.com/-6cVOJuJQ82c/U4jGjZPoWPI/AAAAAAAABWA/ojvFIGU0lF8/s1600/histogram2.PNG)
 
-
-
 Robust Dispertion
 -----------------
 
@@ -138,8 +126,6 @@ can get rid of outlier's influence over the dispersion. Here is the
 distribution function using this Robust type of dispersion. This
 characteristic is called [MAD - Median Absolute
 Deviation](http://en.wikipedia.org/wiki/Median_absolute_deviation).
-
-
 
 [![](http://2.bp.blogspot.com/-9OVLFsOMCz8/U4jJ0OrBrfI/AAAAAAAABWQ/N3aCF_fD514/s320/histogram3.PNG)](http://2.bp.blogspot.com/-9OVLFsOMCz8/U4jJ0OrBrfI/AAAAAAAABWQ/N3aCF_fD514/s1600/histogram3.PNG)
 
@@ -214,7 +200,7 @@ This class has 4 important methods:
 
 Here is the example of the Median aggregate
 
-``` 
+```csharp
 private List ld;
 
 public void Init()
@@ -250,7 +236,7 @@ way: sorting the array and taking the middle element or average of the
 two middle elements. I am returning directly SqlDouble value, which is
 the result of the aggregate.
 
-``` 
+```csharp
 public static SqlDouble Median(List ld)
 {
     if (ld.Count == 0)
@@ -270,7 +256,7 @@ public static SqlDouble Median(List ld)
 Implementing the Robust variance using the MAD method is very similar,
 everything happens inside the **Terminate** method.
 
-``` 
+```csharp
 public SqlDouble Terminate()
 {
     var distances = new List();
@@ -298,7 +284,7 @@ Having implemented both aggregates, detecting the outlier is just a
 matter of a SQL query - giving all the elements which are further away
 from the center than the variance multiplied by a coefficient.
 
-``` 
+```sql
 select * from tbUsers where Height > ( Median(Height) + c*RobustVar(Height)) or Height < (Median(Height) - c*RobustVar(Height))
 ```
 
@@ -323,7 +309,7 @@ data is charted using [D3](http://d3js.org/).
 To draw a histogram chart with the distribution and detecting the
 outliers at the same time one needs just few lines of code
 
-``` 
+```html
 <div id="histogram" data-bind="histogram: data, chartOptions : {
         tolerance : 10,
         showProbabilityDistribution: true,min : -20,
@@ -332,7 +318,7 @@ outliers at the same time one needs just few lines of code
         showOutliers: true}">
 ```
 
-``` 
+```javascript
 var exData = [3.9,3.8,3.9,2.7,2.8,1.9,2.7,3.5, 4.4, 2.8, 3.4, 8.6, 4.5, 3.5, 3.6, 3.8, 4.3, 4.5, 3.5,30,33,31];
   
 function TestViewModel() {
