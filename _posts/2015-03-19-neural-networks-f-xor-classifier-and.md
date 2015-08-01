@@ -11,12 +11,7 @@ thumbnail: http://3.bp.blogspot.com/-VReCg6iqrF0/VQmuBdLVLvI/AAAAAAAAEOw/-wxaOWz
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-286840343880955613
 blogger_orig_url: http://hoonzis.blogspot.com/2015/03/neural-networks-f-xor-classifier-and.html
 ---
-It seems that recently thanks to the buzz around Deep Learning, Neural Networks are getting back the attention that they once had. This post contains just a very short introduction to Neural Networks, just enough to understand the F\# code which follows. The aim for me was to learn F\# and see how easy it can be to write Machine Learning code in F\#. Here are two examples of NN in F\#:
-
-* XOR classifier - sort of Hello World of NN. A simple composition of 2 input nodes, 2 hidden nodes and 1 output node which learns the XOR function.
-* Solution to TSP using Hopfield NN. More complex network which evolves over time in it's configuration space to it's local minima, which shall correspond to optimal TSP tour.
-
-Both working examples are [at GitHub](https://github.com/hoonzis/MachineLearning)
+It seems that recently thanks to the buzz around Deep Learning, Neural Networks are getting back the attention that they once had. This post contains just a very short introduction to Neural Networks, just enough to understand the F\# code which follows. The aim for me was to learn F\# and see how easy it can be to write NN code in F\#. Two usage of Neural Networks are presented here: XOR classifier (Hello World of NN) and Traveling Salesman Problem solved using Hopfield Neural Network. Both working examples are [at GitHub](https://github.com/hoonzis/MachineLearning)
 
 Neural Networks
 ===============
@@ -537,4 +532,4 @@ Note that GitHub repository and specifically the Hopfield module contains more c
     and on the parameter **alfa**, which amplyfies the effect of the
     input potential on the value of given node.
 -   Few lines are also available to draw the solution using Windows
-    Forms Charts, through F\#
+    Forms Charts, through F\##
