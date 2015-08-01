@@ -10,13 +10,10 @@ thumbnail: http://2.bp.blogspot.com/-bhTeegAseTs/VMeJ7PPap_I/AAAAAAAAEMM/Dab5HZm
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-7292279599877960101
 blogger_orig_url: http://hoonzis.blogspot.com/2015/01/ncrunch-and-fsharpdata.html
 ---
-I have recently run into two separate issues while testing some F\# data
-providers based code. I am using ReSharper's NUnit runner and sometimes
-NCrunch.
+I have recently run into two separate issues while testing some F\# data providers based code. I am using ReSharper's NUnit runner and sometimes NCrunch.
 
 NCrunch issues
---------------
-
+==============
 NCrunch won't compile your solution when FSharp.Data is referenced. This component internally references FSharp.Data.DesignTime which has to be available for the compilation - and NCrunch does not have those libs available, because the DLL is not referenced the standard way, but must be provided by Visual Studio.
 
 The current solution is to reference FSharp.Data.DesignTime manually. If you are using nuget, than the DLL can be found in the packages folder as shown bellow:
