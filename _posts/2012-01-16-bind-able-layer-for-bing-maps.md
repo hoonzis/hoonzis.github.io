@@ -11,14 +11,7 @@ modified_time: '2014-06-26T14:40:37.365-07:00'
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-8163684139737279068
 blogger_orig_url: http://hoonzis.blogspot.com/2012/01/bind-able-layer-for-bing-maps.html
 ---
-I had a special requirement on showing items on Bing Map.
-
-I needed to show a collection of collections of objects - in this case
-bike routes. Actually each route was composed of collection of routes
-(which could be interconnected at some places).
-
-This cannot be achieved only by **MapItemsControl** - which can render
-only one dimensional collection.
+I needed to show a collection of collections of objects - in this case bike routes. Actually each route was composed of collection of routes (which could be interconnected at some places). This cannot be achieved only by **MapItemsControl** - which can render only one dimensional collection.
 
 So what I really need was to add dynamically a collection of
 **MapItemsControl** to the map.
@@ -42,7 +35,7 @@ rendered.
 Here is the code:
 
 
-``` 
+```csharp
 public class BikeRoutesLayer : MapLayer
 {
     private static Color[] _colors = { Colors.Blue, Colors.Green, Colors.Orange,Colors.Gray };
