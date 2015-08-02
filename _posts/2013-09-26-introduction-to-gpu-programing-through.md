@@ -156,7 +156,7 @@ namings. The following table shows the terms used by all three
 technologies. We will discuss the AMP terms used in this table later in
 the article.
 
-| Term                                             | CUDA                     | AMP C++            | OpenCL       |
+| *Term*                                             | *CUDA*                     | *AMP C++*            | *OpenCL*       |
 | ------------------------------------------------ | ------------------------ | ------------------ | ------------ |
 | Basic unit of work                               | thread                   | thread             | work-item    |
 | The code executed on one item                    | kernel                   | kernel             | kernel       |
