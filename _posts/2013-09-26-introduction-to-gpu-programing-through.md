@@ -12,17 +12,10 @@ thumbnail: http://3.bp.blogspot.com/-XNWrfsNIS7I/UkSvbyVrjYI/AAAAAAAAAsQ/UyOQkpJ
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-1965487944885903339
 blogger_orig_url: http://hoonzis.blogspot.com/2013/09/introduction-to-gpu-programing-through.html
 ---
-Few months ago I tried to learn a bit about GPU programming and I took
-notes a started to write this post. I am publishing this now even though
-it's not complete, however being too busy, I am not sure whether I will
-have the time to get back to this later.
+Since couple years CUDA (\*2007) and OpenCL (\*2008) have established themselves as standard frameworks for parallel programming on the GPU. In 2011 new framework came to the landscape of GPGPU programming, which does not compete on the same level, but rather represents new abstraction between the GPU and the developer.
 
-Since couple years CUDA (\*2007) and OpenCL (\*2008) have established
-themselves as standard frameworks for parallel programming on the GPU.
-In 2011 new framework came to the landscape of GPGPU programming, which
-does not compete on the same level, but rather represents new
-abstraction between the GPU and the developer.
-
+AMP Description
+===============
 AMP stands for Accelerated Massive Parallelism and it is an open C++
 standard. The implementation of AMP provided by Microsoft consists of
 three main features:
@@ -156,7 +149,7 @@ namings. The following table shows the terms used by all three
 technologies. We will discuss the AMP terms used in this table later in
 the article.
 
-| *Term*                                             | *CUDA*                     | *AMP C++*            | *OpenCL*       |
+| **Term**                                             | **CUDA**                     | **AMP C++**            | **OpenCL**       |
 | ------------------------------------------------ | ------------------------ | ------------------ | ------------ |
 | Basic unit of work                               | thread                   | thread             | work-item    |
 | The code executed on one item                    | kernel                   | kernel             | kernel       |

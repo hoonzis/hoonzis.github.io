@@ -10,7 +10,7 @@ thumbnail: http://2.bp.blogspot.com/-bhTeegAseTs/VMeJ7PPap_I/AAAAAAAAEMM/Dab5HZm
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-7292279599877960101
 blogger_orig_url: http://hoonzis.blogspot.com/2015/01/ncrunch-and-fsharpdata.html
 ---
-I have recently run into two separate issues while testing some F\# data providers based code. I am using ReSharper's NUnit runner and sometimes NCrunch.
+I have recently run into two separate issues while testing some F\# data providers based code. I am using ReSharper's NUnit runner and sometimes NCrunch. One of the problem was linked to the availability of FSharp.Data.DesignTime DLL on the compile time and other to NUnit not correctly handling Portable Library Class projects.
 
 NCrunch issues
 ==============
