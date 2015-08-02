@@ -156,13 +156,13 @@ namings. The following table shows the terms used by all three
 technologies. We will discuss the AMP terms used in this table later in
 the article.
 
-|Term                                            |CUDA                    |AMP C++           |OpenCL      |
-|------------------------------------------------|------------------------|------------------|------------|
-|Basic unit of work                              |thread                  |thread            |work-item   |
-|The code executed on one item                   |kernel                  |kernel            |kernel      |
-|The unit processing one group of working units  |Streaming multiprocessor|-                 |Compute unit|
-|Cache-style memory accessible by grouped threads|shared memory           |tile static memory|local memory|
-|Group of working units sharing local memory     |warp                    |tile              |work-group  |
+| Term                                             | CUDA                     | AMP C++            | OpenCL       |
+| ------------------------------------------------ | ------------------------ | ------------------ | ------------ |
+| Basic unit of work                               | thread                   | thread             | work-item    |
+| The code executed on one item                    | kernel                   | kernel             | kernel       |
+| The unit processing one group of working units   | Streaming multiprocessor | -                  | Compute unit |
+| Cache-style memory accessible by grouped threads | shared memory            | tile static memory | local memory |
+| Group of working units sharing local memory      | warp                     | tile               | work-group   |
 
 ### The tools offered by each framework
 
