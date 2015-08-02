@@ -34,7 +34,7 @@ provides **gapi.auth.authorize** function which can be used. This
 function takes the necessary  parameters (OAuth client ID and the scope)
 and also the callback which will be executed when the handshake is over.
 
-``` 
+```javascript 
 function checkAuth() {
  gapi.auth.authorize(
   {'client_id': CLIENT_ID, 'scope': SCOPES, 'immediate': true},
@@ -68,7 +68,7 @@ fields in this object:
 
 **Getting first 10 items from the drive**
 
-``` 
+```javascript
 function getItems() {
  var request = gapi.client.request({
   'path': 'drive/v2/files',
@@ -91,7 +91,7 @@ function listItems(resp) {
 
 **Creating a folder*
 
-``` 
+```javascript
 function createFolder(folderName) {
  var request = gapi.client.request({
   'path': 'drive/v2/files',
@@ -115,7 +115,7 @@ the body of the request.
 
 **Searching for folders**
 
-``` 
+```javascript
 function getAllFolders(folderName) {
  var request = gapi.client.request({
   'path': 'drive/v2/files',

@@ -9,11 +9,7 @@ modified_time: '2014-06-26T14:15:06.778-07:00'
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-4011874078382089830
 blogger_orig_url: http://hoonzis.blogspot.com/2012/10/git-stops-after-unpacking-objects-or.html
 ---
-Clone, pull and push all seem to finish fine, but they always stop at
-"Resolving deltas" or "Unpacking objects". The root of this issue is the
-fact that MSGIT uses curl, which does not know how to talk to NTLM
-authenticated proxy. There are two solutions which worked for me, first
-one not being stable.
+Clone, pull and push all seem to finish fine, but they always stop at "Resolving deltas" or "Unpacking objects". The root of this issue is the fact that MSGIT uses curl, which does not know how to talk to NTLM authenticated proxy. There are two solutions which worked for me, first one not being stable.
 
 ### Solution 1: unstable, easiest
 
@@ -75,13 +71,12 @@ And everything works just fine...
 
 This needs sone more effort. The solution is to use the CNTLM as a proxy
 between the NTLM proxy and any application which needs to use it. [The
-solution is exelently described on this
+solution is excellently described on this
 blog.](http://sparethought.wordpress.com/2012/12/06/setting-git-to-work-behind-ntlm-authenticated-proxy-cntlm-to-the-rescue/)
 
 ### Solution 3: not confirmed
 
-I was not able to confirm this one, but at [this thread on
-StackOverflow](http://stackoverflow.com/questions/13473341/git-clone-with-ntlm-proxy-hangs-after-resolving-deltas)
+I was not able to confirm this one, but at [this thread on StackOverflow](http://stackoverflow.com/questions/13473341/git-clone-with-ntlm-proxy-hangs-after-resolving-deltas)
 someone mentioned to use **verify-pack** function of git. Verify-pack
 verifies that *.pack* files, which are packed objects used by git during
 the transfer. If the files were transfered correctly you should be able

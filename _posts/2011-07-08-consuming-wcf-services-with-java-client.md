@@ -66,31 +66,28 @@ So first step is to locate your binding and service definition and
 change the binding to **basicHttpBinding**.
 
 
-``` 
-&ltbinding name="BinaryOverHTTPBinding">
-    &ltbinaryMessageEncoding />
-    &lthttpTransport />
+```xml
+<binding name="BinaryOverHTTPBinding">
+    <binaryMessageEncoding />
+    <httpTransport />
 </binding>
     
-&ltservice name="Octo.Bank.Web.WCFServices.WCFUserService" behaviorConfiguration="NeutralBehavior">
-    &ltendpoint address="" binding="BinaryOverHTTPBinding" contract="MyProject.WCFUserService"/>
-    &ltendpoint address="mex" binding="mexHttpBinding" contract="IMetadataExchange"/>
+<service name="Octo.Bank.Web.WCFServices.WCFUserService" behaviorConfiguration="NeutralBehavior">
+    <endpoint address="" binding="BinaryOverHTTPBinding" contract="MyProject.WCFUserService"/>
+    <endpoint address="mex" binding="mexHttpBinding" contract="IMetadataExchange"/>
 </service>
 ```
-
 Replace the binding configuration in the **endpoint** definition.
 
-``` 
-&ltendpoint address="" binding="basicHttpBinding" contract="MyProject.WCFUserService"/>
+```xml
+<endpoint address="" binding="basicHttpBinding" contract="MyProject.WCFUserService"/>
 ```
-
-Just to completed the image here, the **service** is configured to user
-"NeutralBehavior".
+Just to completed the image here, the **service** is configured to user "NeutralBehavior".
 
 ``` 
-&ltbehavior name="NeutralBehavior">
-  &ltserviceMetadata httpGetEnabled="true"/>
-  &ltserviceDebug includeExceptionDetailInFaults="false"/>
+<behavior name="NeutralBehavior">
+  <serviceMetadata httpGetEnabled="true"/>
+  <serviceDebug includeExceptionDetailInFaults="false"/>
 </behavior>
 ```
 
@@ -112,18 +109,16 @@ need to define different namespace and name in your **ServiceContract**
 and **ServiceBehavior**. These are two attributes which can be placed on
 top of your service class.
 
-``` 
+```csharp
 [ServiceContract(Namespace = "octo.users.service",Name="UserService")]
 [ServiceBehavior(Namespace = "octo.users.port", Name = "UserPort")]
 [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
 public class WCFUserService { }
 ```
-
 This completely changes the resulting **WSDL** file, which is describing
 the service. This is really important because if you do not make these
 changes, you will not be able to generate the client with Axis
 framework.
-
 
 ### Creating the Java client
 
@@ -144,7 +139,7 @@ have to enter just the URL of the WSDL.
 When the client is ready, you can see that there is quite a lot of
 code(10kLines) generated for you.
 
-``` 
+```java
 MyServiceLocator locator = new MyServiceLocator();
 AuthService client = locator.getBasicHttpBinding_AuthService();
 String cookie = client.LoginCookie("login","password");
@@ -155,7 +150,7 @@ cookie. Remember that this "Authentication Service" stays open, so
 anybody can call the methods. Now when we have the cookie, we can use it
 to make calls to other already protected services.
 
-``` 
+```java
 MyServiceLocator locator = new MyServiceLocator();
 WCFUserService client = locator.getBasicHttpBinding_WCFUserService();
 ((Stub)client)._setProperty(Call.SESSION_MAINTAIN_PROPERTY,new Boolean(true));
@@ -176,11 +171,7 @@ out in what exact form should I send the cookie, finally
 Silverlight client to see what exactly he is sending and I just did the
 same.
 
-
-
 [![](http://4.bp.blogspot.com/-Yli21ev2fgI/TgdPxAh6YFI/AAAAAAAAAMI/4Na-cg7zLIU/s320/fidler_cookie.PNG)](http://4.bp.blogspot.com/-Yli21ev2fgI/TgdPxAh6YFI/AAAAAAAAAMI/4Na-cg7zLIU/s1600/fidler_cookie.PNG)
-
-
 
 ### Creating the client dynamically
 
@@ -201,7 +192,7 @@ not manage to get the cookie from the SOAP message. I will provide here
 a conception of my solution - maybe someone will be able to finalize and
 obtain the cookie from the response of the authentication service.
 
-``` 
+```java
 try {
   QName serviceName = new QName("http://mynamespace","AuthService");
   URL wsdlLocation = new URL("http://localhost:49830/WCFServices/WCFUserService.svc?wsdl");
@@ -232,7 +223,7 @@ easily in the WSDL definition file.
 Here follows the definition of the **SimpleHandler** class which is
 added to the HTTP handler chain
 
-``` 
+```java
 public class SimpleHandler extends GenericHandler {
  
   HandlerInfo hi;
@@ -293,11 +284,11 @@ client to connect to these secured services.
 To expose the service as RESTfull we will have to define another
 endpoint for the service.
 
-``` 
-&ltservice behaviorConfiguration="NeutralBehavior" name="MyServic">
-  &ltendpoint address="json" binding="webHttpBinding"  behaviorConfiguration="jsonBehavior" contract="Octo.Bank.Web.WCFServices.WCFAccountService" name="JsonEndpoint"/>
-  &ltendpoint address="soap" binding="basicHttpBinding" .../>
-  &ltendpoint address="mex" .../>
+```xml 
+<service behaviorConfiguration="NeutralBehavior" name="MyServic">
+  <endpoint address="json" binding="webHttpBinding"  behaviorConfiguration="jsonBehavior" contract="Octo.Bank.Web.WCFServices.WCFAccountService" name="JsonEndpoint"/>
+  <endpoint address="soap" binding="basicHttpBinding" .../>
+  <endpoint address="mex" .../>
 </service>
 ```
 
@@ -305,20 +296,20 @@ Notice that this endpoint uses **webHttpBinding** and a special behavior
 called **jsonBehavior**. This behavior as it's name says just defines
 JSON as the transport format.
 
-``` 
-&ltendpointBehaviors>
-  &ltbehavior name="jsonBehavior">
-    &ltwebHttp defaultOutgoingResponseFormat="Json"/>
+```xml
+<endpointBehaviors>
+  <behavior name="jsonBehavior">
+    <webHttp defaultOutgoingResponseFormat="Json"/>
   </behavior>
 </endpointBehaviors>
 ```
 
-This is enough for the configuraiton. Now just some minor changes to the
+This is enough for the configuration. Now just some minor changes to the
 Service itself.
-At the end I showed guidlines for exposing WCF services using the REST
+At the end I showed guidelines for exposing WCF services using the REST
 approach.
 
-``` 
+```csharp
 public class MyService {  
   [OperationContract]
   [WebGet(UriTemplate="/accounts?id={id}", BodyStyle=WebMessageBodyStyle.Wrapped)]
@@ -332,13 +323,8 @@ public class MyService {
 It is the **WebGet** attribute which exposes the service for HTTP GET
 request. The UriTemplate defines which URL will invoke the service.
 Notice that the parameter of the service is extracted from the URL
-itself.
-If we would have a method which posts data, it would be decorated with
+itself. If we would have a method which posts data, it would be decorated with
 \[WebInvoke\] attribute.
-This is just a slight intro, you can find more information on internet,
-here I wanted just to provide some basic information to make this post
-complete enough.
-
 
 ### Summary
 

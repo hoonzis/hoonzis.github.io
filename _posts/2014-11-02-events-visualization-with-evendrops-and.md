@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Events visualization with EvenDrops and KoExtensions (D3 and Knockout)
+title: Events visualization with EvenDrops and KnockoutJS
 date: '2014-11-02T15:40:00.000-08:00'
 author: Jan Fajfr
 tags:
@@ -12,9 +12,7 @@ thumbnail: http://1.bp.blogspot.com/-Uq06dPrA0nk/VFa78Ko291I/AAAAAAAAEAE/AAyc-A9
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-8504375191575189411
 blogger_orig_url: http://hoonzis.blogspot.com/2014/11/events-visualization-with-evendrops-and.html
 ---
-I have recently needed to visualize a set of events which occurred within a certain interval. Each event would have couple parameters and there would be multiple event lines. Let's say that you want to
-visualize the occurrences of car sales in couple countries. For each sale you would also want to visualize the price and the mark of the sold car. Before writing everything from scratch, I have found
-[EventDrops](https://github.com/marmelab/EventDrops) project which responded to the majority of my requirements. It had just one flaw and that is that there is no way to chart another characteristics for each event.
+I have recently needed to visualize a set of events which occurred within a certain interval. Each event would have couple parameters and there would be multiple event lines. Let's say that you want to visualize the occurrences of car sales in couple countries. For each sale you would also want to visualize the price and the mark of the sold car. Before writing everything from scratch, I have found [EventDrops](https://github.com/marmelab/EventDrops) project which responded to the majority of my requirements. It had just one flaw and that is that there is no way to chart another characteristics for each event.
 
 EventDrops KnockoutJS integration
 =================================
@@ -23,11 +21,7 @@ I have decided to add such possibility and since I am using KnockoutJS and bindi
 
 [![](http://1.bp.blogspot.com/-Uq06dPrA0nk/VFa78Ko291I/AAAAAAAAEAE/AAyc-A9AhCY/s320/eventDrops.PNG)](http://1.bp.blogspot.com/-Uq06dPrA0nk/VFa78Ko291I/AAAAAAAAEAE/AAyc-A9AhCY/s1600/eventDrops.PNG)
 
-
-
-This
-[example](https://github.com/hoonzis/KoExtensions/blob/master/testpages/EventDrops.html)
-is available on GitHub as part of KoExtensions.
+This [example](https://github.com/hoonzis/KoExtensions/blob/master/testpages/EventDrops.html) is available on GitHub as part of KoExtensions.
 
 What I have added to the original event drops are the following
 possibilities:

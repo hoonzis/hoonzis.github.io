@@ -11,11 +11,8 @@ blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-72645932403638219
 blogger_orig_url: http://hoonzis.blogspot.com/2011/08/dotnetopenauth-and-url-rewriting-in.html
 ---
 I have created a simple OAuth provider for my web application using
-DotNetOpenAuth just [the way that I described in this last
-post.](http:/hoonzis.blogspot.com/2011/08/using-dotnetopenauth-to-create-oauth.html)
-On local everything worked just fine. However when I published the
-solution to Azure then I obtained errors while processing authorized
-request.
+DotNetOpenAuth. I have described how this has been done [in my last post](http:/www.hoonzis.com/using-dotnetopenauth-to-create-oauth).
+Locally everything worked just fine. However when I published the solution to Azure then I obtained errors while processing authorized request.
 
 Well the error happend because I used the idea of specifing exact
 **scope** within each token, which says what URL the consumer
@@ -34,7 +31,7 @@ If you take a look at the Authorization Manager code from the
 DotNetOpenAuth you will see that it checks the scope of the incoming
 message.
 
-``` 
+```csharp
 public class OAuthAuthorizationManager : ServiceAuthorizationManager
 {
   protected override bool CheckAccessCore(OperationContext operationContext)
@@ -57,7 +54,7 @@ which it wants to access in the form before the rewrite.
 What I found as a solution to this issue was to use instead this piece
 of code
 
-``` 
+```csharp
 Uri requestUri = operationContext.RequestContext.RequestMessage.Properties.Via;
 ...
 ...

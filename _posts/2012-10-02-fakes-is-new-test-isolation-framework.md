@@ -18,8 +18,8 @@ In this post I will briefly describe Fakes and than show the steps which have to
 
 Code example related to this post are available at [GitHub](https://github.com/hoonzis/PexMolesAndFakes). Fakes framework contains two constructs which can be used to isolate code:
 
-* Stubs – should be used to implement interfaces and stub the behaviour of public methods. 
-* Shims – allow mocking the behaviour of ANY method, including static and private methods inside .NET assemblies.
+* Stubs – should be used to implement interfaces and stub the behavior of public methods. 
+* Shims – allow mocking the behavior of ANY method, including static and private methods inside .NET assemblies.
 
 Stubs are generated classes. For each public method in the original interface a delegate is create which holds the action that should be executed while invoking the original method. In the case of Shims, such delegate is generated for all methods, even the private and static ones. 
 
@@ -40,7 +40,12 @@ Migrating from Moles to Fakes
 =============================
 First a small warning, <a href="http://connect.microsoft.com/VisualStudio/feedback/details/751873/building-unit-test-project-with-fakes-fails-with-error-exit-code-9009">A bug was apparently introduced by the Code Contracts team, which causes a crash when building a solution which uses Fakes</a>. You will need to install the<a href="http://msdn.microsoft.com/en-us/devlabs/dd491992.aspx"> latest version of Code Contracts</a>. (If you do not know or use Code Contracts, you should not be impacted).
 
-If you have already used Moles before, you might be wondering, how much code changes will the migration need. To give you a simple idea, I have migrated the code from <a href="http://www.hoonzis.com/pex-moles-testing-business-layer.html">my previous post about Moles</a> in order to use Fakes. Two major steps have to be taken during the migration:<ul><li>Change the structure of the project and generate new stubs  </li><li>Rewrite the unit tests to use newly generated classes</li></ul>To prepare the solution we have to remove all the references to Moles as well as the <strong>.moles</strong> files which were previously used during the code generation by the Moles framework. Next step is the generations of new stubs using Fakes framework. This is as simple as it has been before. Open the references window and right click on the DLL for which you want to generate the stubs. Than you should be able to select "<strong>Add Fakes Assembly</strong>” from the menu. 
+If you have already used Moles before, you might be wondering, how much code changes will the migration need. To give you a simple idea, I have migrated the code from [my previous post](http://www.hoonzis.com/pex-moles-testing-business-layer") in order to use Fakes. Few steps have to be taken:
+
+* Change the structure of the project and generate new stubs
+* Rewrite the unit tests to use newly generated classes
+
+To prepare the solution we have to remove all the references to Moles as well as the **.moles** files which were previously used during the code generation by the Moles framework. Next step is the generations of new stubs using Fakes framework. This is as simple as it has been before. Open the references window and right click on the DLL for which you want to generate the stubs. Than you should be able to select **Add Fakes Assembly** from the menu. 
 Following images show the difference between the old and new project structure (also note that I was using VS 2010 with Moles and I am now using VS 2012 with Fakes). After this is done, one needs to take care of the code changes.
 
 [![moles](http://lh5.ggpht.com/-9V7HQSZhYHw/UGi3opGKBaI/AAAAAAAAAcw/U3SZYHnvWVM/image_thumb%25255B1%25255D.png?imgmax=800)](http://lh4.ggpht.com/-oc7YGzDMH0k/UF9-wzQZ-ZI/AAAAAAAAAcY/4hPypdEZcXY/image_thumb%25255B1%25255D.png?imgmax=800)
@@ -50,7 +55,7 @@ Following images show the difference between the old and new project structure (
 
 Here is a classical example of testing a method which depends on **DataTime.Now** value. The first snippet is isolated using **Moles** and the second contains the same test using **Fakes:*
 
-```
+```csharp
 [TestMethod]
 [HostType("Moles")]
 public void GetMessage()
@@ -65,7 +70,7 @@ public void GetMessage()
 ```
 
 
-``` 
+```csharp
 [TestMethod]
 public void GetMessage()
 {
@@ -101,7 +106,7 @@ repositories to be specified in the constructor. The behavior of these
 repositories is stubbed. This is might be typical business layer code of
 any CRUD application. First let’s see the example using Moles.
 
-``` 
+```csharp
 [TestMethod]
 public void TestMakeTransfer()
 {
@@ -142,7 +147,7 @@ to see if the values have been changed in this list.
 
 Let’s see the same example using Fakes:
 
-``` 
+```csharp
 [TestMethod]
 public void TestMakeTransfer()
 {

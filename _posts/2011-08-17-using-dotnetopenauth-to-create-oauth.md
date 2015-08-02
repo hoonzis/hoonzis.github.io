@@ -11,24 +11,22 @@ thumbnail: http://3.bp.blogspot.com/-RavCX64q2tQ/TkubMhKbDnI/AAAAAAAAAMk/aUfz87m
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-8586859066855713132
 blogger_orig_url: http://hoonzis.blogspot.com/2011/08/using-dotnetopenauth-to-create-oauth.html
 ---
-[Download the source code from
-GitHub.](https://github.com/hoonzis/OAuthPoc)
 [DotNetOpenAuth](http://www.dotnetopenauth.net/) is an open source
 library created and managed by Andrew Arnott which gives you the
 possibility to use OAuth protocol, OpenID and ICard. It si powerful -
 and comes with a nice Samples package. Recently I needed to implement
 OAuth provider, in other words I wanted to allow third party application
 to obtain data from my application after the user authorizes them to do
-so.
+so. Source code is available on [GitHub](https://github.com/hoonzis/OAuthPoc)
 
 Before I have implemented that for my application, I have created a
 simple Proof of Concept (POC), which I will share with you. Basically it
 is just a simplified version of the OAuthProvider project in the Samples
-package. That is a greate example, however one fact, that might be
+package. That is a great example, however one fact, that might be
 little confusing is that it uses Linq to SQL to store the authentication
 Tokens and if you do not want to enter into that you might get lost. My
 targeted application uses NHibernate for ORM, but I decided to make the
-POC only store data in the memmory to keep it as simple as I could.
+POC only store data in the memory to keep it as simple as I could.
 
 At the end I will just lay out how I incorporated DotNetOpenAuth to my
 application, where I already had Data Access layer established using
@@ -40,14 +38,7 @@ of OAuth protocol.
 Here is the standard way of communication between Consumer and Provider
 using OAuth protocol.
 
-
-
 [![](http://3.bp.blogspot.com/-RavCX64q2tQ/TkubMhKbDnI/AAAAAAAAAMk/aUfz87m9-ks/s320/OAuth_workflow.png)](http://3.bp.blogspot.com/-RavCX64q2tQ/TkubMhKbDnI/AAAAAAAAAMk/aUfz87m9-ks/s1600/OAuth_workflow.png)
-
-
-
-
-
 
 DotNetOpenAuth provides classes and structures which enable you to
 easily create OAuth Consumer or Provider and manipulate Tokens. However
@@ -61,19 +52,14 @@ the actual user and owner of the resources.
 Here is a digram which shows the structure of OAuth Provider when
 implemented using DotNetOpenAuth.
 
-
-
-
 [![](http://1.bp.blogspot.com/-oS8jJbVEYVA/Tkuad-us3hI/AAAAAAAAAMc/9Spm67ziNUY/s320/oauth_provider_consumer.png)](http://1.bp.blogspot.com/-oS8jJbVEYVA/Tkuad-us3hI/AAAAAAAAAMc/9Spm67ziNUY/s1600/oauth_provider_consumer.png)
-
-
 
 
 There are two entities which perform the communication. First it is
 simple Http Handler which takes care of the OAuth "handshake". The
 second is the actual WCF service which uses custom Authorization Manager
 to perform the authentication. Both of these make use of the Service
-Provider (comming from DotNetOpenAuth). Service Provider than uses
+Provider (coming from DotNetOpenAuth). Service Provider than uses
 implementations of IServiceProviderTokenManager and INonceStore also
 defined in DotNetOpenAuth, which take care of the persistance of Nonces
 and Tokens. It is up to the programmer to decide how to implement these
@@ -84,7 +70,7 @@ and Nonces. To keep it simple, I decided to store all of them in memory
 in lists inside applications Global file.
 
 
-``` 
+```csharp
 public class Global : System.Web.HttpApplication
 {
   public static List<OAuthConsumer> Consumers { get; set; }
@@ -101,7 +87,7 @@ IServiceProviderTokenManager interface ([definition is
 here](http://docs.dotnetopenauth.net/master/html/AllMembers_T_DotNetOpenAuth_OAuth_ChannelElements_IServiceProviderTokenManager.htm)).
 For example the GetRequestToken method would be implemented like this:
 
-``` 
+```csharp
 public IServiceProviderRequestToken GetRequestToken(string token)
 {
 
@@ -133,7 +119,7 @@ which are returning String called Token (one comming from Access Token
 and other from Request Token interface), here is the way in which they
 are implemented:
 
-``` 
+```csharp
 private String _token;
 String IServiceProviderRequestToken.Token
 {
@@ -174,7 +160,7 @@ DotNetOpenAuth. Instead of that I wrapped my entities by classes which
 are using these interfaces and use the database persisted entities as
 backup. So just to explain what I mean, here is the persistant class:
 
-``` 
+```csharp
 public class AuthToken
 {
     public virtual int Id { get; set; }
@@ -195,7 +181,7 @@ public class AuthToken
 
 And here the DotNetOpenAuth compatible wrapper:
 
-``` 
+```csharp
 public class OAuthToken : IServiceProviderRequestToken, IServiceProviderAccessToken
 {
     public OAuthToken(AuthToken token)
@@ -310,9 +296,9 @@ public class OAuthToken : IServiceProviderRequestToken, IServiceProviderAccessTo
 ```
 
 In that case the Token Manager has to take care of the conversation with
-database as well as with wrapping the recieved entities.
+database as well as with wrapping the received entities.
 
-``` 
+```csharp
 public class DatabaseTokenManager : IServiceProviderTokenManager
 {
   private IOAuthServices _oAuthServices;
@@ -340,8 +326,7 @@ public class DatabaseTokenManager : IServiceProviderTokenManager
 }
 ```
 
-The rest stays the same and it works fine.
-It took me some time to understand how DotNetOpenAuth on the provider
+The rest stays the same and it works fine. It took me some time to understand how DotNetOpenAuth on the provider
 site works. I hope this post can help someone to jump in fast.
 
 [Get the code from GitHub](https://github.com/hoonzis/OAuthPoc)
