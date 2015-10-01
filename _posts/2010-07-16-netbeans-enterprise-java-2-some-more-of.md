@@ -11,17 +11,19 @@ thumbnail: http://4.bp.blogspot.com/_fmvjrARTMYo/TD9UvVLJnfI/AAAAAAAAAGw/aXkxFg0
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-3792458602013198883
 blogger_orig_url: http://hoonzis.blogspot.com/2010/07/netbeans-enterprise-java-2-some-more-of.html
 ---
+This is part two from old series about J2EE applications using Java Beans.
+
+- [Part 1](http://www.hoonzis.com/enterprise-java-netbeans/)
+- [Part 2](http://www.hoonzis.com/netbeans-enterprise-java-2-some-more-of/)
+- [Part 3](http://www.hoonzis.com/j2ee-netbeans-jsf-persistence-api-part/)
+
 In the first part I described how to develop a simple page which shows
 all the "companies" stored in the company table. Now I would like to
 describe how to add some additional functions - create new company, edit
-company's details. If you are interested take a look at the [**first
-part**]({{site.baseurl}}{post_url2010-07-14-enterprise-java-netbeans}\)
-or directly [**download the source
-code**](https://skydrive.live.com/redir?resid=F8AFB4F072D6DB62!4913).
+company's details. 
 
 ### Class diagram and actual state
 
-Here is our class diagram.
 [![](http://4.bp.blogspot.com/_fmvjrARTMYo/TD9UvVLJnfI/AAAAAAAAAGw/aXkxFg01ZAI/s320/class_diagram.PNG)](http://4.bp.blogspot.com/_fmvjrARTMYo/TD9UvVLJnfI/AAAAAAAAAGw/aXkxFg01ZAI/s1600/class_diagram.PNG)
 And here the page with some with table containing 2 companies.
 [![](http://4.bp.blogspot.com/_fmvjrARTMYo/TEBlaHdpOwI/AAAAAAAAAHA/QnJTpbwvmgs/s320/sample_data.PNG)](http://4.bp.blogspot.com/_fmvjrARTMYo/TEBlaHdpOwI/AAAAAAAAAHA/QnJTpbwvmgs/s1600/sample_data.PNG)
@@ -38,16 +40,14 @@ Backing Beans (the middle layer).
 
 ### New methods in Session Beans
 
-
 In the Session Bean I will add a method called "saveCompany".
 
 ``` 
 public void saveCompany(Company company) {
-company = em.merge(company);
-em.persist(company);
+  company = em.merge(company);
+  em.persist(company);
 }
 ```
-
 
 This method will take an instance of "Company" object and will perform a
 "merge" of this object with object in Persistence Context. If there is
@@ -71,8 +71,8 @@ allows me to get the row selected by the user in the GUI.
 public DataModel companiesModel;
 private Company company;
 public DataModel getCompaniesModel(){
-companiesModel = new ListDataModel(getAllCompanies());
-return companiesModel;
+  companiesModel = new ListDataModel(getAllCompanies());
+  return companiesModel;
 }
 ```
 
@@ -107,10 +107,7 @@ public String newCompany(){
 }
 ```
 
-
-
 ### New JSF Page to show Company's details
-
 
 Lets create a new JSF JSP page (On the Web Module -&gt; New -&gt; JSF
 JSP) and call it "company.jsp". This page will be used to specify the
@@ -137,7 +134,6 @@ Backing Bean and the value of the input fields are binded to the
 "company" members again in the Backing Bean.
 
 ### Changes to page containing table of companies
-
 
 Now lets do some changes to the "companies.jsp" page - the page
 containing the table of all companies. I will add a "Edit" button to
@@ -202,20 +198,11 @@ rules.
 </navigation-rule>
 ```
 
+Now you should be ready to try out the project. In the "index.jsp" page I added redirect from index page to "companies.jsp" - so you do not have to type the address and it just gets opened after running the project from NetBeans.
 
-OK now you should be ready to start try out the project. In the
-"index.jsp" page I added redirect from index page to "companies.jsp" -
-so you do not have to type the address and it just gets opened after
-running the project in NetBeans.
-
-``` {.brush: .html}
+```
 ```
 
-
-[**PART
-1**]({{site.baseurl}}{post_url2010-07-14-enterprise-java-netbeans}\)
-[**PART
-2**]({{site.baseurl}}{post_url2010-07-16-netbeans-enterprise-java-2-some-more-of}\)
-[**PART
-3**]({{site.baseurl}}{post_url2010-07-29-j2ee-netbeans-jsf-persistence-api-part}\)
-
+- [Part 1](http://www.hoonzis.com/enterprise-java-netbeans/)
+- [Part 2](http://www.hoonzis.com/netbeans-enterprise-java-2-some-more-of/)
+- [Part 3](http://www.hoonzis.com/j2ee-netbeans-jsf-persistence-api-part/)

@@ -12,32 +12,29 @@ thumbnail: http://2.bp.blogspot.com/_fmvjrARTMYo/TEBmdsdJm-I/AAAAAAAAAHI/ql1vT_4
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-7514540512490015079
 blogger_orig_url: http://hoonzis.blogspot.com/2010/07/enterprise-java-netbeans.html
 ---
-**UPDATE:**
-
 This is a very old article from the times, when I was very new to Java
-world. Nowadays I would probably not recomend looking into JSF and J2EE,
+world. Nowadays I would probably not recommend looking into JSF and J2EE,
 but it can serve well someone who decided for these technologies and
-wants to get started.
+wants to get started. This article is divided into 3 parts:
+
+- [Part 1](http://www.hoonzis.com/enterprise-java-netbeans/)
+- [Part 2](http://www.hoonzis.com/netbeans-enterprise-java-2-some-more-of/)
+- [Part 3](http://www.hoonzis.com/j2ee-netbeans-jsf-persistence-api-part/)
+
+[**Source code
+here.**](https://skydrive.live.com/redir?resid=F8AFB4F072D6DB62!4913)
 
 I spend most of my time with .NET technologies, but I am aware of that
 J2EE is very powerful and number one technology in the enterprise
 application world, so I decided that I should learn some basics of
 J2EE.
 
-You can download the [**source code
-here.**](https://skydrive.live.com/redir?resid=F8AFB4F072D6DB62!4913)
-The source code contains already implemented the changes described in
-the [second part of this
-post.]({{site.baseurl}}{post_url2010-07-16-netbeans-enterprise-java-2-some-more-of}\)
-
 This is a simple tutorial on "How to build simple enterprise web
 application on top of DB" using Java Persistence API, JSF, NetBeans and
 Derby Database. We will create application that allows the management of
 "Companies and their Products".
 
-
 ### First you will need:
-
 
 -&gt; NetBeans 6.7.1 + [UML tools](uml.netbeans.org/). I used 6.7.1
 because it supported the UML modelling tools with reverse engineer and
@@ -465,10 +462,6 @@ OK in the next post I will finish this application and provide some
 additional functionality to edit the company details and add and remove
 products of a company.
 
-[**PART
-1**]({{site.baseurl}}{post_url2010-07-14-enterprise-java-netbeans}\)
-[**PART
-2**]({{site.baseurl}}{post_url2010-07-16-netbeans-enterprise-java-2-some-more-of}\)
-[**PART
-3**]({{site.baseurl}}{post_url2010-07-29-j2ee-netbeans-jsf-persistence-api-part}\)
-
+- [Part 1](http://www.hoonzis.com/enterprise-java-netbeans/)
+- [Part 2](http://www.hoonzis.com/netbeans-enterprise-java-2-some-more-of/)
+- [Part 3](http://www.hoonzis.com/j2ee-netbeans-jsf-persistence-api-part/)

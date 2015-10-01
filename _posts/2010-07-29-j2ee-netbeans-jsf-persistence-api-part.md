@@ -12,27 +12,18 @@ thumbnail: http://4.bp.blogspot.com/_fmvjrARTMYo/TFcPE-ZjuZI/AAAAAAAAAHY/13-nbFL
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-5298151891570281471
 blogger_orig_url: http://hoonzis.blogspot.com/2010/07/j2ee-netbeans-jsf-persistence-api-part.html
 ---
-This blog entry is a continuation of a series in which I try to show how
-I taught myself the basics of J2EE. You can see the [**first
-part**]({{site.baseurl}}{post_url2010-07-14-enterprise-java-netbeans}\)
-and following [**second
-part**]({{site.baseurl}}{post_url2010-07-16-netbeans-enterprise-java-2-some-more-of}\).
-The aim of this part is to extend the detail page of a company by adding
-a list of products of the company and a drop down list box, which will
-allow a user to add a new product to the list of the products of the
-company. Here is who it should look like in the end.
+This is part 3 of old series about J2EE, Java Beans and JSF.
+
+- [Part 1](http://www.hoonzis.com/enterprise-java-netbeans/)
+- [Part 2](http://www.hoonzis.com/netbeans-enterprise-java-2-some-more-of/)
+- [Part 3](http://www.hoonzis.com/j2ee-netbeans-jsf-persistence-api-part/)
+
+The aim of this part is to extend the detail page of a company by adding a list of products of the company and a drop down list box, which will allow a user to add a new product to the list of the products of the company. Here is who it should look like in the end.
 [![](http://4.bp.blogspot.com/_fmvjrARTMYo/TFcPE-ZjuZI/AAAAAAAAAHY/13-nbFLL-B4/s320/result.PNG)](http://4.bp.blogspot.com/_fmvjrARTMYo/TFcPE-ZjuZI/AAAAAAAAAHY/13-nbFLL-B4/s1600/result.PNG)
-Generally adding the list of the products of the company to the page
-will be a piece of cake. You can again use the **dataTable** component
-provided by JSF. What will be a bit tricky is adding a drop down list.
-We will use the **selectOnListBox** component populated by **List**.
-Because this component allows to show **String** value and as I seed we
-will put in **Product** class. We will have to use a **Converter**
-component which will translate the **Product** to a single **String**
-and vice versa.
+
+Generally adding the list of the products of the company to the page will be a piece of cake. You can again use the **dataTable** component provided by JSF. What will be a bit tricky is adding a drop down list. We will use the **selectOnListBox** component populated by **List**. Because this component allows to show **String** value and as I seed we will put in **Product** class. We will have to use a **Converter** component which will translate the **Product** to a single **String** and vice versa.
 
 ### Changes to the Session Bean
-
 
 Again here I will start with the changes in the lower level. We will
 need to add a method which will provide all the products in the database
@@ -46,7 +37,6 @@ return products;
 }
 ```
 
-
 This method is calling a named query which you need to place above the
 "Product" class declaration.
 
@@ -57,7 +47,6 @@ public class Product implements Serializable {
 
 }
 ```
-
 
 Then we will need a method which will find a product for a given ID. We
 can easily use u method of the Entity Manager which allows to find o
@@ -76,10 +65,7 @@ return null;
 }
 ```
 
-
-
 ### The converter class
-
 
 As it had been said already, we will implement class which allows us
 convert object of type **Product** to a **String**. This class has to
@@ -130,19 +116,11 @@ return null;
 }
 ```
 
-
-The conversion of the object to the String is quite easy - you just need
-to decide what describes the object. Here you can see that I just return
-the products ID.
-The conversion of an String to object is the processing of looking up
-the product of given ID in our Entity Manager. We had prepared a method
-for this lookup in the Sesion Bean, which we are basically calling by
-the following line.
+The conversion of the object to the String is quite easy - you just need to decide what describes the object. Here you can see that I just return the products ID. The conversion of an String to object is the processing of looking up the product of given ID in our Entity Manager. We had prepared a method for this lookup in the Sesion Bean, which we are basically calling by the following line.
 
 ``` 
 Product p = ssb.getProductWithId(value);
 ```
-
 
 Now the question is how to obtain the Session Bean. Normally in the
 Backing Bean we are using the EJB injection by the "@EJB" decoration.
@@ -153,7 +131,6 @@ Bean (no initialization, the framework takes care of this).
 @EJB
 SalesSessionLocal ssl;
 ```
-
 
 However in the Converter you are not able to use this approach. The
 injection is allowed just in Managed Beans (another name for Backing
@@ -340,12 +317,8 @@ INSERT INTO SALES.PRODUCT (productname,productdescription) values ('Product 1','
 INSERT INTO SALES.PRODUCT (productname,productdescription) values ('Product 2','Banana');
 ```
 
-[**DOWNLOAD THE SOURCE
-CODE**](https://skydrive.live.com/redir?resid=F8AFB4F072D6DB62!4913)
-[**PART
-1**]({{site.baseurl}}{post_url2010-07-14-enterprise-java-netbeans}\)
-[**PART
-2**]({{site.baseurl}}{post_url2010-07-16-netbeans-enterprise-java-2-some-more-of}\)
-[**PART
-3**]({{site.baseurl}}{post_url2010-07-29-j2ee-netbeans-jsf-persistence-api-part}\)
+[**Download the source code**](https://skydrive.live.com/redir?resid=F8AFB4F072D6DB62!4913)
 
+- [Part 1](http://www.hoonzis.com/enterprise-java-netbeans/)
+- [Part 2](http://www.hoonzis.com/netbeans-enterprise-java-2-some-more-of/)
+- [Part 3](http://www.hoonzis.com/j2ee-netbeans-jsf-persistence-api-part/)

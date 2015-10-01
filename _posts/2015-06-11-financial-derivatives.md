@@ -316,10 +316,7 @@ premiums.
 
 #### <a name="butterfly"></a>Butterfly
 
-Limited risk, non-directional options strategy that is designed to have
-a large probability of earning a limited profit when the future
-volatility of the underlying asset is expected to be lower than the
-implied volatility.
+Limited risk, non-directional options strategy that is designed to have a large probability of earning a limited profit when the future volatility of the underlying asset is expected to be lower than the implied volatility.
 
 ![Butterfly](../images/finderivatives/butterfly.png)
 
@@ -345,9 +342,7 @@ stock.
 -   Long a put option at strike price X (called the "floor")
 -   Short a call option at strike price (X+a) (called the "cap")
 
-Latter two are a short Risk reversal position,so we can say Underlying -
-Risk reversal = Collar. The profit or loss on underlying are very
-limited.
+Latter two are a short Risk reversal position,so we can say Underlying - Risk reversal = Collar. The profit or loss on underlying are very limited.
 
 The premium income from selling the call reduces the cost of purchasing the put.
 
@@ -355,9 +350,7 @@ The premium income from selling the call reduces the cost of purchasing the put.
 
 #### <a name="condor"></a>Condor
 
-Strategy with limited risk, non-directional (the same result if underlying
-moves either way) with limited profit when the underlying security is
-perceived to have little volatility.
+Strategy with limited risk, non-directional (the same result if underlying moves either way) with limited profit when the underlying security is perceived to have little volatility.
 
 -   Sell 1 In The Money Call
 -   Buy 1 In The Money Call (Lower Strike)
