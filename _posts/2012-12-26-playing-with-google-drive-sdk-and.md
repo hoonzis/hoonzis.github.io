@@ -9,22 +9,11 @@ modified_time: '2014-06-26T14:12:08.280-07:00'
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-2514104088306056042
 blogger_orig_url: http://hoonzis.blogspot.com/2012/12/playing-with-google-drive-sdk-and.html
 ---
-I am just starting to use the Google Drive SDK for one of my personal
-projects. The front-end of the application is written entirely in
-JavaScript. I am in the process of integrating Google Drive and it took
-me some time to get throw the API reference and get it to work, here are
-some useful code snippets. I have started with the [JavaScript
-Quickstart available at the google sdk
-page](https://developers.google.com/drive/quickstart-js) and I have
-added couple useful methods:
+I am just starting to use the Google Drive SDK for one of my personal projects. The front-end of the application is written entirely in JavaScript. I am in the process of integrating Google Drive and it took me some time to get throw the API reference and get it to work, here are some useful code snippets. 
 
-The Google Drive API is a standard RESTful API. You can access the
-functionalities only by issuing HTTP requests, so you do not need any
-special SDK. However the requests have to be signed. OAuth protocol is
-used to secure the communication. Google provides a SDK for many
-languages, JavaScript being one of them. Using this SDK facilitates the
-creation of HTTP requests. The API provides a good compromise between
-the simplicity and flexibility.
+I have started with the [JavaScript Quickstart available at the google sdk page](https://developers.google.com/drive/quickstart-js) and I have added couple useful methods:
+
+The Google Drive API is a standard RESTful API. You can access the functionalities only by issuing HTTP requests, so you do not need any special SDK. However the requests have to be signed. OAuth protocol is used to secure the communication. Google provides a SDK for many languages, JavaScript being one of them. Using this SDK facilitates the creation of HTTP requests. The API provides a good compromise between the simplicity and flexibility.
 
 **The OAuth handshake**
 
@@ -130,5 +119,4 @@ function getAllFolders(folderName) {
 }
 ```
 
-You can get more information about searching the google drive
-[here](https://developers.google.com/drive/search-parameters).
+You can get more information about searching the google drive [here](https://developers.google.com/drive/search-parameters).

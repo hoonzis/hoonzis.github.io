@@ -11,68 +11,28 @@ thumbnail: http://1.bp.blogspot.com/-_dTtQK_AOfI/TWWcttkD9uI/AAAAAAAAAI8/bIA2WbW
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-5496261131107564255
 blogger_orig_url: http://hoonzis.blogspot.com/2011/02/spring-mvc-simple-project-spring-by.html
 ---
-This semester I had to do a bigger project using Spring Framework &
-Hibernate. On a side of this project I had a smaller one which I have
-created just to always try out certain parts which later I applied to
-the bigger one. Here I just present the simple project which should be
-easy to understand, but it contains all the important
-parts/frameworks/design patterns of enterprise applications: MVC, ORM,
-Validations, Security, Internalization, Views/ Tiles, Unit Tests.
+This semester I had to do a bigger project using Spring Framework & Hibernate. On a side of this project I had a smaller one which I have created just to always try out certain parts which later I applied to the bigger one. Here I just present the simple project which should be easy to understand, but it contains all the important parts/frameworks/design patterns of enterprise applications: MVC, ORM, Validations, Security, Internalization, Views/ Tiles, Unit Tests.
 
-I do not have much experience working with J2EE, or writing enterprise
-Java applications, so this will maybe help someone who is on the same
-Java level as I am.
+I do not have much experience working with J2EE, or writing enterprise Java applications, so this will maybe help someone who is on the same Java level as I am.
 
-[Download the project
-here](https://onedrive.live.com/redir.aspx?cid=f8afb4f072d6db62&resid=F8AFB4F072D6DB62!4915&parId=F8AFB4F072D6DB62!4912&authkey=!ALHYiWWtLLCdhKw)
+[Download the project here](https://onedrive.live.com/redir.aspx?cid=f8afb4f072d6db62&resid=F8AFB4F072D6DB62!4915&parId=F8AFB4F072D6DB62!4912&authkey=!ALHYiWWtLLCdhKw)
 
 Now this is the resulting application:
-
-
 
 [![](http://1.bp.blogspot.com/-_dTtQK_AOfI/TWWcttkD9uI/AAAAAAAAAI8/bIA2WbWE2ts/s320/students.PNG)](http://1.bp.blogspot.com/-_dTtQK_AOfI/TWWcttkD9uI/AAAAAAAAAI8/bIA2WbWE2ts/s1600/students.PNG)
 
 
-
-
-
-
-
 [![](http://4.bp.blogspot.com/-oOhl2KRvNu0/TWWcz_jtCQI/AAAAAAAAAJE/dsyyVl5BbHQ/s320/courses.PNG)](http://4.bp.blogspot.com/-oOhl2KRvNu0/TWWcz_jtCQI/AAAAAAAAAJE/dsyyVl5BbHQ/s1600/courses.PNG)
-
-
-
-
-
-
 
 [![](http://3.bp.blogspot.com/-QXf0RVF3iSU/TWWc4nHhLcI/AAAAAAAAAJM/fruZNxQct-0/s320/studentcourses.PNG)](http://3.bp.blogspot.com/-QXf0RVF3iSU/TWWc4nHhLcI/AAAAAAAAAJM/fruZNxQct-0/s1600/studentcourses.PNG)
 
-
-
-You can see, that it is a basic application containing: Student and
-Courses. There is one Many To Many relationship, while each student can
-have many courses and each course can be followed by many students.
-
+You can see, that it is a basic application containing: Student and Courses. There is one Many To Many relationship, while each student can have many courses and each course can be followed by many students.
 
 ### Basic setup of the project
 
-This is Eclipse "Dynamic Web Application" Project. I have used the
-latest Eclipse 3.6, Java 1.6 and Tomcat 6. However this should not limit
-to run the project with different configurations, however changing to
-Java 1.5 would require some additional changes (@Override annotations).
-In the following image you can see the two groups first the source files
-and second all the important configuration files. Here is brief
-overview:
-
-
+This is Eclipse "Dynamic Web Application" Project. I have used the latest Eclipse 3.6, Java 1.6 and Tomcat 6. However this should not limit to run the project with different configurations, however changing to Java 1.5 would require some additional changes (@Override annotations). In the following image you can see the two groups first the source files and second all the important configuration files. Here is brief overview:
 
 [![](http://3.bp.blogspot.com/-I_ffD86c_ZE/TWGaCcuafFI/AAAAAAAAAIo/gloMHFTlC3E/s320/project_structure.PNG)](http://3.bp.blogspot.com/-I_ffD86c_ZE/TWGaCcuafFI/AAAAAAAAAIo/gloMHFTlC3E/s1600/project_structure.PNG)
-
-
-
-
-
 
 -   **web.xml** - Web Deployment Descriptor, the base of the
     configuration for all the parts that compose the web application.
@@ -84,13 +44,10 @@ overview:
 -   **applicationContext-security.xml** - Configuration of Spring
     Security Framework.
 
-
-
 ### Package and project structure
 
 The project has a common structure:
-**View &lt;--&gt; Controller &lt;--&gt; Service &lt;--&gt; Repository
-&lt;--&gt; DB**.
+**View &lt;--&gt; Controller &lt;--&gt; Service &lt;--&gt; Repository &lt;--&gt; DB**.
 The Repository pattern (implemented by the classes in the DAO package)
 allows the abstraction of the DB technology. The Service layer has
 implemented all the functions of the project. For example in the
@@ -98,7 +55,6 @@ StudetsService class you can find all methods concerning the students
 (add a course to student, create new student..).
 The Controller layer uses the Service layer to fill the model needed
 behind the view and to perform the tasks desired by the user.
-
 
 ### Model View Controller with Spring
 
@@ -141,8 +97,6 @@ configuration we set the path of this file as the parametr to the Spring
 ContextLoader. There is also a link to the file which provides security
 configuration. Spring-servlet.xml contains a lot of configuration. Lets
 now take a look at the part concerning the view.
-
-
 
 Apache Tiles
 ------------
@@ -255,20 +209,13 @@ decoration with the controller and with the execution of the decorated
 method. In other words when the user navigates to
 "..TestingProject/students.do" this method will be processed to
 construct the Model and to return the View to the user.
-As said before the methods have different signatures depending on their
-neeeds but the are some rules which have to be kept. ([see the
-documentation](http://static.springsource.org/spring/docs/3.0.x/spring-framework-reference/html/mvc.html#mvc-ann-requestmapping-uri-templates))).
-The most straightforward is the method **listStudents**. This method
-fills the given Model (which is passed to the method by MVC framework)
-and returns the name of the view which should be used to show this
-model. You can take a look at the Tiles configuration to see which JSP
-will be shown after returning "students" as the name of the view.
+As said before the methods have different signatures depending on their needs but the are some rules which have to be kept. ([see the documentation](http://static.springsource.org/spring/docs/3.0.x/spring-framework-reference/html/mvc.html#mvc-ann-requestmapping-uri-templates))).
 
+The most straightforward is the method **listStudents**. This method fills the given Model (which is passed to the method by MVC framework) and returns the name of the view which should be used to show this model. You can take a look at the Tiles configuration to see which JSP will be shown after returning "students" as the name of the view.
 
 ### Object Relational Mapping - the Domain
 
-In the Domain package you can find just two classes: Student and Course.
-This is the Student class:
+In the Domain package you can find just two classes: Student and Course. This is the Student class:
 
 ``` 
 @Entity
@@ -324,12 +271,7 @@ The course class is quite similar and I will not describe it here.
 
 ### Internalization / Localization
 
-It is quite common demand to make the application supporting multipel
-languages. Spring framework provides LocalChangeInterceptor, which based
-on parametr in the url of the page decides, which languages version of
-the page should be loaded. To configure this feature take a look at the
-**spring-servlet.xml** file which contains the 3 following beans:
-
+It is quite common demand to make the application supporting multiple languages. Spring framework provides LocalChangeInterceptor, which based on parameter in the url of the page decides, which languages version of the page should be loaded. To configure this feature take a look at the **spring-servlet.xml** file which contains the 3 following beans:
 
 ``` 
 <!-- Messages and Internalization -->
@@ -639,9 +581,7 @@ public class UsersDAOTest{
        }
 ```
 
-You might also want to create Test Suites which allow to run multiple
-tests in the same time, by creating simple class with @Suite
-annotation:
+You might also want to create Test Suites which allow to run multiple tests in the same time, by creating simple class with @Suite annotation:
 
 ``` 
 @RunWith(Suite.class)

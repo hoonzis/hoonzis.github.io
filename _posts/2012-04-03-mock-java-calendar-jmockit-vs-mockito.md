@@ -10,19 +10,16 @@ modified_time: '2014-06-26T14:25:09.134-07:00'
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-5873479968341259306
 blogger_orig_url: http://hoonzis.blogspot.com/2012/04/mock-java-calendar-jmockit-vs-mockito.html
 ---
-To get the current time or day in Java, one should be using the Calendar
-class in the following way:
+To get the current time or day in Java the Calendar class can be used. It can be a bit tricky to mock for unit tests. Here is a short comparison between JMockit and Mockito.
 
+One should be using the Calendar class in the following way:
 
 ``` 
 Calendar c = Calendar.getInstance();
 int day = c.get(Calendar.DAY_OF_WEEK);
 ```
 
-Now I imagine this code can be hidden somewhere inside a business method
-and the behaviour of that method would be dependent on the current day.
-Typical example can be the method which returns the schedule of the
-cinema on the current day.
+Now I imagine this code can be hidden somewhere inside a business method and the behavior of that method would be dependent on the current day. Typical example can be the method which returns the schedule of the cinema on the current day.
 
 ``` 
 public class ScheduleService{
@@ -37,9 +34,9 @@ public class ScheduleService{
 ```
 
 In order to test this method you have to mock the Calendar. You will
-have to verify, that for monday the service will return the schedule for
-monday. However since the test will be automatically called every day,
-not only monday, you will obtain whole different schedules and the
+have to verify, that for Monday the service will return the schedule for
+Monday. However since the test will be automatically called every day,
+not only Monday, you will obtain whole different schedules and the
 assert will fail. There are several solutions to this. I have 3 in my
 mind.
 
@@ -206,11 +203,10 @@ Summary
 -------
 
 With Mockito you can mock the real Calendar. However you have to pass
-the instance of the mocked callendar to the class, which actually uses
+the instance of the mocked calendar to the class, which actually uses
 it. With JMockit you are able to tell to the JVM: "from now all my mocks
 behave like this...". For me this simplifies the situation, while I am
 not forced to create a setter for a Calendar to be passed to my service
 class. But it would take much more time and effort to compare the two
 frameworks. It might be that Mockito handles some situations better than
 JMockit.
-[CodeProject](http://www.codeproject.com/script/Articles/BlogFeedList.aspx?amid=honga)

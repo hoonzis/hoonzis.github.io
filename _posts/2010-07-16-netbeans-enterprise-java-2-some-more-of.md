@@ -25,11 +25,12 @@ company's details.
 ### Class diagram and actual state
 
 [![](http://4.bp.blogspot.com/_fmvjrARTMYo/TD9UvVLJnfI/AAAAAAAAAGw/aXkxFg01ZAI/s320/class_diagram.PNG)](http://4.bp.blogspot.com/_fmvjrARTMYo/TD9UvVLJnfI/AAAAAAAAAGw/aXkxFg01ZAI/s1600/class_diagram.PNG)
+
 And here the page with some with table containing 2 companies.
+
 [![](http://4.bp.blogspot.com/_fmvjrARTMYo/TEBlaHdpOwI/AAAAAAAAAHA/QnJTpbwvmgs/s320/sample_data.PNG)](http://4.bp.blogspot.com/_fmvjrARTMYo/TEBlaHdpOwI/AAAAAAAAAHA/QnJTpbwvmgs/s1600/sample_data.PNG)
 
 ### What we will add
-
 
 Now I will add a button to each row of the table, which will direct the
 page to a site where the user could edit the company details and a
@@ -60,12 +61,7 @@ Company will be stored in the database.
 
 ### Changes in Backing Bean
 
-
-Now the Backing Bean will need some more changes. I will add a field of
-type "Company" which will represent a Company which is actually showed
-or edited. Than instead of using a basic collection of type List I will
-use a class called DataModel, which is a part of JSF Framework and
-allows me to get the row selected by the user in the GUI.
+Now the Backing Bean will need some more changes. I will add a field of type "Company" which will represent a Company which is actually showed or edited. Than instead of using a basic collection of type List I will use a class called DataModel, which is a part of JSF Framework and allows me to get the row selected by the user in the GUI.
 
 ``` 
 public DataModel companiesModel;
@@ -80,20 +76,14 @@ public DataModel getCompaniesModel(){
 Now when I have the model I am able to get Company object representing
 the actually selected row. This is show in method "editCompany".
 
-``` {.prettyprint><br ./>public .String .editCompany(){<br ./> .company .= .(Company)companiesModel.getRowData();<br ./> .return edit-company";<br=""}
+```
+public .String .editCompany(){
+   company = (Company)companiesModel.getRowData();
+   return company;
+}
 ```
 
-}
-
-
-You see that the method returns String, concretely "edit-company". That
-string represents a name of a navigation rule which will be used by JSF
-Framework. Basically it means that the user will be redirected to
-another page which is specified in the faces-config.xml file. That I
-will show later. First let me put the last 2 new methods in Backing
-Bean, one for saving and one for creating a new company. Again the
-methods return String values for navigation purposes, it will all be
-clear soon :).
+You see that the method returns String, concretely "edit-company". That string represents a name of a navigation rule which will be used by JSF Framework. Basically it means that the user will be redirected to another page which is specified in the faces-config.xml file. That I will show later. First let me put the last 2 new methods in Backing Bean, one for saving and one for creating a new company. Again the methods return String values for navigation purposes, it will all be clear soon :).
 
 ``` 
 public String saveCompany(){
@@ -161,12 +151,9 @@ defined in the Backing Bean.
 </h:form>
 ```
 
-
-Notice, that because there are buttons performing actions I had to
-surround the whole table by **h:form** tag.
+Notice, that because there are buttons performing actions I had to surround the whole table by **h:form** tag.
 
 ### Changes to faces-config.xml
-
 
 OK - now we have the pages, last step missing is to explain the
 navigation rules. As I said before these rules are managed by JSF
@@ -176,10 +163,10 @@ file "faces-config.xml" and in the upper tab select "Page Flow". You
 will see a diagram of your pages (there should be 3 of them:
 companies.jsp, company.jsp, index.jsp). Edit the "Page Flow diagram so
 it will resemble the following one.
+
 [![](http://1.bp.blogspot.com/_fmvjrARTMYo/TEFosQFIslI/AAAAAAAAAHQ/oeZsBQQFlB4/s320/page_layout_2.PNG)](http://1.bp.blogspot.com/_fmvjrARTMYo/TEFosQFIslI/AAAAAAAAAHQ/oeZsBQQFlB4/s1600/page_layout_2.PNG)
-You can change the view to XML and see the XML declaration of these
-rules (the Page Flow diagram is there just to visualize the navigation
-rules.
+
+You can change the view to XML and see the XML declaration of these rules (the Page Flow diagram is there just to visualize the navigation rules.
 
 ``` 
 <navigation-rule>
@@ -199,9 +186,6 @@ rules.
 ```
 
 Now you should be ready to try out the project. In the "index.jsp" page I added redirect from index page to "companies.jsp" - so you do not have to type the address and it just gets opened after running the project from NetBeans.
-
-```
-```
 
 - [Part 1](http://www.hoonzis.com/enterprise-java-netbeans/)
 - [Part 2](http://www.hoonzis.com/netbeans-enterprise-java-2-some-more-of/)

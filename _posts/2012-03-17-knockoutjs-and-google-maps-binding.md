@@ -11,21 +11,9 @@ thumbnail: http://lh4.ggpht.com/-HXElwVXPlV4/T2RgnYw2SeI/AAAAAAAAATY/RHL4H9fBXqw
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-1973359973792824666
 blogger_orig_url: http://hoonzis.blogspot.com/2012/03/knockoutjs-and-google-maps-binding.html
 ---
-This post describes the integration between Google Maps and KnockoutJS.
-Concretely you can learn how to make the maps marker part of the View
-and automatically change it's position any time when the ViewModel
-behind changes. The ViewModel obviously has to contain the latitude and
-longitude positions of the point that you wish to visualize on the map.
+This post describes the integration between Google Maps and KnockoutJS. Concretely you can learn how to make the maps marker part of the View and automatically change it's position any time when the ViewModel behind changes. The ViewModel obviously has to contain the latitude and longitude positions of the point that you wish to visualize on the map.
 
-Previously I have worked a bit with Silverlight/WPF which in general
-leaves one mark on a person: the preference for declarative definition
-of the UI leveraging the rich possibilities of data binding provided by
-the previously mentioned platforms. In this moment I have a small
-free-time project where I am visualizing a collection of points on a
-map. This post describes how to make the marker automatically change
-it's position after the model values behind changes. Just like in this
-picture bellow, where the position changes when user changes the values
-of latitude and longitude in the input boxes.
+Previously I have worked a bit with Silverlight/WPF which in general leaves one mark on a person: the preference for declarative definition of the UI leveraging the rich possibilities of data binding provided by the previously mentioned platforms. In this moment I have a small free-time project where I am visualizing a collection of points on a map. This post describes how to make the marker automatically change it's position after the model values behind changes. Just like in this picture bellow, where the position changes when user changes the values of latitude and longitude in the input boxes.
 
 [![image](http://lh4.ggpht.com/-HXElwVXPlV4/T2RgnYw2SeI/AAAAAAAAATY/RHL4H9fBXqw/image_thumb.png?imgmax=800 "image")](http://lh6.ggpht.com/-KtZ1v4DOEl4/T2RgmGXhokI/AAAAAAAAATQ/rOq7ve_0OH8/s1600-h/image%25255B2%25255D.png)
 
@@ -80,9 +68,6 @@ update: function (element, valueAccessor, allBindingsAccessor, viewModel) {
 }
 ```
 
-``` 
-;
-```
 
 So let's describe what is going on here. We have defined a **map**
 binding. This binding is used on a div element. Actually the type of the
@@ -138,9 +123,6 @@ pass the map as an argument to the binding and the div element has to be
 outside of the map. Coming from Silverlight/WPF you would like to do
 something like this:
 
-    
-    
-    
 
 That is actually the beauty of declarative UI definition. You can save a
 lot of code only by composing the elements in the correct order. However
@@ -171,5 +153,3 @@ should be for example given as the description to the marker.
 
 Summary: **KnouckoutJS** **is great**. It lets me get rid of the
 bordelic JS code.
-
-[CodeProject](http://www.codeproject.com/script/Articles/BlogFeedList.aspx?amid=honga)

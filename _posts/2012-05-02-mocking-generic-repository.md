@@ -12,15 +12,11 @@ modified_time: '2014-06-26T14:20:01.298-07:00'
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-6294818593906360547
 blogger_orig_url: http://hoonzis.blogspot.com/2012/05/mocking-generic-repository.html
 ---
-This post describe one way to mock the generic repository. It assumes
-that you are familiar with the **Service &lt;-&gt; Repository &lt;-&gt;
-Database** architecture.
-Another pre-requisity is the knowledge of the [repository pattern]() and
-[it's generic
-variant](http://www.tugberkugurlu.com/archive/generic-repository-pattern-entity-framework-asp-net-mvc-and-unit-testing-triangle).
+This post describe one way to mock the generic repository when you can't use any mocking framework. It assumes that you are familiar with the **Service &lt;-&gt; Repository &lt;-&gt;
+Database** architecture. Another prerequisite is the knowledge of the [repository pattern]() and
+[it's generic variant](http://www.tugberkugurlu.com/archive/generic-repository-pattern-entity-framework-asp-net-mvc-and-unit-testing-triangle).
 
-In the majority of my projects I am using the following generic
-repository class.
+In the majority of my projects I am using the following generic repository class.
 
 ``` 
 public interface IRepository
@@ -41,15 +37,11 @@ public interface IRepository
 }
 ```
 
-Based on this technique, some people decide to implement concrete
-classes of this interface (**CarRepository : IRepository**), whereas
-others decide to keep using the generic implementation. That depends on
-the ORM that you are using. [With
+Based on this technique, some people decide to implement concrete classes of this interface (**CarRepository : IRepository**), whereas others decide to keep using the generic implementation. That depends on the ORM that you are using. [With
 EF](http://elegantcode.com/2009/12/15/entity-framework-ef4-generic-repository-and-unit-of-work-prototype/)
 and
 [NHibernate](http://stackoverflow.com/questions/2587965/using-a-generic-repository-pattern-with-fluent-nhibernate)
-you can easily implement the generic variant of the repository (check
-the links).
+you can easily implement the generic variant of the repository (check the links).
 
 I am also using the generic variant (mostly with NHibernate). Now the
 question is: **How to mock this generic repository**? It can be a bit
@@ -144,20 +136,20 @@ other possible options:
 
 -   **Use mocking framework ([there is quite a choice
     here](http://stackoverflow.com/questions/37359/what-c-sharp-mocking-framework-to-use))*
-     This essentialy means that in each of your tests you define the
-    behaviour of the repository class. This requires you to write a mock
+     This essentially means that in each of your tests you define the
+    behavior of the repository class. This requires you to write a mock
     for each repository method that is called inside the service method.
-    So it means more code to write. On the other hand you controll the
-    behaviour needed for the particular tested method. While using
+    So it means more code to write. On the other hand you control the
+    behavior needed for the particular tested method. While using
     mocking framework you have also the option to verify that methods
-    have been caled.
--   **Use the repository implementation and point it to in-memmory
+    have been called.
+-   **Use the repository implementation and point it to in-memory
     database** (SQL Lite). That is a good option in the case when:
     -   You are able to populate the database with the data.
     -   You are sure of your repository implementation
 -   **Use the generic repository mock presented here.** That is not a
     bad option if you have some way to populate the collections which
-    serve as in-memmory database. I have used deserialization from JSON.
+    serve as in-memory database. I have used de-serialization from JSON.
     Another option could be to use a framework such as
     [AutoPoco](http://autopoco.codeplex.com/)to generate the data. You
     can also create one repository which can be used for the whole test
@@ -170,4 +162,3 @@ Proof of Concepts and portable versions of database based applications.
 On the other hand for unit test you might consider either mocking
 framework or in-memory database. There is no clear winner in this
 comparison.
-[CodeProject](http://www.codeproject.com/script/Articles/BlogFeedList.aspx?amid=honga)

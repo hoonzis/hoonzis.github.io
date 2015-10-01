@@ -11,6 +11,8 @@ thumbnail: http://lh5.ggpht.com/-VaL2wQPsE0c/T1zSaKKs13I/AAAAAAAAARY/XoUW14IDx2A
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-3402269271418485750
 blogger_orig_url: http://hoonzis.blogspot.com/2012/03/collective-intelligence-ants-colony.html
 ---
+This article is a description of TSP solver written in Python, using ants colony inspired algorithm. The algorithm is inspired by the behavior of ants and the way that they use pheromones to communicate. It belongs to larger group of algorithms inspired by Collective Intelligence.
+
 According to
 [wikipedia](http://en.wikipedia.org/wiki/Collective_intelligence):
 
@@ -282,5 +284,3 @@ and later taken out to be executable isolated. Therefor there still is
 quite a lot of refactoring which could be done, but I do not consider it
 necessary, since the purpose is merely to present the Ant colony
 algorithm.
-
-[CodeProject](http://www.codeproject.com/script/Articles/BlogFeedList.aspx?amid=honga)

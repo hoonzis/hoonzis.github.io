@@ -11,20 +11,10 @@ modified_time: '2013-04-10T09:58:56.167-07:00'
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-7522731516243956423
 blogger_orig_url: http://hoonzis.blogspot.com/2012/06/programming-languages-for-age-of-cloud.html
 ---
-This posts talks about the aspects which are influencing computer
-languages these days. We are in the age when the sequential execution is
-over. Even your laptop has a processor with several cores. The cloud
-provides us with tons of machines whic we can use to run our code on. We
-are in the age of distribution, parallelization, asynchronous
-programming and concurrency. As developers we have to deal with the
-chalenges which arise from this new environement. Computer language
-scientists have worked on the subject since the seventies. Nowadays
-concepts which have been studied for long time, influence the mainstream
-languages. This post describes how. The motivation for this post was
-this panel discussion at the last's year Lang.NEXT conference, where one
-of the greatest language architects of these days discuss what the ideal
-computer language should look like (Anders Hejlsberg - C\#, Martin
-Odersky - Scala, Gilad Bracha - Newspeak, Java, Dart and Peter Alvaro).
+This posts talks about the aspects which are influencing computer languages these days. We are in the age when the sequential execution is over. Even your laptop has a processor with several cores. The cloud
+provides us with tons of machines which we can use to run our code on. We are in the age of distribution, parallelization, asynchronous programming and concurrency. As developers we have to deal with the challenges which arise from this new environment. Computer language scientists have worked on the subject since the seventies. Nowadays concepts which have been studied for long time, influence the mainstream languages. This post describes how. 
+
+The motivation for this post was this panel discussion at the last's year Lang.NEXT conference, where one of the greatest language architects of these days discuss what the ideal computer language should look like (Anders Hejlsberg - C\#, Martin Odersky - Scala, Gilad Bracha - Newspeak, Java, Dart and Peter Alvaro).
 
 Web and Cloud programming
 -------------------------
@@ -62,8 +52,8 @@ challenging, however write asynchronous application in a transparent
 maintainable manner might feel impossible. Just think about the global
 variables which you have to create to hold the information about
 ‘current situation’, so that when a response from a web service arrives
-you are able to decide and take the right actions. It is this maintance
-of the global state which is particulary dificult in asynchronous
+you are able to decide and take the right actions. It is this maintenance
+of the global state which is particularly difficult in asynchronous
 programming.
 
 **What are the tools which will help us with the transition to distruted
@@ -71,7 +61,7 @@ asynchronous or parallel coding?**
 
 Here is a list of 3 tools which I think might be helpful:
 
--   **Conteptual models** - As developers we can follow some conceptual
+-   **Conceptual models** - As developers we can follow some conceptual
     model - for instance the actors model in order to organize and
     architecture the program.
 -   **Libraries** - To implement one of the models (or design patterns)
@@ -186,7 +176,7 @@ even available in C++. Let's stop for a while here, because C++ adds the
 ability to distinguish between variables captured by reference and
 variables captured by value. The syntax for lambdas in C++ is a bit more
 complicated, but allows the developers for each variable to specify how
-it should be captured. In this folowing code the *v1* variable is
+it should be captured. In this following code the *v1* variable is
 captured by value and all the variables are captured as references. So
 the value of *v2* will depend on what happened before the lambda
 actually executed.
@@ -199,7 +189,7 @@ actually executed.
     });
 
 You can see, that even such and old school imperative language like C++
-has been influenced and modified to embrass functional programming.
+has been influenced and modified to embrace functional programming.
 
 Closures add the ability to use the current state from the moment of the
 definition of the anonymous function, as the current state used during

@@ -11,16 +11,10 @@ thumbnail: http://lh6.ggpht.com/-MOBHZdjyJyc/T1kPhAIMGxI/AAAAAAAAAQ4/rU5Ls5O9iVg
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-2137478854784529909
 blogger_orig_url: http://hoonzis.blogspot.com/2012/03/graph-theory-in-latex.html
 ---
-For one of my [previous
-posts]({{site.baseurl}}{post_url2012-02-25-applications-of-graph-theory}\),
-I needed some images of graphs. Initially I have taught, that I will
-just draw them in Inkscape or some other tool, but after a while I have
-decided to do something more clever – which might maybe serve me in the
-future – draw the graphs in Latex. After a quick search I have found
-this blog:
+For one of my [previous posts](http://www.hoonzis.com/applications-of-graph-theory/), I needed some images of graphs. Initially I have taught, that I will just draw them in Inkscape or some other tool, but after a while I have decided to do something more clever – which might maybe serve me in the future – draw the graphs in Latex. 
 
-<http://graphtheoryinlatex.wordpress.com/> and older posts from the same
-author: <http://graphtheoryinlatex.blogspot.com/>
+
+After a quick search I have found [this blog](http://graphtheoryinlatex.wordpress.com) and older posts from the [same author](http://graphtheoryinlatex.blogspot.com)
 
 This blog is about drawing graphs in TeX. So what do you need:
 
@@ -68,8 +62,6 @@ Coloring some of the nodes:
     \end{tikzpicture}  
 
 ![](http://lh4.ggpht.com/-gnmTUt_v9Ug/T0kM1wN_MPI/AAAAAAAAAPY/1u4wZwZv9aQ/image_thumb4.png?imgmax=800)
-
- 
 
 ### Graph with labeled edges
 
@@ -126,5 +118,4 @@ the second vertex, NOEA = Northeast of…)
 
 [![image](http://lh5.ggpht.com/-L4SZlSkKJcw/T1kPi5ikd3I/AAAAAAAAARI/Ui1pvCeppaQ/image_thumb%25255B1%25255D.png?imgmax=800 "image")](http://lh5.ggpht.com/-SnR7kWavbMU/T1kPiEkntEI/AAAAAAAAARA/Xk6ARO93xE0/s1600-h/image%25255B5%25255D.png)
 
-For now I am content that I have found this blog and actually I have to
-say, that drawing graphs in TeX is much easier than I have expected.
+For now I am content that I have found this blog and actually I have to say, that drawing graphs in TeX is much easier than I have expected.

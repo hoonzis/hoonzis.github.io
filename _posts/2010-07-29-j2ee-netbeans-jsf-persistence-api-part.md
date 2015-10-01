@@ -156,21 +156,16 @@ configuration file. Here is the registration of EJB in web.xml.
 </ejb-local-ref>
 ```
 
-
-And Here is how we can use the JNDI Lookup to get the Sesstion Bean in
-our GlassFish InitialContext.
+And Here is how we can use the JNDI Lookup to get the Session Bean in  our GlassFish InitialContext.
 
 ``` 
 Context c = new InitialContext();
 SalesSessionLocal ssb = (SalesSessionLocal) c.lookup("java:comp/env/SalesSessionBean");
 ```
 
-
-
 ### Changing Faces Configuration
 
-
-So that's it, the Convertor class is ready to be used. Now we have to
+So that's it, the Converter class is ready to be used. Now we have to
 register it in the Faces Configuration; in the **faces-config.xml** file
 add the following:
 
@@ -182,10 +177,7 @@ add the following:
 </converter>
 ```
 
-
-
 ### Changes to the Managed Bean (another name for Backing Bean)
-
 
 Now we will have to add some methods and fields to the Backing Bean to
 assure the functionality. First we will need to provide a field (and off
@@ -271,7 +263,6 @@ company.
 </h:commandbutton>
 ```
 
-
 You can see that the **selectOneListbox** component is binded to the
 "selectedProduct" field defined in the Backing Bean as well as the items
 list is binded to the list of products in the Backing Bean. The
@@ -304,10 +295,7 @@ return true;
 }
 ```
 
-
-To try out your example you need some simple testing data. You can run
-this script (just check the names of the fields in the database tables
-before).
+To try out your example you need some simple testing data. You can run this script (just check the names of the fields in the database tables before).
 
 ``` 
 INSERT INTO SALES.COMPANY (companyname, companydescription) values('First company', 'Sales bananas');

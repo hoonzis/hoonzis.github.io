@@ -10,21 +10,14 @@ modified_time: '2014-06-26T14:20:55.050-07:00'
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-5448790318473932249
 blogger_orig_url: http://hoonzis.blogspot.com/2012/09/reflection-order-of-discovered.html
 ---
-In .NET environement Reflection provides several methods to obtain
-information about any type from the type system. One of these methods is
-**GetProperties** method which retrieves a list of all the properties of
-a given type. This method returns an array of **PropertyInfo** objects.
+In .NET Reflection provides several methods to obtain information about any type from the type system. One of these methods is **GetProperties** method which retrieves a list of all the properties of a given type. This method returns an array of **PropertyInfo** objects, but the order of these properties is not guarantied to be the same.
 
 ``` 
 PropertyInfo[] propListInfo = type.GetProperties();
 ```
 
-In most cases you don't care, but the order of the properties does not
-have to be the same if you run this method several times. This is well
-described in [the documentation of this
-method.](http://msdn.microsoft.com/en-us/library/kyaxdd3x.aspx)
-Microsoft also states, that your code should not be depending on the
-order of the properties obtained.
+In most cases you don't care, but the order of the properties does not have to be the same if you run this method several times. This is well described in [the documentation of this
+method.](http://msdn.microsoft.com/en-us/library/kyaxdd3x.aspx) Microsoft also states, that your code should not be depending on the order of the properties obtained.
 
 I had a very nice example of a bug resulting from the misuse of this
 method. A ObjectComparer class, which is dedicated to comparison of two
@@ -91,4 +84,3 @@ only the first time that I ask the ObjectComparator to compare the
 objects and there is no reason that there should be any garbage
 collection between the first and second run...well no idea here. Sorting
 by MetadataToken has fixed the issue for me.
-[CodeProject](http://www.codeproject.com/script/Articles/BlogFeedList.aspx?amid=honga)

@@ -9,12 +9,7 @@ modified_time: '2014-06-27T05:10:20.756-07:00'
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-6603543459515201982
 blogger_orig_url: http://hoonzis.blogspot.com/2011/02/silverlight-accordion-changing-header.html
 ---
-Changing the header style for all items in the Siverlight Toolkit's
-Accordion item is not that easy as you might think it would be. If you
-wish to change the Container for each Accordion Item, you can just
-change the **ItemContainerStyle** property, however this will not help
-you to change the header. You can also apply some changes directly to
-the Header property of each Item that you add to the accordion.
+Changing the header style for all items in the Siverlight Toolkit's Accordion item is not that easy as you might think it would be. If you wish to change the Container for each Accordion Item, you can just change the **ItemContainerStyle** property, however this will not help you to change the header. You can also apply some changes directly to the Header property of each Item that you add to the accordion.
 
 ``` 
 <layoutToolkit:Accordion>
