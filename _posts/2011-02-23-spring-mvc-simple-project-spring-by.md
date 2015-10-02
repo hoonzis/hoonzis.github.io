@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Spring MVC simple project (Spring by example)
+title: Spring MVC tutorial
 date: '2011-02-23T15:50:00.002-08:00'
 author: Jan Fajfr
 tags:
@@ -15,9 +15,10 @@ This semester I had to do a bigger project using Spring Framework & Hibernate. O
 
 I do not have much experience working with J2EE, or writing enterprise Java applications, so this will maybe help someone who is on the same Java level as I am.
 
+#### The application description
 [Download the project here](https://onedrive.live.com/redir.aspx?cid=f8afb4f072d6db62&resid=F8AFB4F072D6DB62!4915&parId=F8AFB4F072D6DB62!4912&authkey=!ALHYiWWtLLCdhKw)
 
-Now this is the resulting application:
+This is standard CRUD application, here are the 3 mains screens:
 
 [![](http://1.bp.blogspot.com/-_dTtQK_AOfI/TWWcttkD9uI/AAAAAAAAAI8/bIA2WbWE2ts/s320/students.PNG)](http://1.bp.blogspot.com/-_dTtQK_AOfI/TWWcttkD9uI/AAAAAAAAAI8/bIA2WbWE2ts/s1600/students.PNG)
 
@@ -62,9 +63,8 @@ The MVC software architecture permits separate the domain model (M), the
 logic (C) and the user interface (V). Spring implementation of MVC is
 based on DispatcherServlet. DispatcherServlet is classical HttpServlet
 which decides to which Controller the current request should be sent and
-which View should be used to render the reponse.
-Please refer to the [Oficial
-Documentation](http://static.springsource.org/spring/docs/3.0.x/reference/mvc.html)
+which View should be used to render the response.
+Please refer to the [Official Documentation](http://static.springsource.org/spring/docs/3.0.x/reference/mvc.html)
 which contains great explanation.
 In the web.xml the DispatcherServlet is defined to handle all the
 requests coming to the web site (see url-pattern).
@@ -93,7 +93,7 @@ requests coming to the web site (see url-pattern).
 In the servlet mapping part, the servlet-name is set to "spring". This
 servlet needs some special configuration and this will be provided by
 spring-servlet.xml file. But in order to tell Spring where to search te
-configuration we set the path of this file as the parametr to the Spring
+configuration we set the path of this file as the parameter to the Spring
 ContextLoader. There is also a link to the file which provides security
 configuration. Spring-servlet.xml contains a lot of configuration. Lets
 now take a look at the part concerning the view.
@@ -104,7 +104,7 @@ Apache Tiles
 With spring you can use several APIs or technologies to build you user
 interface: standard JSP, Java Server Faces, Apache Tiles (they do not
 compete, they serve for different purposes and sometimes overlap). In
-this project I am using Apacha Tiles. That is a framework which allowes
+this project I am using Apache Tiles. That is a framework which allows
 you to define a fragments or parts which can be reused in several web
 pages (typically for example you have a menu bar, which is always
 present).
