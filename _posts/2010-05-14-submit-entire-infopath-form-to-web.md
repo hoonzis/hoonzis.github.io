@@ -51,11 +51,11 @@ and will parse this XML document representing the InfoPath form and
 store it's values to the database.
 
 
-``` 
+```
 [WebMethod]
 public void SubmitDocument(XmlDocument doc)
 {           
-XmlNamespaceManager nsManager = new XmlNamespaceManager(doc.NameTable); 
+XmlNamespaceManager nsManager = new XmlNamespaceManager(doc.NameTable);
 nsManager .AddNamespace(formNamespace, formURI);
 nsManager .AddNamespace("dfs",
 "http://schemas.microsoft.com/office/infopath/2003/dataFormSolution");
@@ -87,33 +87,20 @@ namespace to the document marked as: **dfs** with the url
 and you need to add the namespace to your namespace manager.
 
 
-``` 
+```
 nsManager .AddNamespace("dfs", "http://schemas.microsoft.com/office/infopath/2003/dataFormSolution");
 ```
 
+Then to get value of certain field in the **XmlDocument** we need to know the **XPath** which leads directly to the desired **XmlNode**. We can get the XPath by the **Copy XPath** option, which can be found in the context menu of desired field in the "Data Sources" tab in your InfoPath client. For example to get the "amount" XmlNode and later the string representing a number inside this node we can use the following code:
 
-
-Then to get value of certain field in the **XmlDocument** we need to
-know the **XPath** which leads directly to the desired **XmlNode**. We
-can get the XPath by the **Copy XPath** option, which can be found in
-the context menu of desired field in the "Data Sources" tab in your
-InfoPath client.
-
-For example to get the "amount" XmlNode and later the string
-representing a number inside this node we can use the following code:
-
-
-``` 
+```
 XmlNode nAmount = node.SelectSingleNode("/dfs:IPDocument/my:myFields/my:prodList/my:product/my:amount", nsManager);
-
 int amount = Convert.ToInt32(nAmount.InnerText);
-Now in the following part I will just show a simple example of method which would store some data to the Access database.
 ```
 
-
+Now in the following part I will just show a simple example of method which would store some data to the Access database.
 
 ### Preparing the Accesss database connection
-
 
 To connect to Access database you can use the OLE DB Provider, exactly
 the .NET Framework OLE DB provider, in the namespace
@@ -122,7 +109,7 @@ to your database. Because we are using web service it is good idea to
 store it in the **Web.config** file. Add the following to the Web.config
 file.
 
-``` 
+```
 
 ```
 
@@ -131,7 +118,7 @@ Later, already in the code of your Web Service you can prepare yourself
 a property which will provide you this connection string (just not to
 write too long lines of code).
 
-``` 
+```
 public String ConStr
 {
 get { return ConfigurationManager.ConnectionStrings["myDB"].ConnectionString; }
@@ -143,7 +130,7 @@ The following is a simple implementation of a method which stores the
 data in the database. You can made this method part of your Web Service
 directly or build yourself some data access class.
 
-``` 
+```
 public void SubmitToDataBase(String name, String price, String amount)
 {
 OleDbConnection con = new OleDbConnection(ConStr);
@@ -170,7 +157,6 @@ con.Close();
 }
 ```
 
-
 There is nothing too interesting here if you are familiar with some
 other ADO classes. Just notice that I am using parametrized queries. The
 SQL command contains question marks, which are later when the actual
@@ -180,29 +166,22 @@ the InfoPath form to connect to the Web Service.
 
 ### Connecting the InfoPath form to the Web Service
 
-
-OK now lets go back to the InfoPath form design. To submit the document
-to this web service you will have to **add new data source** select
-**submit data -&gt; to Web Service**. Than localize you web service and
-find the method that, you just created and than finally in the Data
-Connection Wizard select submit **Entire form**.
+OK now lets go back to the InfoPath form design. To submit the document to this web service you will have to **add new data source** select **submit data -&gt; to Web Service**. Than localize you web service and find the method that, you just created and than finally in the Data Connection Wizard select submit **Entire form**.
 
 [![](http://4.bp.blogspot.com/_fmvjrARTMYo/S_JI_j9RQpI/AAAAAAAAAFI/rzD2R2B0AU8/s320/new_data_connection.PNG)](http://4.bp.blogspot.com/_fmvjrARTMYo/S_JI_j9RQpI/AAAAAAAAAFI/rzD2R2B0AU8/s1600/new_data_connection.PNG)
 
-Now just to give you a complete idea, here is the XML which is submitted
-to the web service. However if the document is saved as XML later (eg.
-in the SharePoint document library), the **dfs** namespace is not
-presented.
+Now just to give you a complete idea, here is the XML which is submitted to the web service. However if the document is saved as XML later (eg. in the SharePoint document library), the **dfs** namespace is not presented.
 
-
-    <dfs:IPDocument xmlns:dfs="http://schemas.microsoft.com/office/infopath/2003/dataFormSolution"><?mso-infoPathSolution solutionVersion="1.0.0.4" productVersion="12.0.0" PIVersion="1.0.0.0" href="file:///C:\Users\fajfr\AppData\Local\Microsoft\InfoPath\Designer2\23fae1f325544a92\manifest.xsf" ?><?mso-application progid="InfoPath.Document" versionProgid="InfoPath.Document.2"?>
-    <my:myFields xmlns:my="http://schemas.microsoft.com/office/infopath/2003/myXSD/2010-05-18T07:21:28" xml:lang="en-us">
-    <my:prodList>
-    <my:product>
-    <my:name />
-    <my:price xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" />
-    <my:amout xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" />
-    </my:product>
-    </my:prodList>
-    </my:myFields>
-    </dfs:IPDocument>
+```
+<dfs:IPDocument xmlns:dfs="http://schemas.microsoft.com/office/infopath/2003/dataFormSolution"><?mso-infoPathSolution solutionVersion="1.0.0.4" productVersion="12.0.0" PIVersion="1.0.0.0" href="file:///C:\Users\fajfr\AppData\Local\Microsoft\InfoPath\Designer2\23fae1f325544a92\manifest.xsf" ?><?mso-application progid="InfoPath.Document" versionProgid="InfoPath.Document.2"?>
+<my:myFields xmlns:my="http://schemas.microsoft.com/office/infopath/2003/myXSD/2010-05-18T07:21:28" xml:lang="en-us">
+<my:prodList>
+<my:product>
+<my:name />
+<my:price xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" />
+<my:amout xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" />
+</my:product>
+</my:prodList>
+</my:myFields>
+</dfs:IPDocument>
+```
