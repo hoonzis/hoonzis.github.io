@@ -9,59 +9,36 @@ modified_time: '2014-06-26T14:52:34.291-07:00'
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-2193220764597818623
 blogger_orig_url: http://hoonzis.blogspot.com/2011/07/provide-jsonp-with-your-wcf-services.html
 ---
-I wrote this post mainly to correct one "bug", or let's say complete the
-MS example which shows how to configure your WCF services to provide
-data in JSONP format.
+This post contains a small correction to MS provided example for returning JSONP with over WCF. The example is awailable [here](https://msdn.microsoft.com/en-us/library/cc716898(v=vs.90).aspx) and works in most cases correctly, except the case when you are returning a raw JSON, that is you are not returning object which is serialized in to JSON, but rather returning a Stream which represents this JSON.
 
-This example works except the case when you are returning a raw JSON,
-that is you are not returning object which is serialized in to JSON, but
-rather returning a Stream which represents this JSON.
+Such case might occur if you are building the JSON dynamically and not just serializing objects. The exception which you might obtain will be something allong these lines:
 
-The exception which you might obtain will be:
+```
+Encountered invalid root element name 'Binary'. 'root' is the only allowed root element name.
 
-Encountered invalid root element name 'Binary'. 'root' is the only
-allowed root element name.
-
+```
 
 ### About JSONP
 
+JSON with Padding is a transport format, which uses the ability of *script* tag to execute scripts from different domains to overcome the cross-domain access issue. Generally the returned JSON is wrapped by JavaScript function which can be executed cross-domain.
 
-JSON with Padding is a transport format, which uses the ability of
-SCRIPT tag to execute scripts from different domains to overcome the
-cross-domain access issue. Generally the returned JSON is wrapped by
-JavaScript function which can be executed cross-domain.
-
-So before we start - JSONP support is already added to .NET 4 so the
-services can be configured to use JSONP only by adding the
-CrossDomainScriptAccessEnabled attribute.
-
+So before we start - JSONP support is already added to .NET 4 so the services can be configured to use JSONP only by adding the *CrossDomainScriptAccessEnabled* attribute.
 
 ### When the problem occurs
 
-However I am stuck with NET 3.5 - so I needed to provide JSONP manually.
-Actually that is not that hard because MS provides this functionality in
-the WCF-WF example package ([Downloadable
+However I am stuck with NET 3.5 - so I needed to provide JSONP manually. Actually that is not that hard because MS provides this functionality in the WCF-WF example package ([Downloadable
 here](http://msdn.microsoft.com/en-us/library/cc716898(v=vs.90).aspx)).
 
-**The problem is, that this example is not complete. To be more
-specific: It works only when the service returns .NET objects which are
-serialized to JSON by WCF. However in some cases you might be serving
-the JSON which is already prepared. In this case your service returns a
-**Stream**. And in this case the example provided by MS will not
-work.*
+As stated above, the problem is, that this example is not complete. It works only when the service returns .NET objects which are serialized to JSON by WCF. However in some cases you might be serving the JSON which is already prepared. In this case your service returns a
+**Stream**. And the provided example won't work.
 
-To understand the problem, we have to take a look at what exactly does
-the example of MS code. Well to start you can simply look at [this
+To understand the problem, we have to take a look at what exactly does the example of MS code. Well to start you can simply look at [this
 blog.](http://jasonkelly.net/2009/05/using-jquery-jsonp-for-cross-domain-ajax-with-wcf-services/)
 
-So basically to enable JSONP you just need to add JSONPBehavior
-attribute to your service. In fact this behavior uses
-JSONPEncoderFactory class, which defines an encoder (JSONPEncoder) which
-converts the messages to JSONP. The encoding takes place in the override
-WriteMessage method. Let's take a look at the method provided in the MS
-example.
+So basically to enable JSONP you just need to add JSONPBehavior attribute to your service. In fact this behavior uses JSONPEncoderFactory class, which defines an encoder (JSONPEncoder) which
+converts the messages to JSONP. The encoding takes place in the override WriteMessage method. Let's take a look at the method provided in the MS example.
 
-``` 
+```
 public override ArraySegment&ltbyte> WriteMessage(Message message, int maxMessageSize, BufferManager bufferManager, int messageOffset)
 {
     MemoryStream stream = new MemoryStream();
@@ -97,13 +74,7 @@ public override ArraySegment&ltbyte> WriteMessage(Message message, int maxMessag
 }
 ```
 
-
-So what is happening here: the **Message** object contains the object
-which returns your method. The WriteMessage method will take this object
-and write it to a Stream which is passed to it in argument. In the
-method the passed stream is a **JsonWriter**. The problem is that
-JsonWriter expects the structure of the message to be object represented
-by XML, which it will convert to JSON.
+So what is happening here: the **Message** object contains the object which returns your method. The WriteMessage method will take this object and write it to a Stream which is passed to it in argument. In the method the passed stream is a **JsonWriter**. The problem is that JsonWriter expects the structure of the message to be object represented by XML, which it will convert to JSON.
 
 Now you can see that before we are actually writing the content of the
 message, we write "methodName(" and after ");". Generally this is the
@@ -131,7 +102,7 @@ The solution to the problem is following:
     bytes
 -   If it is Json, than use the same procedure as before
 
-``` 
+```
 public override ArraySegment&ltbyte> WriteMessage(Message message, int maxMessageSize, BufferManager bufferManager, int messageOffset)
 {
     WebContentFormat messageFormat = this.GetMessageContentFormat(message);
@@ -178,9 +149,9 @@ public override ArraySegment&ltbyte> WriteMessage(Message message, int maxMessag
 
     ArraySegment&ltbyte> byteArray = new ArraySegment&ltbyte>(totalBytes, messageOffset, messageLength);
     stream.Close();
-    
+
     return byteArray;
-} 
+}
 ```
 
 
@@ -197,43 +168,42 @@ blog post is a great source of information regarding customization of
 WCF Service, definitely worth checking.
 
 
-``` 
+```
 private WebContentFormat GetMessageContentFormat(Message message)
-            {
-                WebContentFormat format = WebContentFormat.Default;
-                if (message.Properties.ContainsKey(WebBodyFormatMessageProperty.Name))
-                {
-                    WebBodyFormatMessageProperty bodyFormat;
-                    bodyFormat = (WebBodyFormatMessageProperty)message.Properties[WebBodyFormatMessageProperty.Name];
-                    format = bodyFormat.Format;
-                }
+{
+    WebContentFormat format = WebContentFormat.Default;
+    if (message.Properties.ContainsKey(WebBodyFormatMessageProperty.Name))
+    {
+        WebBodyFormatMessageProperty bodyFormat;
+        bodyFormat = (WebBodyFormatMessageProperty)message.Properties[WebBodyFormatMessageProperty.Name];
+        format = bodyFormat.Format;
+    }
 
-                return format;
-            }
+    return format;
+}
 
 private String ReadRawBody(ref Message message)
-            {
-                
-                XmlDictionaryReader bodyReader = message.GetReaderAtBodyContents();
-                
-                bodyReader.ReadStartElement("Binary");
-                byte[] bodyBytes = bodyReader.ReadContentAsBase64();
-                
-                string messageBody = Encoding.UTF8.GetString(bodyBytes);
+{
+    var bodyReader = message.GetReaderAtBodyContents();
 
-                // Now to recreate the message
-                MemoryStream ms = new MemoryStream();
-                XmlDictionaryWriter writer = XmlDictionaryWriter.CreateBinaryWriter(ms);
-                writer.WriteStartElement("Binary");
-                writer.WriteBase64(bodyBytes, 0, bodyBytes.Length);
-                writer.WriteEndElement();
-                writer.Flush();
-                ms.Position = 0;
-                XmlDictionaryReader reader = XmlDictionaryReader.CreateBinaryReader(ms, XmlDictionaryReaderQuotas.Max);
-                Message newMessage = Message.CreateMessage(reader, int.MaxValue, message.Version);
-                newMessage.Properties.CopyProperties(message.Properties);
-                message = newMessage;
-                //return bodyBytes;
-                return messageBody;
-            }
+    bodyReader.ReadStartElement("Binary");
+    byte[] bodyBytes = bodyReader.ReadContentAsBase64();
+
+    string messageBody = Encoding.UTF8.GetString(bodyBytes);
+
+    // Now to recreate the message
+    MemoryStream ms = new MemoryStream();
+    XmlDictionaryWriter writer = XmlDictionaryWriter.CreateBinaryWriter(ms);
+    writer.WriteStartElement("Binary");
+    writer.WriteBase64(bodyBytes, 0, bodyBytes.Length);
+    writer.WriteEndElement();
+    writer.Flush();
+    ms.Position = 0;
+    XmlDictionaryReader reader = XmlDictionaryReader.CreateBinaryReader(ms, XmlDictionaryReaderQuotas.Max);
+    Message newMessage = Message.CreateMessage(reader, int.MaxValue, message.Version);
+    newMessage.Properties.CopyProperties(message.Properties);
+    message = newMessage;
+    //return bodyBytes;
+    return messageBody;
+}
 ```
