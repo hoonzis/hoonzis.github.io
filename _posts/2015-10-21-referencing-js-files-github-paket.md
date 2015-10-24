@@ -1,3 +1,13 @@
+---
+layout: post
+title: Referencing JS files from GitHub with Paket
+date: '2015-10-21T09:44:00.000-07:00'
+author: Jan Fajfr
+tags:
+- FSharp, Visual Studio, Paket
+modified_time: '2015-10-21T01:07:44.866-07:00'
+---
+
 Paket is a dependency manager for .NET projects, besides referencing NuGet packages, one can reference as well any file from GitHub. One can reference any file from GitHub just by adding single line to **paket.dependencies** files. Such files would however be added as links to the solution and if they should be picked up by IIS or other web server they need to be copied to it's location in the solution.
 
 ```

@@ -1,11 +1,11 @@
 ---
 layout: post
 title: F# folder rendered multiple times
-date: '2015-07-29T09:44:00.000-07:00'
+date: '2015-09-17T09:44:00.000-07:00'
 author: Jan Fajfr
 tags:
-- Csharp, ElasticSearch
-modified_time: '2015-07-29T01:07:44.866-07:00'
+- FSharp, Visual Studio
+modified_time: '2015-09-17T01:07:44.866-07:00'
 ---
 
 I was recently testing the [ASP.MVC 5 F# template](https://visualstudiogallery.msdn.microsoft.com/39ae8dec-d11a-4ac9-974e-be0fdadec71b), which works fine but almost always breaks down as soon as you add new item to the solution.

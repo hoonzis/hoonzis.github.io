@@ -1,3 +1,13 @@
+---
+layout: post
+title: JSON serialization with F#
+date: '2015-10-24T09:44:00.000-07:00'
+author: Jan Fajfr
+tags:
+- FSharp, JSON, Json.NET
+modified_time: '2015-10-24T01:07:44.866-07:00'
+---
+
 This post is about F# types serialization using Json.NET library. Luckily enough Json.NET handles most of the F# types correctly but there are still few issues. Typically you can have problems with the F# specific types.
 Luckily enough there are quite a lot of examples on the internet of convertors for each of these types, that one can just plug into Json.NET. Here is a short list with an example of convertor that one can find on the web.
 
