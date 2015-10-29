@@ -2,8 +2,42 @@ Pricer is a small library for pricing options and generating payoff charts.
 
 Payoff charts show you the profit of an option based on the movement of the underlying security itself. You can create a payoff charts of any derivative (options, futures, convertible bonds). Multiple options traded in the same time form strategies which can be used to obtain different type of protection or leverage against the movements of the underlying stock.
 
+There are generally two methods to price options:
+- Black Scholes formula
+- Binomial pricing
+
+Black Scholes is a closed formula for pricing European options (options that can be excercised only on the maturity). Binomial pricing is a sort of Monte Carlo method that can be applied to pricing diverse types of financial derivatives. Both of these methods place the same assumptions on underlying share and it's movements.
+
+There are quite a lot of examples of the Black & Scholes implementation around the web. Taking into account the fact that it is a closed mathematical solution, besides writing the formula in programming language, there is not that much to talk about. So this blog post will be about Binomial Pricing. However, for both methods it is quite important to understand how the underlying stock movements are modelized.
+
+Share price and it's movements
+------------------------------
+In order to determine the price of the option, one has to guess how the shares will move in the future. That is not possible be we can assume two facts:
+
+- the stock price follows a long term direction (in the long term it keeps climbing or it declines)
+- the stock oscilates randomly in the short term
+
+These two assumptions are contained in the following equation, which describes the stock movement as generalized [Wiener process](https://en.wikipedia.org/wiki/Wiener_process) (type of stochastic process).
+
+```
+dS = alpha*S*dt + sigma*S*dW
+```
+This describes the change in the share price (dS) in time (dt), in the function of the current share price (S), the drift  (alpha), which is the long term direction of the stock, the volatility (sigma) and (dW) random value - the random swing in the share price.
+
+This by it self would not be enough to build any pricing model. A second assumption is based on the share prices changes and specially about it's log returns.
+
+Log returns are used because they are additive. We can say that the logarithm of weekly return is the same as the some of the daily returns of the given week:
+
+```
+log(Stweek/S_lastweek) = log (S_monday/S_lastweek) + log (S_tuesday/S_monday) + ... + log(S_friday/S_thursday)
+```
+The second assumption is: the logarithms of daily returns of share prices are independent - there is no correlation between the results the stock in consecutive days. Of course this is far from reality. The daily returns and the log returns as well can be correlated and that would happen specially during the crises periods where bing swings would happend in consecutive days on the markets. But it is crucial to make this assumption.
+
+As a consequence it can be shown, that if we model the share as process of log returns, the daily log returns of the share are normally distributed. This is the key to Black Scholes and Binomial Pricing as well, because both of these method are based on the fact that the log returns are normally distributed.
+
 Binomial pricing
 ----------------
+The basic idea behind binomial pricing is the following. We assume that the share can move every day. With this knowledge we will build a tree (binomial) which will contain all paths that the share price could undertake from now until certain time (if we pricing the option, until maturity). 
 
 Imperative way:
 //we need to construct the binomial pricing model, using the CRR (Cox, Ross and Rubinstein)
