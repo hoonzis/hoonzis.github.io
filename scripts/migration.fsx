@@ -99,7 +99,7 @@ let geturlmap acc filename =
     printfn "Year: %s month: %s name:%s" year month name
 
     let originalUrl = sprintf "http://hoonzis.blogspot.com/%s/%s/%s.html" year month name
-    let newUrl = sprintf "http://www.hoonzis.com/%s" name
+    let newUrl = sprintf "http://www.hoonzis.com/%s/" name
     sprintf "%s\n%s, %s" acc originalUrl newUrl
 
 let completeMap = files |> Seq.fold (geturlmap) ""
