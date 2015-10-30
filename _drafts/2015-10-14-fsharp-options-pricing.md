@@ -31,13 +31,18 @@ Log returns are used because they are additive. We can say that the logarithm of
 ```
 log(Stweek/S_lastweek) = log (S_monday/S_lastweek) + log (S_tuesday/S_monday) + ... + log(S_friday/S_thursday)
 ```
-The second assumption is: the logarithms of daily returns of share prices are independent - there is no correlation between the results the stock in consecutive days. Of course this is far from reality. The daily returns and the log returns as well can be correlated and that would happen specially during the crises periods where bing swings would happend in consecutive days on the markets. But it is crucial to make this assumption.
+The second assumption is: the logarithms of daily returns of share prices are independent - there is no correlation between the results the stock in consecutive days. Of course this is far from reality. The daily returns and the log returns as well can be correlated and that would happen specially during the crises periods where big swings would happend in consecutive days on the markets. But it is crucial to make this assumption.
 
 As a consequence it can be shown, that if we model the share as process of log returns, the daily log returns of the share are normally distributed. This is the key to Black Scholes and Binomial Pricing as well, because both of these method are based on the fact that the log returns are normally distributed.
 
 Binomial pricing
 ----------------
-The basic idea behind binomial pricing is the following. We assume that the share can move every day. With this knowledge we will build a tree (binomial) which will contain all paths that the share price could undertake from now until certain time (if we pricing the option, until maturity). 
+The basic idea behind binomial pricing is the following. We assume that the share can move every day. With this knowledge we will build a tree (binomial) which will contain all paths that the share price could undertake from now until certain time (if we are pricing the option, until maturity).
+
+In the same time, we can construct a second tree which will hold the prices of the derivative. The price of the option is dependend on the price of the underlying and thus any change in the price of the share will result also in change in the price of the option.
+
+Imagine that we could create a portfolio in which we would hold a certain number of shares (usually called delta) and short position in the derivative (selling the option in the same time) and that we would figure out the exact amount of shares (delta), which would make this portfolio imune to the share price - it would not loose nor win anything if the share price changes. If we find out the exact number of shares delta, and in a world where there is no arbitrage possible, nor taxes, this portfolio should earn you exactly the neutral interest rate.
+
 
 Imperative way:
 //we need to construct the binomial pricing model, using the CRR (Cox, Ross and Rubinstein)
