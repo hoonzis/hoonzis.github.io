@@ -10,4 +10,4 @@ I enjoy solving any computationally solvable problems and I like stats, machine 
  
 ### Contact me
 [@hoonzis](https://twitter.com/hoonzis)
-[linked-in](https://www.linkedin.com/in/jan.fajfr@centrum.cz)
+[linked-in](https://www.linkedin.com/pub/jan-fajfr/30/163/21b)
