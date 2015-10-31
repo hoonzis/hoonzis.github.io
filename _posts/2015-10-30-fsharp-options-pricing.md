@@ -8,15 +8,16 @@ tags:
 modified_time: '2015-10-30T01:07:44.866-07:00'
 ---
 
-I have recently written a small option pricing library in F# called [Pricer](https://github.com/hoonzis/Pricer) (what an original name...). Besides options pricing it can also generate payoff charts, estimate volatility and I am currently working in Convertible Bonds pricing. Payoff charts show you the profit of an option based on the movement of the underlying security itself. You can create a payoff charts of any derivative (options, futures, convertible bonds). Multiple options traded in the same time form strategies which can be used to obtain different type of protection or leverage against the movements of the underlying stock - but that is not the subject of this post.
+I have recently written a small option pricing library in F# called [Pricer](https://github.com/hoonzis/Pricer) (what an original name...). It contains a set of methods for derivatives pricing, generating payoff charts, estimating volatility. Payoff charts show you the profit of an option as a function of the share price change. One can create a payoff charts of any derivative. Multiple options traded in the same time form strategies which can be used to obtain different type of protection or leverage against the movements of the underlying stock - but that is not the subject of this post.
 
 This post is about options pricing and the way it can be implemented in F#. There are generally two methods to price options:
+
 - Black Scholes formula
 - Binomial pricing
 
-Black Scholes is a closed mathematical formula for pricing European options (options that can be exercised only at the maturity). Binomial pricing is a sort of Monte Carlo method that can be applied to pricing diverse types of financial derivatives. Both of these methods place the same assumptions on underlying share and it's movements.
+Black Scholes is a closed mathematical formula for pricing European options (options that can be exercised only at the maturity). Binomial pricing is algorithmical method that can be applied to price diverse types of financial derivatives. Both of these methods place the same assumptions on underlying share and it's movements.
 
-There are quite a lot of examples of the Black & Scholes implementation around the web. Taking into account the fact that it is a closed mathematical solution, besides writing the formula in programming language, there is not that much to talk about. So this blog post will be about Binomial Pricing. However, for both methods it is quite important to understand how the underlying stock movements are modelized.
+There are quite a lot of examples of the Black Scholes implementation around the web. Taking into account the fact that it is a closed mathematical solution, besides writing the formula in programming language, there is not that much to talk about. So this blog post will be about Binomial Pricing. However, for both methods it is quite important to understand how the underlying stock movements are modelized.
 
 Share price and it's movements
 ------------------------------
@@ -30,26 +31,19 @@ These two assumptions are contained in the following equation, which describes t
 ```
 dS = alpha*S*dt + sigma*S*dW
 ```
-This describes the change in the share price (dS) in time (dt), in the function of the current share price (S), the drift  (alpha), which is the long term direction of the stock, the volatility (sigma) and (dW) random value - the random swing in the share price.
+This describes the change in the share price (dS) in time (dt), as a function of the current share price (S), the drift  (alpha), which is the long term direction of the stock, the volatility (sigma) and (dW) random value, which represents the random swing in the share price in the short time (dt).
 
-This by it self would not be enough to build any pricing model. A second assumption is based on the share prices changes and specially about it's log returns. Log returns are used because they are additive. We can say that the logarithm of weekly return is the same as the some of the daily returns of the given week:
-
-```
-log(Stweek/S_lastweek) = log (S_monday/S_lastweek) + log (S_tuesday/S_monday) + ... + log(S_friday/S_thursday)
-```
-The second assumption is: the logarithms of daily returns of share prices are independent - there is no correlation between the results the stock in consecutive days. Of course this is far from reality. The daily returns and the log returns as well can be correlated and that would happen specially during the crises periods where big swings would happened in consecutive days on the markets. But it is crucial to make this assumption.
-
-As a consequence it can be shown, that if we model the share as process of log returns, the daily log returns of the share are normally distributed. This is the key to Black Scholes and Binomial Pricing as well, because both of these method are based on the fact that the log returns are normally distributed.
-
+This by it self would not be enough to build any pricing model. A second assumption is based on the share price and it's daily returns. The daily returns of the stock which follows the generalized Wiener process have log-normal distribution. If we assume, that the daily returns are independent, than the logarithms of daily returns are normally distributed. It is important to keep thi assumption in mind. Both methods (BS and Binomial pricing) are based on the fact, that the logs of daily returns are normally distributed and are indepent, which in the real time is not the case.
+ 
 Binomial pricing
 ----------------
-The basic idea behind binomial pricing is the following. We assume that the share can move every day. With this knowledge we will build a tree (binomial) which will contain all paths that the share price could undertake from now until certain time (if we are pricing the option, until maturity). In the same time, we can construct a second tree which will hold the prices of the derivative. The price of the option depends on the price of the underlying and thus any change in the price of the share will result also in change in the price of the option. Here are the trees:
+The basic idea behind binomial pricing is the following. We assume that the share can move every day up or down, always in the same way. With this knowledge we will build a tree (binomial) which will contain all paths that the share price could undertake from now until certain time in the future (usually the maturity). In the same time, we can construct a second tree which will hold the prices of the derivative. The price of the option depends on the price of the underlying and thus any change in the price of the share will result also in change in the price of the option. Here are the trees:
 
 ![tree](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/pricing/share_and_derivative_tree.png)
 
-We assume that there are constants **u** and **d** which symbolize the movements of the stock. The stock in the next time step will have value **S\*u** or **S\*d**.
+We assume that there are constants **u** and **d** which symbolize the movements of the stock. The stock in the next time step will have value **S\*u** if it goes up or **S\*d** if it goes down.
 
-Imagine that we could create a portfolio in which we would hold a certain number of shares (usually called delta) and short position in the derivative (selling the option in the same time) and that we would figure out the exact amount of shares (delta), which would make this portfolio immune to the share price - it would not loose nor win anything if the share price changes. If we find out the exact number of shares delta, and in a world where there is no arbitrage possible, nor taxes, this portfolio should earn you exactly the neutral interest rate. Taking these assumptions we will try to deduce the delta:
+Imagine that we could create a portfolio in which we would hold a certain number of shares (usually called delta) and short position in the derivative (selling the option in the same time) and that we would figure out the exact amount of shares (delta), which would make this portfolio immune to the share price. The portfolio would not loose nor win anything if the share price changes in any way. If we find out the exact number of shares needed to hedge the option, our portfolio should hold a stable value. In a world where there is no arbitrage possible, nor taxes, this portfolio should earn you exactly the neutral interest rate. Taking these assumptions we will try to deduce the delta:
 
 ![delta_determination](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/pricing/delta_determination.png)
 
@@ -62,19 +56,20 @@ Now this is great but does not tell us anything about the price of the derivativ
 
 ![option_price](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/pricing/derivative_price.png)
 
-We have defined a technical variable called **p** (small p) which is usually called technical probability - but now we have the option price (**P**) as a function of **Pu** (the price of the option if the stock goes up) and **Pd** price of the option if the stock goes down. That means that if we would be able to find the prices of the derivative in the end nodes - at the maturity, we could walk the tree back all the way to the current node, to get the price of the derivative right now.
+We have defined a technical variable called **p** (small p) which is usually called technical probability just to simplify the equation, and we have the option price (**P**) as a function of **Pu** (the price of the option if the stock goes up) and **Pd** price of the option if the stock goes down. That means that if we would be able to find the prices of the derivative in the end nodes - at the maturity, we could walk the tree back all the way to the current node, to get the price of the derivative right now.
 
-Now to make the things a bit more complicated, the stocks pay dividends and we have to take that into account. If we the dividend yield is **q**, then the tree of our portfolio would be a bit different:
+Now to make the things a bit more complicated, the stocks pay dividends and we have to take that into account. If the dividend yield is **q**, then the tree of our portfolio would be a bit different:
 ![portfolio_with_dividends](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/pricing/derivative_price_dividends.png)
 
 The dividend would raise the price of the stock up a bit in each step top **Su\*exp(qt)**, but everything else stays the same. The technical probability (**p**) now contains the dividend as well.
+
 We have everything, but what we did not yet figured out are the values of  **u** and **p** the multiplicators which make the stock go up or down.
 
-This was determined by Cox, Ross, & Rubinstein in the CRR method and we are using the volatility of the stock to defined **u** and **d**.
+This was determined by Cox, Ross, & Rubinstein in the [CRR binomial pricing model](https://en.wikipedia.org/wiki/Binomial_options_pricing_model), which tells us to use the volatility to obtain the values of **u** and **d**.
 
 ![crr](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/pricing/crr_tree.png)
 
-It is beyond the scope of this blog, to explain how this was determined, but note that this is only possible if the log returns of the underlying have normal distribution (hence that introduction about share price movement  modelization).
+It is beyond the scope of this blog, to explain how this was determined, but note that this is only possible if the log returns of the underlying have normal distribution and if the returns of the stock are independent, (hence that introduction about share price modelization).
 
 Implementation
 --------------
@@ -83,11 +78,12 @@ I will present here two implementations both in F#, the first one is more impera
 ![implementation](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/pricing/implementation.png)
 
 The algorithm has the following steps:
+
 -  Determine the prices of the stock and the derivative in the end nodes.
 - Go backwards in the tree and compute the price of the derivative (P) as the function of **Pu** and **Pd** (derivative prices from the previous nodes)
-- In the case of pricing American options, the option can be exercised any time (before maturity). If so, compare in each node the price of the stock to the price of the underlying share, and determine if pre-mature exercise is worth
+- In the case of pricing American options, the option can be exercised any time (before maturity). If so, compare in each node the price of the stock to the price of the underlying share, and determine if pre-mature exercise is worth.
 
-The price of the derivative in the end node is calculated with the **optionValue** function. For call option it would be *max(S-X,0)* for a put option *max(X-S,0)*. The following algorithm takes the number of steps in the tree as parameter and an option definition. Option has a property called **TimeToExpiry** which is in days the value between the purchase date of the option and the maturity. This time is then divided by the number of steps to obtain **deltaT** the time interval of a single step.
+The price of the derivative in the end node is calculated with the **optionValue** function. For call option it would be *max(S-X,0)* for a put option *max(X-S,0)*. The following algorithm takes the number of steps in the tree as parameter and an option definition. Option has a property called **TimeToExpiry** which is the value between the purchase date of the option and the maturity in days. This time is then divided by the number of steps to obtain **deltaT** the time interval of a single step.
 
 ```FSharp
 let deltaT = option.TimeToExpiry/float steps
@@ -128,15 +124,17 @@ for step = counter downto 0 do
 oValues.[0]
 ```
 
-The technical probability (**p**) is determined as **p_up** and **p_down** is defined as *1-(p_up)* just to simplify the computation.
+The technical probability (**p**) is determined as **p_up**. We have also defined **p_down** as *1-(p_up)* just to simplify the computations.
+
+Note that the implementation iterates and modifies 2 arrays: *oValues* which contains the prices of the derivate and *prices* which contains the prices of the stock in the current layer.
 
 Functional way
 --------------
-The previous implementation is cool but we iterate over the stock price and option price array and constantly modify it's content, let's try to come up with an immutable way.
+The previous implementation is cool but we iterate over the stock and option price arrays and constantly modify their's content, let's try to come up with an immutable way.
 
-That can be surprisingly easy, let's define a functional for the single binomial step. This function would take a list of values, which are the values of the nodes in the current layer and produce another list which would contain the derivative prices in the next step. If we pass in a list with 4 items, we should get a list of 3 items, going down until we have only one item, which will be the derivative price.
+That can be surprisingly easy, let's define a function for single step backwards in the tree. This function would take a list of values, which are the values of the nodes in the current layer and produce another list which would contain the derivative prices in the next step. If we pass in a list with 4 items, we should get a list of 3 items, going down until we have only one item, which will be the derivative price.
 
-This is achieved thanks to **Seq.pairwise** which iterates over all consecutive tuples in the array - in our case the first item will be *P_up* and second *P_down*.
+This is achieved thanks to **Seq.pairwise** which iterates over all consecutive values in the array - in our case the first item will be *P_up* and second *P_down*.
 
 ```FSharp
 let step (derPrice:float list) (pricing:BinomialPricing) =
@@ -151,7 +149,7 @@ let rec reducePrices (derPrice:float list) (pricing:BinomialPricing) =
             | prices -> reducePrices (step prices pricing) pricing
 ```
 
-Rewriting all in functional way would resolve into something similar to. I have changed the algorithm a bit to keep track of the share and the option price. Now the list of prices passed from one step to another contains a tuple of share price and option price.
+Rewriting all in functional way would resolve into something similar to the following snippet. I have changed the algorithm a bit to keep track of the share and the option price. Now the list of prices passed from one step to another contains a tuples of share price and option price.
 
 ```FSharp
 let binomialPricingFunc (pricing:BinomialPricing) =
