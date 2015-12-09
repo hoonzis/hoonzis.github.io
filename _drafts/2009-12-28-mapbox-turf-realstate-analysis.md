@@ -1,0 +1,252 @@
+---
+layout: post
+title: Realestate analysis with MapBox and Turf 
+date: '2015-12-7T05:25:00.000-08:00'
+author: Jan Fajfr
+tags:
+- Maps
+modified_time: '2015-12-07T05:11:43.965-08:00'
+---
+I was recently thinking about buying a flat back in Prague. That is pretty bold decision and requires some analysis before. At the beginning before looking further into the market I was looking for a web that would give me the average prices per meter in diffent city regions. I didn't find anything and since I have always liked building stuff around maps I have created a simple web page. Everything is in JavaScript besides the backend part for gethering the data.
+
+## The data
+I have gathered the data by screenscrapping few reality servers. On the backend I was using C#, but quickly went over to F#, since HtmlTypeProvider and CsvTypeProvider helped me a lot to gether the data. Then there was a question of how to serve the data. I have decided the best would be for the server to provide already valid geo-json data, which would work fine with the JS frontend libraries. Here is the F# model, which should be pretty comprehensible for everyone.
+
+```fsharp
+type Location = {
+    Lat:float
+    Lng:float
+}
+
+type Flat = { 
+    Address:string
+    Price: float
+    Timestamp: DateTime
+    Surface : float
+    CityPart : string
+    Location: Location option
+} with member this.Pms = this.Price / this.Surface
+```
+
+And here is the model part for serving geo-json. Note that if I wan to provide a set of flats as geojson I would just have to create *FeatureCollection* object and convert each flat to a *Feature*. You can see that in this model the *Properties* property of the *Feature* is of the *Flat*. I am simply adding the flat as metadata to each feature which it represents. For other projects that would be different there is no type specification for *Properties* and one could simply create generic *Feature*.
+
+```fsharp
+type GeometryType = 
+    | Polygon
+    | Point
+    
+type Geometry = {
+    Type:GeometryType
+    Coordinates: float list
+}
+
+type Feature = {
+    Type: string
+    Geometry:Geometry
+    Properties:Flat
+} 
+
+type FeatureCollection = {
+    Type:string
+    Features: Feature list
+}
+```
+
+## Showing prices per city regions
+For visualizing the average prices per city part, one needs a map of them. Prague has a open data service which provides several different maps as geojson, one of them is the simply city regions map.
+
+The geojson file contains some global information and then list of *Features*, each of them representing one city part. *Feature* is composed of a polygon, defined using list of location points and metadata stored aside in *properties* field.
+
+I am using Knockout.JS behind to wire everything together but I suppose any decent JavaScript framework would do the job, I have removed all references to it from the snippets.
+
+As I said I have already calculated the averege price of each city part on the server, now it's just the matter of vizualization.
+The following code would load the geojson into memory and then specify a function to determine how each polygon shoudl be shown. For each polygon I would use the *name* of the city part, found in the *properties* metadata of each feature. I would than get the *Average Price Per Meter Squared* (*avgPms*) and use it to get the color.
+
+```javascript
+var cityParts = //... load the city parts collection from the server
+var cityPartsLayer = L.geoJson(cityPartJson, {
+    pointToLayer: L.mapbox.marker.style,
+    style: function(feature) {
+        var partName = feature.properties.NAZEV;
+
+        var part = find(citiParts, function(p) {
+            return p.cityPart === partName;
+        });
+
+        var color = "#FFF";
+        if (part) {
+            color = partsColorScale(part.avgPms);
+            feature.properties = part;
+        }
+
+        return {
+            "fillColor": color,
+            "fillOpacity": 0.8
+        }
+    }
+}).addTo(map);
+``` 
+
+I am using a *partsColorScale* function above which returns the appropriate color for given value. To define this function I would use standard D3.js color scale. If you know your minimal and maximal values then the scale can be defined simply as:
+
+Note that above I would also take the data for the city part and store them in the *properties* data of the feature, we will use them later when adding action for the click on the given feature. For that we would also need the object that we have created which is a Mapbox layer.
+
+```javascript
+var partsColorScale = d3.scale.linear()
+    .domain([data.minPms, data.maxPms])
+    .interpolate(d3.interpolateRgb)
+    .range(["white", "red"]);
+```
+The last step would be to add click event handler. We can do that by attaching a function to the *click* event of the Mapbox layer. This function takes as parameter, which contains some mouse event information such as position of the coursor, but it holds also the layer, which we can use to access the feature and the metadata that we have stored there before.
+
+```javascript
+cityPartsLayer.on("click", function (e) {
+    var content = "<b>"+e.layer.feature.properties.cityPart +"</b>: " + e.layer.feature.properties.avgPms.toFixed(2);
+    self.popup
+        .setLatLng(e.latlng)
+        .setContent(content)
+        .openOn(map);
+});
+``` 
+
+## Prices interpolation using TIN - Triangular interpolation network
+The aim of this part is to create something similar to the following vizualization. TIN is a network in which each point is connected to two other points in such way that together they form a convex polygon and none of the connection lines crosses other line. Such network can be then used to interpolate a value anywhere on the map within this convex polygon. The idea is that any point on the map fits into one of the triangles and within this triangle the price can be linerarly interpolated, by looking at how close the point is to  each of the three nodes of the triangle. Constructing such network efficiently would require quite smart algorithm. [citation needed]. This is where **Turf.js** comes in place.
+
+Turf exposes a method which takes a simple *FeaturesCollection* object, that holds a list of features each of them beiing a point with properties. Alongside we to Turf.js only the name of the property containing the value that we want to interpolate.
+```javascript
+var tins = turf.tin(data, 'pms');
+``` 
+
+Very easy. Before going there however I figured out that network woudl get quite dense in some places and sparce in others. The problem were the really dense places, which actually caused the TIN network to be invalid (it woudl contain crosing lines as shown bellow). I suppose that could be marked as bug in Turf, but in reality it also shows that my data is not that good, because if there are really two flats few hundred meters from each other, it does not make sense to construc a triangle around them to interpolate prices. We could just take the average. So basically what I wanted to do, would be to cluster the really close points together, make one point from them with avarage price per meter.
+
+I came up with the following not really efficient gready algorithm, that just loops over the points, looks if there is a cluster available in certain distance and if not creates one. The center of the clusters would not move.
+
+```javascript
+function(data, distance)
+{
+    var buffers = [];
+    var findBuffer = function (point) {
+        for (var i = 0; i < buffers.length; i++) {
+            var b = buffers[i];
+            if (turf.inside(point, b.buffer))
+                return b;
+
+        }
+        return null;
+    }
+    data.forEach(function (f) {
+
+        var buf = findBuffer(f);
+        if (!buf) {
+            buf = turf.buffer(f, distance, 'meters');
+            buffers.push({
+                "buffer": buf.features[0],
+                "points": [f],
+                "avg": f.properties.pms
+            });
+        } else {
+            buf.points.push(f);
+            buf.avg = (buf.avg + f.properties.pms) / buf.points.length;
+        }
+    });
+
+    return {
+        "type": "FeaturesCollection",
+        "features": buffers.map(function (b) {
+            return b.points[0];
+        })
+    };
+}
+``` 
+
+I am using two Turf methods here: **buffer** creates a circle around the point that we can handle as geo-json feature. That means that I can use it fine with other turf methods and I can also attach properties to it like to any geo-json feature. The second *turf* method is inside, which checks for any new point whether it is in one of the existing buffers (clusters). The method return *FeaturesCollection* compatible with other turf and mapbox methods, that can be passed directly to the **tin** method to calculate the triangular network.
+
+This time the network would be without crossing lines and with no useless small triangles. Here is how to actually add the TIN layer object to the map.
+
+```javascript
+var tins = turf.tin(data, 'pms');
+var tinsLayer = L.geoJson(tins, {
+    pointToLayer: L.mapbox.marker.style,
+    style: function(feature) {
+        var avgTrianglePms = (feature.properties.a + feature.properties.b + feature.properties.c) / 3;
+        var style = {
+            "weight": 1,
+            "color": "black",
+            "fillOpacity": 0.4,
+            "fillColor": partColorScale(avgTrianglePms)
+        }
+
+        return style;
+    }
+}).addTo(map);
+```
+Above we are using the average of the 3 points of the triangle to decide the color which we should attribute to it. But as said before there is a way to interpolate the value anywhere on the map using the TIN network. We could add a click handler for that.
+
+```javascript
+    self.tinsLayer.on("click", function (e) {
+        var point = turf.point([e.latlng.lng, e.latlng.lat]);
+        var value = turf.planepoint(point, e.layer.feature).toString();
+        popup
+            .setLatLng(e.latlng)
+            .setContent(value)
+            .openOn(map);
+    });
+```
+First we need the coordinates of the point on which have clicked, then we can pass it to *planepoint*, which takes besides the feature representing the feature representing the triangle inside TIN. This returns the interpolated value which can be shown with a simple popup.
+
+## Interpolating the prices with Hexagonal grid.
+Another and maybe better way to get better idea about the prices would be to use hexagonal grid. Of course simple grid could be used as well, but using hexagonal grids will give you more detail then simple rectangular grid.
+
+There are couple ways to implement this. The simpliest one would be just to iterate over the grid and for each hexagon find the flats inside it's area and then take average or median value. The problem with this approach is that you will probably get a lot of empty grids, since flats are not regularly distributed.
+
+One way around this is to use the triangular network that we already have. The network covers completely the city. We can iterate over the grid get the center of each cell and see what it's value would be in the TIN. We can create the hex grid over which we iterate later with turf's *hexGrid* method which takes the bounds as parameters.
+
+```javascript
+var hexgrid = turf.hexGrid([14.35, 50.02, 14.5, 50.12], 0.8);
+
+var filledGrid = hexgrid.features.map(function (grid) {
+    var center = turf.center(grid);
+    self.tins.features.forEach(function(triangle) {
+        var isInTriangle = turf.inside(center, triangle);
+        if (isInTriangle) {
+            var value = turf.planepoint(center, triangle);
+            grid.properties.avgPms = value;
+        }
+
+    });
+    return grid;
+});
+
+var hexGridLayer = L.geoJson(filledGrid, {
+    pointToLayer: L.mapbox.marker.style,
+    style: function(feature) {
+        var style = {
+            "weight": 0,
+            "color": "black",
+            "fillOpacity": 0.4,
+            "fillColor": self.cityPartColorScale(feature.properties.avgPms)
+        }
+
+        return style;
+    }
+});
+```
+## Clustering with leaflet
+As the last type of vizualization I wanted something that would naurally cluster the markers on the map, with automatical decomposition of the cluster while zooming in. It turns out this is very easy with leaftlet.js and it's cluster plugin.
+
+```javascript
+var clusteredFlats = new L.MarkerClusterGroup();
+var flatsLayers = L.geoJson(flats);
+
+flatsLayers.eachLayer(function (f) {
+    var desc = JSON.stringify(f.feature.properties);
+    f.bindPopup(desc);
+    clusteredFlats.addLayer(f);
+});
+
+map.addLayer(self.clusteredFlats);
+```
+
+This is very easy specially if you already have the collection of the points as valid geo-json (in my case the *flats*) property. The *MarkerClusterGroup* (comming from leaflet) contains a method *addLayer* which adds a single layer to the cluster. So we have to only convert the geo-json to layers collection.
+
+Note that here are I am also adding popup, which will contain all the properties of the parker synced to JSON.
