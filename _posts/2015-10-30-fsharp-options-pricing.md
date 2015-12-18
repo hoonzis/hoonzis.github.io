@@ -34,7 +34,7 @@ dS = alpha*S*dt + sigma*S*dW
 This equation describes the change in the share price (dS) in time (dt), as a function of the current share price (S), the drift  (alpha), which is the long term direction of the stock, the volatility (sigma) and (dW) random value, which represents the random swing in the share price in the short time (dt). The volatility affects how big the random swings in the share price will be.
 
 This by it self would not be enough to build any pricing model. A second assumption is based on the share price and it's daily returns. The daily returns of the stock which follows the generalized Wiener process have log-normal distribution. If we assume, that the daily returns are independent, than the logarithms of daily returns are normally distributed. It is important to keep this assumption in mind. Both methods (BS and Binomial pricing) are based on the fact, that the logs of daily returns are normally distributed and are indepent, which in the real time is not the case.
- 
+
 Binomial pricing
 ----------------
 The basic idea behind binomial pricing is the following. We assume that the share can move every day up or down, always in the same way. With this knowledge we will build a tree (binomial) which will contain all paths that the share price could undertake from now until certain time in the future (usually the maturity). In the same time, we can construct a second tree which will hold the prices of the derivative. The price of the option depends on the price of the underlying and thus any change in the price of the share will result also in change in the price of the option. Here are the trees:
@@ -43,10 +43,10 @@ The basic idea behind binomial pricing is the following. We assume that the shar
 
 We assume that there are constants **u** and **d** which symbolize the movements of the stock. The stock in the next time step will have value **S\*u** if it goes up or **S\*d** if it goes down.
 
-Imagine that we could create a portfolio in which we would hold a certain number of shares (usually called delta) and short position in the derivative (selling the option in the same time) and that we would figure out the exact amount of shares (delta), which would make this portfolio immune to the share price. The portfolio would not loose nor win anything if the share price changes in any way. If we find out the exact number of shares needed to hedge the option, our portfolio should hold a stable value. 
+Imagine that we could create a portfolio in which we would hold a certain number of shares (usually called delta) and short position in the derivative (selling the option in the same time) and that we would figure out the exact amount of shares (delta), which would make this portfolio immune to the share price. The portfolio would not loose nor win anything if the share price changes in any way. If we find out the exact number of shares needed to hedge the option, our portfolio should hold a stable value.
 
-As it was said before the price of the option depends on the price of the share. If the price of the derivative changes the following day, because the stock moved, then the delta will change as well, we will have to buy different number of shares to "hedge" the option that we are selling. This is practice of continously adapting to the share and derivative price to keep neutral portfolio is called delta hedging.
- 
+As it was said before the price of the option depends on the price of the share. If the price of the derivative changes the following day, because the stock moved, then the delta will change as well, we will have to buy different number of shares to "hedge" the option that we are selling. This is practice of continuously adapting to the share and derivative price to keep neutral portfolio is called delta hedging.
+
 Now back to delta, how can we figure out the exact amount of shares to hedge the option?
 
 In a world where there is no arbitrage possible, nor taxes, this portfolio should earn you exactly the neutral interest rate - because it does not move. Taking these assumptions we will try to deduce the delta (the number of shares the we need to hold):
