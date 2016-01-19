@@ -25,6 +25,7 @@ I am using Discriminated Union in several different ways here are typical 3 exam
 Discriminated Union as enumeration
 ----------------------------------
 Simple example will make this clear. The DU values have name and don't hold any other type inside.
+
 ```Fsharp
 type Motor =
   | Diesel
@@ -38,6 +39,7 @@ type Car = {
 let test = { Motor=Diesel,Name="VW"}
 ```
 In this  case I would expect a serialization and deserialization into a single string value. Ideally the **test** object should be serialized simply as:
+
 ```javascript
   {"Motor":"Diesel","Name":"VW"}
 ```
