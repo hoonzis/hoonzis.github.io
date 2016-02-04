@@ -33,7 +33,7 @@ dS = alpha*S*dt + sigma*S*dW
 ```
 This equation describes the change in the share price (dS) in time (dt), as a function of the current share price (S), the drift  (alpha), which is the long term direction of the stock, the volatility (sigma) and (dW) random value, which represents the random swing in the share price in the short time (dt). The volatility affects how big the random swings in the share price will be.
 
-This by it self would not be enough to build any pricing model. A second assumption is based on the share price and it's daily returns. The daily returns of the stock which follows the generalized Wiener process have log-normal distribution. If we assume, that the daily returns are independent, than the logarithms of daily returns are normally distributed. It is important to keep this assumption in mind. Both methods (BS and Binomial pricing) are based on the fact, that the logs of daily returns are normally distributed and are indepent, which in the real time is not the case.
+This by it self would not be enough to build any pricing model. A second assumption is based on the share price and it's daily returns. The daily returns of the stock which follows the generalized Wiener process have log-normal distribution. If we assume, that the daily returns are independent, than the logarithms of daily returns are normally distributed. It is important to keep this assumption in mind. Both methods (BS and Binomial pricing) are based on the fact, that the logs of daily returns are normally distributed and are independent, which in the real time is not the case.
 
 Binomial pricing
 ----------------
@@ -59,7 +59,7 @@ We have extracted two pieces of information from the binomial tree:
 ```
 (delta\*Su - Pu) = (S-P)\*exp(rt)
 ```
-We will use this knowledge later to determine the price of option P from the prices Pu and Pd in the next nodes.
+We will use this knowledge later to determine the price of option *P* from the prices *Pu* and *Pd* in the next nodes.
 
 We can use those last two equations and solve for **P** the price of the option.
 
@@ -140,7 +140,7 @@ Note that the implementation iterates and modifies 2 arrays: *oValues* which con
 
 Functional way
 --------------
-The previous implementation is cool but we iterate over the stock and option price arrays and constantly modify their's content, let's try to come up with an immutable way.
+The previous implementation is cool but we iterate over the stock and option price arrays and constantly modify their content, let's try to come up with an immutable way.
 
 That can be surprisingly easy, let's define a function for single step backwards in the tree. This function would take a list of values, which are the values of the nodes in the current layer and produce another list which would contain the derivative prices in the next step. If we pass in a list with 4 items, we should get a list of 3 items, going down until we have only one item, which will be the derivative price.
 
@@ -149,9 +149,8 @@ This is achieved thanks to **Seq.pairwise** which iterates over all consecutive 
 ```FSharp
 let step (derPrice:float list) (pricing:BinomialPricing) =
     derPrice  |> Seq.pairwise
-              |> Seq.fold (fun derPrice' (down,up)->
-                let price' = (pricing.PUp*up+pricing.PDown*down)*(1.0/pricing.Rate)
-                derPrice' @ [price'])[]
+              |> Seq.map (fun (down,up)-> (pricing.PUp*up+pricing.PDown*down)*(1.0/pricing.Rate))
+              |> List.ofSeq
 
 let rec reducePrices (derPrice:float list) (pricing:BinomialPricing) =
     match derPrice with
@@ -173,7 +172,7 @@ let binomialPricingFunc (pricing:BinomialPricing) =
     let step (prices:(float*float) list) =
         prices
             |> Seq.pairwise
-            |> Seq.fold (fun prices' ((sDown,dDown),(sUp,dUp)) ->
+            |> Seq.map (fun ((sDown,dDown),(sUp,dUp)) ->
                 let derValue = (pricing.PUp*dUp+pricing.PDown*dDown)*(1.0/pricing.Rate)
                 let stockValue = sUp*pricing.Down
                 let der' = if pricing.Option.Style = American then
