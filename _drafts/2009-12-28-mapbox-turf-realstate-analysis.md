@@ -7,12 +7,14 @@ tags:
 - Maps
 modified_time: '2015-12-07T05:11:43.965-08:00'
 ---
-I was recently thinking about buying a flat back in Prague. That is pretty bold decision and requires some analysis before. At the beginning before looking further into the market I was looking for a web that would give me the average prices per meter in different city regions. I didn't find anything and since I have always liked building stuff around maps I have created a simple web page. Everything is in JavaScript besides the backend part for gathering the data. I have discovered this since the last time couple years ago, when google maps were pretty much the only way around, there is a set of open source libraries containing [mapbbox](https://www.mapbox.com/), [turf.js](http://turfjs.org/) and [leafletjs](http://leafletjs.com/) which have quite a lot of built-in analysis and visualization features. At the end I was able to get pretty cool interpolation using hexagonal grid system, backed up by [triangulated interpolated network](https://en.wikipedia.org/wiki/Triangulated_irregular_network).
+I was recently thinking about buying a flat back in Prague. That is pretty bold decision and requires some analysis before. Before looking further into the market I was looking for a web that would give me the average prices per meter in different city regions. I didn't find anything and since I have always liked building stuff around maps I have created a simple web page. Everything is in JavaScript besides the backend part for gathering the data.
+
+Last time I played with maps, google maps were pretty much the only way around. These days more frameworks are available. One particular solution got my attention: Mapbox and it's ecosystem. I ended up using [mapbbox](https://www.mapbox.com/), [turf.js](http://turfjs.org/) and [leafletjs](http://leafletjs.com/) which have quite a lot of built-in analysis and visualization features. At the end I was able to get pretty cool interpolation using hexagonal grid system, backed up by [triangulated interpolated network](https://en.wikipedia.org/wiki/Triangulated_irregular_network).
 
 ![hexgrid](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/appartee/hexmap.PNG)
 
 ## The data - gathering and serving
-I have gathered the data by screen-scrapping few reality servers. On the backend I was using C#, but quickly went over to F#, since *HtmlTypeProvider* and *CsvTypeProvider* helped me a lot to gather the data. Then there was a question of how to serve the data. I have decided the best would be for the server to provide already valid [geojson](http://geojson.org/) data, which would work fine with the JS frontend libraries. Here is the F# model, which should be pretty comprehensible for everyone.
+I have gathered the data by screen-scrapping few reality servers. On the backend I was using C#, but quickly went over to F#, since *HtmlTypeProvider* and *CsvTypeProvider* helped me a lot to gather the data. Then there was a question of how to serve the data. I have decided the best would be for the server to provide already valid [geojson](http://geojson.org/) data, which would work fine with the JS frontend libraries. In order to generate such valid geojson I would have to create an F\# model mirroring the structure of the geojson format. Before we get to that, let's see how I store the flats and their locations:
 
 ```fsharp
 type Location = {
@@ -29,8 +31,7 @@ type Flat = {
     Location: Location option
 } with member this.Pms = this.Price / this.Surface
 ```
-
-And here is the model part for serving geo-json. Note that if I want to provide a set of flats as geojson I would just have to create *FeatureCollection* object and convert each flat to a *Feature*. You can see that in this model the *Properties* property of the *Feature* is of the *Flat*. I am simply adding the flat as metadata to each feature which it represents. For other projects that would be different there is no type specification for *Properties* and one could simply create generic *Feature*.
+That should be pretty easy for everyone. And here is the model part for serving geo-json.
 
 ```fsharp
 type GeometryType =
@@ -54,12 +55,14 @@ type FeatureCollection = {
 }
 ```
 
+Note that if I want to provide a set of flats as geojson I would just have to create *FeatureCollection* object and convert each flat to a *Feature*. You can see that in this model the *Properties* property of the *Feature* is of the *Flat*. I am simply adding the flat as metadata to each feature which it represents. *Properties* is just a generic JSON object and can take anything, here I have decided to type it directly to flats.
+
 ## Showing prices per city regions
-For visualizing the average prices per city part, one needs a map of them. Prague has a open data service which provides several different maps as geojson, one of them is the simply city regions map.
+In order to visualize the average prices per city region, one needs a geojson map of the city. Prague has an open data service which provides several different maps as geojson, one of them is the simple city regions map.
 
 The geojson file contains some global information and then list of *Features*, each of them representing one city part. *Feature* is composed of a polygon, defined using list of location points and metadata stored aside in *properties* field.
 
-I am using Knockout.JS behind to wire everything together but I suppose any decent JavaScript framework would do the job, I have removed all references to it from the snippets.
+I am using Knockout.JS as MVVM framework to wire everything together behind the scene, but I suppose any decent JavaScript framework would do the job. I have removed all references to it from the snippets.
 
 As I said I have already calculated the average price of each city part on the server, now it's just the matter of visualization.
 The following code would load the geo-json into memory and then specify a function to determine how each polygon should be shown. For each polygon I would use the *name* of the city part, found in the *properties* metadata of each feature. I would than get the *Average Price Per Meter Squared* (*avgPms*) and use it to get the color.
