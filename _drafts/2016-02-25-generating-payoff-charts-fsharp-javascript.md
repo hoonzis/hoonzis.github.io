@@ -11,7 +11,7 @@ I have recently been playing with options, their pricing and pay-off charts gene
 
 - Calculate options prices
 - Generate data for pay-off charts
-- Analyze stock data from Quandl and calculate volatility and floating averages
+- Analyze stock data from [Quandl](https://www.quandl.com/) and calculate volatility and floating averages
 
 In order to demonstrate what the library can do, I have created a small web application [Payoffcharts.com](http://www.payoffcharts.com/). Here is the list of the visualizations that it does:
 
@@ -28,7 +28,7 @@ Comparing the American and European option price with different expiry
 ![americaneuropean](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/optionscharts/american_vs_european.PNG)
 
 ## Payoff charts
-A bit of theory is necessary here, just to describe the domain - options and strategies. Options are financial contracts that give you the right to buy some asset in the future for agreed price.
+A bit of theory is necessary here, just to describe the domain: options and strategies. Options are financial contracts that give you the right to buy some asset in the future for agreed price.
 
 ### Call and Put Options
 - Call is the right to **buy** the stock for agreed price
@@ -41,15 +41,15 @@ A bit of theory is necessary here, just to describe the domain - options and str
 	- Style (American/European)
 	- Premium (the price)
 
-Payoff chart, shows us how much we earn when the stock moves up or down
-- Example: Call with strike 45, Premium: 2.5
+Payoff chart, shows us how much we earn when the stock moves up or down. Bellow is the payoff chart of *Call* option with strike 45, Premium: 2.5.
+
 ![call](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/optionscharts/call.png)
 
 ### Strategies
 
 - Traders can buy or sell multiple options in the same time
 - Multiple options bought at the same time make up strategies
-- Example: Call Spread
+- Example of such strategy can be a **Call Spread**
 	- Buying a call
 	- Selling a call with higher strike
 
@@ -63,7 +63,10 @@ Another example of a strategy: Covered Call
 
 ![callspread](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/optionscharts/coveredcall.png)
 
-In order to generate the charts, we will need to defined the domain model. All this is part of the *Pricer* library and I have simplified it here a bit.
+In order to generate the charts, we will need to defined the domain model. All this is part of the [Pricer](https://github.com/hoonzis/Pricer) library and I have simplified it for this blog a bit.
+
+When we build a strategy, each part of the strategy (options, or stock) is called leg. As said, leg can be either option or cash (stock). Let's define the options leg first:
+
 ```fsharp
 type OptionKind =
     | Call
@@ -82,7 +85,9 @@ type OptionLeg = {
         PurchaseDate: DateTime
     }
     member this.TimeToExpiry = this.Expiry - this.PurchaseDate
-
+```
+We will need also the cash leg and a union to as composition of these two types.
+```fsharp
 type CashLeg = {
     Direction: float
     Price:float
@@ -91,7 +96,10 @@ type CashLeg = {
 type LegInfo =
     | Cash of CashLeg
     | Option of OptionLeg
+```
+Each leg (option or cash) will have a price. For options the price is usually called the premium, it is wrapped by a type here to simplify further development.
 
+```fsharp
 type Pricing = {
     Premium: float
 }
@@ -100,7 +108,10 @@ type Leg = {
     Definition:LegInfo
     Pricing:Pricing option
 }
+```
+We also need a type to specify the underlying (share, commodity) on which the options are defined and a Strategy type to wrap it all.
 
+```fsharp
 type StockInfo = {
     Rate:float
     Volatility: float
@@ -114,13 +125,16 @@ type Strategy = {
 }
 ```
 Now that we have the model, let's actually use it to create an example of a strategy. We will use the Covered Call as our example.
+
 ```fsharp
 let buyingCash = {
 	Definition = Cash {
 		Price = 100.0
 		Direction = 1.0
 	}
-	Pricing = None
+	Pricing = Some {
+		Premium: 100.0
+	}
 }
 
 let sellingCall = {
@@ -132,7 +146,9 @@ let sellingCall = {
         Style = European
         PurchaseDate = DateTime.Now
     }
-    Pricing = None
+    Pricing = Some {
+		Premium: 10.0
+	}
 }
 
 let coveredCall = {
@@ -150,12 +166,12 @@ let coveredCall = {
 }
 ```
 Now let's see how we can generate the payoff chart from the *coveredCall* variable.
+We will put aside the pricing of options, let's assume that we already have the prices (the are stored in the Pricing variable of each leg). How can we generate the payoff chart of any strategy?
 
-- Let's forget the pricing of options
-- How can we generate the payoff chart of any strategy?
-- Chart is a composition of lines connecting X,Y coordinates
-- The Y coordinate reflects the value of the option, so how do we calculate it?
-- How much I can earn if I exercise the option now - that is when the underlying share is at certain given level?
+Chart is just a composition of lines connecting X,Y coordinates, the Y coordinate reflects the value of the option. The value of the option is not the premium, but expresses how much I can earn if I exercise the option now.
+
+In other words, how much do we earn if we exercise the option, when the underlying share is at certain given level?
+
 ```
 let optionValue option stockPrice =
 	match option.Kind with
@@ -163,11 +179,11 @@ let optionValue option stockPrice =
 			| Put -> max 0.0 (option.Strike - stockPrice)
 ```
 
+The following picture shows a detail of the Call payoff chart. We have defined a function to computed the black line.
+
 ![callvalue](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/optionscharts/callvalue.png)
 
-- Up to this point we actually didn't take into account the price of the options, we have assumed, that we already had it.
-- Next question is: What is the payoff of an option?
-- When calculating the payoff we take into account the price of the option
+Up to this point we actually didn't take into account the price of the options, we have assumed, that we already had it. Next question is: What is the payoff of an option? When calculating the payoff we take into account the premium of the option (the money that we paid to obtain the option).
 
 ```
 let legPayoff leg pricing stockPrice =
@@ -176,7 +192,7 @@ let legPayoff leg pricing stockPrice =
 		| Option optionLeg -> optionValue optionLeg stockPrice - pricing.Premium
 
 ```
-![callvalue](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/optionscharts/callvalue.png)
+This function calculates the violet line from the previous picture.
 
 ### Sampling the data
 
@@ -199,7 +215,9 @@ let getInterestingPoints strategy =
 			yield max
 		}
 ```
+
 If we have all the interesting X points, we can now compute the option lines (one line per each leg). The following function will return a list of functions. Each function will be a payoff calculator which takes X will and returns Y payoff value of the option.
+
 ```fsharp
 let payOffs = strategy.Legs |> Seq.map (fun leg ->
     let legPricing =
