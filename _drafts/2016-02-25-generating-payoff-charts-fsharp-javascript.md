@@ -244,7 +244,12 @@ let strategyLine = [for stockPrice in interestingPoints do yield stockPrice,
 ]
 ```
 
-## Serving the data by WebAPI F# controller
+## Serving the data by WebAPI F\# controller
+
+I have used WebAPI F\# project template, event though there are probably more Fsharpy options for building web apps (SuaveIO seems to be the best candidate).
+
+The *getStrategyData* method returns a tuple of strategy payoff and each leg payoff.
+
 ```fsharp
 //given complete strategy  (stock and legs, returns the payoff chart data)
 member x.Put([<FromBody>] strategy:Strategy) : IHttpActionResult =
@@ -269,8 +274,8 @@ member x.Put([<FromBody>] strategy:Strategy) : IHttpActionResult =
     x.Ok(payoff) :> _
 ```
 ## JavaScript front end
-I have built the front end with KnockoutJS, mainly because I know it quite well. The view models reflect quite a lot the F\# domain presented above:
-Leg definition is quite simple, I am ski
+I have built the front end with KnockoutJS, mainly because I know it quite well. The view models reflect quite a lot the F\# domain presented above. I am using Knockout.Validation (all those extend calls).
+
 ```javascript
 function LegViewModel(dto,parent) {
     var self = this;
@@ -285,7 +290,7 @@ function LegViewModel(dto,parent) {
 }
 ```
 
-Strategy is a composition of legs with some additional
+Strategy is just a composition of legs with some additional information.
 
 ```javascript
 function StrategyViewModel(legs, stock,name,parent){
