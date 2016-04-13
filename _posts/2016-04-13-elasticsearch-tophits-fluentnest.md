@@ -1,12 +1,13 @@
 ---
 layout: post
-title: ElasticSearch TopHits in C\#
+title: ElasticSearch TopHits with FluentNest
 date: '2016-04-13T05:11:43.965-08:00'
 author: Jan Fajfr
 tags:
 - ElasticSearch
 modified_time: '2016-04-13T05:11:43.965-08:00'
 ---
+
 When providing statistics or charts to the users, one usually groups up the values into aggregated collection - let's say sum per month, or average per category. In certain cases you might want to provide few details about the most significant elements in each bucket. For instance what were the biggest trades contributing to the total for given month. This can be easily done with ElasticSearch, but the queries get quite complicated. This post shows an easy way using [FluentNest](https://github.com/hoonzis/fluentnest) library.
 
 Let's say you are building statistics of sold records per music style and want to see who were the most selling artists per each style.
