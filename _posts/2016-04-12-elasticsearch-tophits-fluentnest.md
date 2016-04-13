@@ -1,53 +1,51 @@
 ---
 layout: post
 title: ElasticSearch TopHits with FluentNest
-date: '2016-04-13T05:11:43.965-08:00'
+date: '2016-04-12T05:11:43.965-08:00'
 author: Jan Fajfr
 tags:
 - ElasticSearch
-modified_time: '2016-04-13T05:11:43.965-08:00'
+modified_time: '2016-04-12T05:11:43.965-08:00'
 ---
 
 When providing statistics or charts to the users, one usually groups up the values into aggregated collection - let's say sum per month, or average per category. In certain cases you might want to provide few details about the most significant elements in each bucket. For instance what were the biggest trades contributing to the total for given month. This can be easily done with ElasticSearch, but the queries get quite complicated. This post shows an easy way using [FluentNest](https://github.com/hoonzis/fluentnest) library.
 
-Let's say you are building statistics of sold records per music style and want to see who were the most selling artists per each style.
-
-When using ElasticSearch, you would use the to perform such "aggregation with detail" scenario, you should use  [TopHits](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-top-hits-aggregation.html), combined with *Terms* aggregation. The above described scenario could be queried like this:
+Let's say you are building statistics of sold records per music style and want to see who were the most selling artists per each style. When using ElasticSearch, you would use the to perform such "aggregation with detail" scenario, you should use  [TopHits](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-top-hits-aggregation.html), combined with [Terms](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-terms-aggregation.html) aggregation. The above described scenario could be queried like this:
 
 ```json
 {
-    "aggs": {
-        "sales_per_style": {
-            "terms": {
-                "field": "style",
-                "size": 10
-            },
-            "aggs": {
-	          	"sum_sold_records": {
-		            "sum": {
-		              "field": "soldRecords"
-		            }
-		          },
-                "top_artists": {
-                    "top_hits": {
-                        "sort": [
-                            {
-                                "soldRecords": {
-                                    "order": "desc"
-                                }
-                            }
-                        ],
-                        "_source": {
-                            "include": [
-                                "artistName"
-                            ]
-                        },
-                        "size" : 10
-                    }
-                }
-            }
+  "aggs": {
+    "sales_per_style": {
+      "terms": {
+          "field": "style",
+          "size": 10
+      },
+      "aggs": {
+      	"sum_sold_records": {
+          "sum": {
+            "field": "soldRecords"
+          }
+        },
+        "top_artists": {
+          "top_hits": {
+              "sort": [
+                  {
+                      "soldRecords": {
+                          "order": "desc"
+                      }
+                  }
+              ],
+              "_source": {
+                  "include": [
+                      "artistName"
+                  ]
+              },
+              "size" : 10
+          }
         }
+      }
     }
+  }
 }
 ```
 
@@ -101,25 +99,26 @@ Using ElasticSearch query language, this can be achieved by appending *_source* 
 
 ```
 "top_artists": {
-	"top_hits": {
-		"sort": [
-			{
-				"soldRecords": {
-					"order": "desc"
-				}
+  "top_hits": {
+	"sort": [
+		{
+			"soldRecords": {
+				"order": "desc"
 			}
-		],
-		"_source": {
-			"include": [
-				"artistName"
-			]
-		},
-	"size" : 10
+		}
+	],
+	"_source": {
+		"include": [
+			"artistName"
+		]
+	},
+"size" : 10
 }
 ```
 
 In the C\# version, you can just append all the fields to fetch right into the query. The following query will fetch the artist name and style. Other fields will keep their default value.
-```
+
+```csharp
 var result = client.Search<Artist>(sc => sc.Aggregations(agg => agg
     .SumBy(x => x.SoldRecords)
     .SortedTopHits(10, x => x.SoldRecords, SortType.Descending, incl => incl.ArtistName, incl => incl.Style)
