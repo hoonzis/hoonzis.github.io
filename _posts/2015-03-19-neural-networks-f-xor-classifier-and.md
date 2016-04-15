@@ -63,20 +63,14 @@ Unlike single layer perceptron, multilayer feed forward network is
 capable of learning linerably non-separable data such as the results of
 XOR function.
 
-XOR classifier
---------------
-
+## XOR classifier
 This is the first example. This network is called clasifier because it
 learns the XOR function. It can then "classify" the 2 values in the
 input into single value on the output.
 
 Here is how the network looks like:
 
-
-
 [![](http://1.bp.blogspot.com/-UVM3imr3fyU/VQmuOtKeUtI/AAAAAAAAEQA/QUD43O87Z7E/s320/xor.PNG)](http://1.bp.blogspot.com/-UVM3imr3fyU/VQmuOtKeUtI/AAAAAAAAEQA/QUD43O87Z7E/s1600/xor.PNG)
-
-
 
 The NN diagram was drawn in latex, using the tkz-berge package. [Look
 here if you want to know
@@ -97,7 +91,7 @@ minimalize the error as shown later.
 Each layer can be represented as one dimensional array, the weights are
 stored using 2-dimensional array (\[0,1\] is the weight between nodes 0
 and 1). Here is the function which calculates the sum of values
-incomming to a single node and passes the value to the activation
+incoming to a single node and passes the value to the activation
 function. The activation function here can be any function, as it is
 passed as parameter but here Sigmoid is used.
 
@@ -177,7 +171,7 @@ value.
 The last missing piece is the function that woudl update weights between
 2 layers.
 
-``` 
+```
 let updateWeights (layer:float[]) (delta:float[]) (weights:float[,]) learningRate =
     weights |> Array2D.mapi (fun i j w -> w + learningRate * delta.[j] * layer.[i])
 ```
@@ -274,7 +268,7 @@ node will have value of either 0 or 1. As said the network in fully
 inter-connected so there is an edges between each node, which is not
 shown in the image bellow.
   [![](http://3.bp.blogspot.com/-W5MfCdp_WGY/VQmuMPTrzMI/AAAAAAAAEPU/oZgvGO84YbA/s320/tsp_example.PNG)](http://3.bp.blogspot.com/-W5MfCdp_WGY/VQmuMPTrzMI/AAAAAAAAEPU/oZgvGO84YbA/s1600/tsp_example.PNG)   [![](http://2.bp.blogspot.com/-rD5N9wFRJhk/VQmuMK4h2BI/AAAAAAAAEQM/2M8lzPis1C8/s320/tsp_solution.PNG)](http://2.bp.blogspot.com/-rD5N9wFRJhk/VQmuMK4h2BI/AAAAAAAAEQM/2M8lzPis1C8/s1600/tsp_solution.PNG)
- 
+
 If the node in i-th row and j-th column has value 1, the city (i) will
 be in the tour on position (j).
 
@@ -373,15 +367,15 @@ single node at coordinates **(city,position)**. This is just
 retranscription of the equation above.
 
 ```fsharp
-let singlePass (distances:float[,]) (u:float[,]) pms city position = 
+let singlePass (distances:float[,]) (u:float[,]) pms city position =
     let n = Array2D.length2 u
-    
+
     let values = u |> toValues pms
 
     let aSum = sumAllBut position (values |> rowi city)
 
     let bSum = sumAllBut city (values |> coli position)
-            
+
     let cSum = (values |> Seq.cast<float> |> Seq.sum) - float(n+1)
 
     let dSum = dSumCalc distances city position values
@@ -408,24 +402,24 @@ calculates the D value of the equation above (the one that assures the
 minimization of the TSP circuit)
 
 ```fsharp
-let rowi row (network:float[,]) = 
+let rowi row (network:float[,]) =
     network.[row,*] |> Array.mapi (fun j e -> (e,j))
 
-let coli col (network:float[,]) = 
+let coli col (network:float[,]) =
     network.[*,col] |> Array.mapi (fun j e -> (e,j))
 
-let sumAllBut (i:int) (values:(float*int)[]) = 
+let sumAllBut (i:int) (values:(float*int)[]) =
     Array.fold (fun acc (e,j) -> if i<>j then acc + e else acc) 0.0 values
 
-let dSumCalc distances city position (v:float[,]) = 
+let dSumCalc distances city position (v:float[,]) =
     let n = v |> Array2D.length1
-    (distances |> rowi city) |> Array.sumBy (fun (e,i) -> 
+    (distances |> rowi city) |> Array.sumBy (fun (e,i) ->
         let index1 = (n+position+1) % n
         let index2  = (n+position-1) % n
         e*(v.[i,index1] + v.[i,index2])
     )
 
-let toValues (pms:HopfieldTspParams) u = 
+let toValues (pms:HopfieldTspParams) u =
     u|> Array2D.map (fun (ui) -> v ui pms)
 
 //calculates the value of node from input potential
@@ -435,10 +429,10 @@ let v (ui:float) (parameters:HopfieldTspParams) = (1.0 + tanh(ui*parameters.alfa
 The method which updates the input potential of single node can be called in 2 different ways. Either we pick the nodes randomly multiple times or we loop over all the nodes serially. If the update is serial then the only random element of the algorithm is the initialization of the network.
 
 ```fsharp
-let serialIteration u pms distances = 
+let serialIteration u pms distances =
     u |> Array2D.mapi (fun i j x -> singlePass distances u pms i j)
 
-let randomIteration u pms distances = 
+let randomIteration u pms distances =
     let r = new Random(DateTime.Now.Millisecond)
     let n = Array2D.length1 u
     for i in 0 .. 1000*n do
@@ -454,9 +448,9 @@ seems to converge much sooner. Just for the sake of completeness, here
 is the method that runs 10 times either serial or random iteration.
 
 ```fsharp
-let initAndRunUntilStable cities pms distances = 
+let initAndRunUntilStable cities pms distances =
     let u = initialize cities pms
-    {1 .. 10} |> Seq.fold (fun uNext i -> 
+    {1 .. 10} |> Seq.fold (fun uNext i ->
             match pms.Update with
                 | Random -> randomIteration uNext pms distances
                 | Serial -> serialIteration uNext pms distances
@@ -468,7 +462,7 @@ problem, calculates distances between all cities and runs the algorithm
 until a stable and correct solution is found. That is until the network
 returns feasable solution.
 
-```fsharp 
+```fsharp
 let sampleRun (pms:HopfieldTspParams ) (n:int) =
     let cities = generateRandomCities n
     let distances = calculateDistances cities

@@ -95,7 +95,6 @@ public void GetMessage()
 
 
 ### Rewriting code which is using only Stubs
-
 Here the situation is even easier. Besides the changes in the naming of
 the generated classes, no additional changes are needed to migrate the
 solution. The following snippet test “**MakeTransfer**” method, which
@@ -181,8 +180,6 @@ directive…
 
 
 ### Fakes & Pex
-
-
 One of the advantages of Moles compared to other isolation frameworks,
 was the fact that it was supported by Pex. When Pex explores the code,
 it enters deep into any isolation framework which is used. Since Moles

@@ -113,12 +113,10 @@ let json = JsonConvert.SerializeObject(datas
 json = {"Error"}
 ```
 
-Conflicts with other convertor
-------------------------------
+### Conflicts with other convertor
 List is implemented as discriminated union, so is the Option type, we have to be careful to specify the usage of our convertor only for types that are concerned. In this case all discriminated unions except the List and Option. This can be easily solved by changing the *CanSerialize* method.
 
-The code
---------
+### The code
 Now it should be more or less clear what I wanted to achieve. Here is the code for such convertor.
 
 ```fsharp

@@ -12,12 +12,11 @@ blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-75227315162439564
 blogger_orig_url: http://hoonzis.blogspot.com/2012/06/programming-languages-for-age-of-cloud.html
 ---
 This posts talks about the aspects which are influencing computer languages these days. We are in the age when the sequential execution is over. Even your laptop has a processor with several cores. The cloud
-provides us with tons of machines which we can use to run our code on. We are in the age of distribution, parallelization, asynchronous programming and concurrency. As developers we have to deal with the challenges which arise from this new environment. Computer language scientists have worked on the subject since the seventies. Nowadays concepts which have been studied for long time, influence the mainstream languages. This post describes how. 
+provides us with tons of machines which we can use to run our code on. We are in the age of distribution, parallelization, asynchronous programming and concurrency. As developers we have to deal with the challenges which arise from this new environment. Computer language scientists have worked on the subject since the seventies. Nowadays concepts which have been studied for long time, influence the mainstream languages. This post describes how.
 
 The motivation for this post was this panel discussion at the last's year Lang.NEXT conference, where one of the greatest language architects of these days discuss what the ideal computer language should look like (Anders Hejlsberg - C\#, Martin Odersky - Scala, Gilad Bracha - Newspeak, Java, Dart and Peter Alvaro).
 
-Web and Cloud programming
--------------------------
+### Web and Cloud programming
 
 "Web and cloud programming" was the title of the mentioned panel
 discussion. Cloud programming is quite noncommittal term. What do we
@@ -26,8 +25,7 @@ IDE in the cloud)? or programming applications for the cloud (but that
 can be just any web app right)? It turns out this is just a term to
 depict the **programming in distributed environment**.
 
-Programming in distributed environment
---------------------------------------
+### Programming in distributed environment
 
 Programming in distributed environment is much better term - but again
 it might not be completely clear. The majority of todays applications is
@@ -69,8 +67,7 @@ Here is a list of 3 tools which I think might be helpful:
 -   **Computer languages** - The biggest helper will be on the lowest
     level - the computer language itself.
 
-Models, Libraries and languages
--------------------------------
+### Models, Libraries and languages
 
 Libraries are and will be the principal tools to make developers life
 easier. There are several libraries available to help with the
@@ -89,14 +86,13 @@ Modern languages have two characteristics:
 -   Lately have been strongly influenced by [functional
     programming](http://en.wikipedia.org/wiki/Functional_programming).
 
-Benefits of functional languages
---------------------------------
+### Benefits of functional languages
 
 Functional languages might be one of the helpers in the age of
 distributed computing. Some imperative languages are introducing
 functional aspects (for instance C\# has been heading that way since
 long time), another ones designed from scratch are much more closer to
-"pure" functional style (Scala, F\#, or the puriest - Haskel). Let's
+"pure" functional style (Scala, F\#, Haskell). Let's
 first define some terms and possible benefits of functional programming.
 From my point of view (and I admit quit simplified point of view) there
 are four aspects of functional programming that are useful in everyday
@@ -110,9 +106,7 @@ coding.
     the execution and evaluation of methods till the time the results
     are needed.
 
-Eliminating the state
----------------------
-
+### Eliminating the state
 It's hard to keep shared state in parallel systems written in imperative
 languages. Once we leave the save sequential execution of the language,
 we are never sure what are the values in the actual state. Callbacks
@@ -137,9 +131,7 @@ is called “Referential transparency” and enables the lazy evaluation. So
 the elimination of the global state  might be seen as the pre-condition
 for using other functional language features such as lazy evaluation
 
-Function as a first class citizen
----------------------------------
-
+### Function as a first class citizen
 Another aspect of functional programming is the fact that functions
 become first class citizens. That means, that they can be passed as
 arguments to other functions (these are called higher order functions).
@@ -150,9 +142,7 @@ collection of values, we can compose the resulting function and apply it
 at once. in C\# the LINQ uses a form of functional composition, which
 will be discussed later.
 
-Lambdas and Closures
---------------------
-
+### Lambdas and Closures
 Lambdas are anonymous functions - defined on the fly. Closure add the
 ability to capture the variables defined around the definition of the
 function. C\# has closures and lambdas since the version 3.0, they
@@ -164,7 +154,7 @@ creating a closure.
 
     var a = 10;
     var input = 5
-    request(input, function(x) { 
+    request(input, function(x) {
        a = x;
     });
 
@@ -195,9 +185,7 @@ Closures add the ability to use the current state from the moment of the
 definition of the anonymous function, as the current state used during
 the functional execution.
 
-Collections in functional programming
--------------------------------------
-
+### Collections in functional programming
 In functional programming languages (the pure ones), collections are
 immutable. Instead of modification a copy of the collection is returned
 on each operation which is performed on the collection. It is up to the
@@ -220,9 +208,7 @@ selector the function is a predicate which returns “true” or “false” in
 case of the mapper, the function just returns a new object. Thanks to
 lambdas we can define both of them on the fly.
 
-Language integrated data queries
---------------------------------
-
+### Language integrated data queries
 Lazy loading also comes from functional languages. Since the result of
 the function does not depend on the "state of the world" it does not
 matter when we execute any given statement or computation. The designers
@@ -252,9 +238,7 @@ Similar concept inspired some Scala developers and since Scala posseses
 the necessary language features, we might see similar concepts in Scala
 also ([ScalaQL](http://jiangxi.cs.uwm.edu/publication/sle09.pdf)).
 
-Dynamic or Typed languages
---------------------------
-
+### Dynamic or Typed languages
 What are the benefits of Dynamic or Strongly typed language? Let's look
 for the answer in everyday coding: Coding in dynamic language is at
 least at the beginning much faster than in a typed language. There is no
@@ -284,10 +268,7 @@ without polluting our lifes with too much typing exercises. This comes
 handy sometimes.
 
 
-JavaScript as the omnipresent language
---------------------------------------
-
-
+### JavaScript as the omnipresent language
 JavaScript is everywhere and lately (with Node.JS and MS investing
 heavily into it) drawing more and more attention. The language has some
 nice features: it treats the functions as first class citizens, supports
@@ -306,9 +287,7 @@ future version of ECMAScript will try to solve the problems of
 JavaScript by bringing modular systems,classes, static typing. But the
 big questions will be of course the adoption by the browsers.
 
-Summary
--------
-
+### Summary
 -   Libraries will be always the core pieces to enable writing
     distributed software
 -   Language should be designed in a way to minimize the state and
@@ -330,4 +309,3 @@ well established static typed, compiled (and for me well known) world.
 But whether it is Scala, Python, Dart, JavaScript or C\#/F\# - I thing
 we should be trying to adopt modern languages as fast as possible and
 that for just one reason: to express more with less code.
-

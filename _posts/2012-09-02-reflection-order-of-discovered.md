@@ -12,7 +12,7 @@ blogger_orig_url: http://hoonzis.blogspot.com/2012/09/reflection-order-of-discov
 ---
 In .NET Reflection provides several methods to obtain information about any type from the type system. One of these methods is **GetProperties** method which retrieves a list of all the properties of a given type. This method returns an array of **PropertyInfo** objects, but the order of these properties is not guarantied to be the same.
 
-``` 
+```
 PropertyInfo[] propListInfo = type.GetProperties();
 ```
 
@@ -30,7 +30,7 @@ comparison was run on two same objects it always told me, that the
 objects are not equal. Take a look at the problematic code, which I have
 simplified a bit for this post:
 
-``` 
+```cs
 private static bool CompareObjects(object initialObj, object currentObj, IList<String> filter)
 {
  string returnMessage = string.Empty;
@@ -66,7 +66,7 @@ private static bool CompareObjects(object initialObj, object currentObj, IList<S
 So in order to correct this code, you will have to **order both arrays
 by MetadataToken**, which is a unique identifier of each property.
 
-``` 
+```cs
 propListInfo = propListInfo.OrderBy(x=>x.MetadataToken).ToArray();
 propListInfo1 = propListInfo1.OrderBy(x=>x.MetadataToken).ToArray();
 ```

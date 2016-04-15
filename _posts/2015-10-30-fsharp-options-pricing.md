@@ -93,7 +93,7 @@ The algorithm has the following steps:
 
 The price of the derivative in the end node is calculated with the **optionValue** function. For call option it would be *max(S-X,0)* for a put option *max(X-S,0)*, where *X* is the strike of the option. The following algorithm takes the number of steps in the tree as parameter and an option definition. Option has a property called **TimeToExpiry** which is the value between the purchase date of the option and the maturity in days. This time is then divided by the number of steps to obtain **deltaT** the time interval of a single step.
 
-```fsharp
+```cs
 let deltaT = option.TimeToExpiry/float steps
 let up = exp(stock.Volatility*sqrt deltaT)
 let down = 1.0/up
@@ -143,7 +143,7 @@ That can be surprisingly easy, let's define a function for single step backwards
 
 This is achieved thanks to **Seq.pairwise** which iterates over all consecutive values in the array - in our case the first item will be *P_up* and second *P_down*.
 
-```fsharp
+```cs
 let step (derPrice:float list) (pricing:BinomialPricing) =
     derPrice  |> Seq.pairwise
               |> Seq.map (fun (down,up)-> (pricing.PUp*up+pricing.PDown*down)*(1.0/pricing.Rate))

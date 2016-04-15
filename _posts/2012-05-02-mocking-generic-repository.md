@@ -18,7 +18,7 @@ Database** architecture. Another prerequisite is the knowledge of the [repositor
 
 In the majority of my projects I am using the following generic repository class.
 
-``` 
+```cs
 public interface IRepository
 {
  T Load<T>(object id);
@@ -53,7 +53,7 @@ be backed up a list of students.
 While when working with generic repository, it might be a bit harder.
 Here is how I have solved the problem:
 
-``` 
+```cs
 public class MockedRepository :IRepository
 {
  public MockedRepository()
@@ -62,7 +62,7 @@ public class MockedRepository :IRepository
   stations = DeserializeList<Station>("StationDto");
   tips = DeserializeList<InformationTip>("InformationTipDto");
   countries = DeserializeList<Country>("CountryDto");
-  
+
   dataDictionary = new Dictionary<Type, object>();
   dataDictionary.Add(typeof(City), cities);
   dataDictionary.Add(typeof(Station), stations);
@@ -109,7 +109,7 @@ of objects. Each method in the mocked repository can use this dictionary
 to determine which is the collection addressed by the call (by using the
 generic type T.).
 
-``` 
+```cs
 Type type = typeof(T);
 var data = dataDictionary[type];
 IEnumerable<T> list = (IEnumerable<T>)data;

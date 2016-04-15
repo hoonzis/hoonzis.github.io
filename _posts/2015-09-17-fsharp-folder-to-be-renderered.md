@@ -25,6 +25,7 @@ The suggestion proposed solution si to forgot the nested folders and just rename
 ```
 
 In real F# can handle nested folders, but all files in the same folder have to be consecutive in the items group. This will fix the problem:
+
 ```xml
 <Content Include="Views\Web.config" />
 <Content Include="Views\Home\Index.cshtml" />
@@ -40,4 +41,3 @@ Note that the same applies for any nested level. The following would not work, b
 <Content Include="Views\Shared\Test2\_Layout.cshtml" />
 <Content Include="Views\Shared\Another\_Layout.cshtml" />
 ```
-	
