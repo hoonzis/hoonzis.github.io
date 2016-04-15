@@ -69,7 +69,7 @@ var result = client.Search<Artist>(sc => sc.Aggregations(agg => agg
 
 That is pretty cool if you compare that to the JSON above. What about getting the values from the result? Well it's a group by query, so we should be able to get a list of styles and for each style the top artists.
 
-```csharp
+```cs
 var styles = result.Aggs.GetGroupBy<Car>(x => x.Style);
 foreach (var styleBucket in styles)
 {

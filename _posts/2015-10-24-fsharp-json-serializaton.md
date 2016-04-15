@@ -4,7 +4,7 @@ title: JSON serialization with F#
 date: '2015-10-24T09:44:00.000-07:00'
 author: Jan Fajfr
 tags:
-- FSharp, JSON, Json.NET
+- fsharp, JSON, Json.NET
 modified_time: '2015-10-24T01:07:44.866-07:00'
 ---
 
@@ -22,11 +22,10 @@ I am using Discriminated Union in several different ways here are typical 3 exam
 - using DU to discriminate between 2 or more simple record types
 - using DU with tuples, usually to discriminate between quite heterogeneous types
 
-Discriminated Union as enumeration
-----------------------------------
+### Discriminated Union as enumeration
 Simple example will make this clear. The DU values have name and don't hold any other type inside.
 
-```Fsharp
+```fsharp
 type Motor =
   | Diesel
   | Electric
@@ -43,11 +42,11 @@ In this  case I would expect a serialization and deserialization into a single s
 ```javascript
   {"Motor":"Diesel","Name":"VW"}
 ```
-Discriminating only between record types
-----------------------------------------
+
+### Discriminating only between record types
 Here is the second case, which resembles a simple inheritance case from Object Oriented world.
 
-```FSharp
+```fsharp
 type OptionLeg = {
   Strike:float
   Expiration:DateTime
@@ -75,18 +74,17 @@ The compiler will infer the type of test as **CashLeg**. In the resulting Json I
 ```
 Since Json.NET already handles records in the implementation we can check and if a DU is composed of single record, just serialize the record. During the deserialization however the convertor should automatically determine which case was passed in by looking at the fields and deserialize into that concrete case. This might be a bit tricky, but sounds feasible. The following JSON should be automatically serialized into OptionLeg even if **Leg** type is expected.
 
-```FSharp
+```fsharp
 {
   Strike:100,
   Expiration: new Date()
 }
 ```
 
-DU holding diferent data types
-------------------------------
+### DU holding different data types
 This is the last example which also shows why DU are so cool.
 
-```FSharp
+```fsharp
 type Result =
         | Error
         | Success of String
@@ -101,7 +99,7 @@ json = {"Case":"SuperSuccess","Item1":"All","Item2":"IsOK"}
 In this case the serialized object should contain the name of the DU case and the serialized vales of the tuple:
 The same should work for a DU which is not composed of a tuple but by a single element:
 
-```
+```fsharp
 let data = Success "Allright"
 let json = JsonConvert.SerializeObject(data)
 json = {"Case":"Success","Item1":"Allright"}
@@ -109,7 +107,7 @@ json = {"Case":"Success","Item1":"Allright"}
 
 Now the question is what should the **Error** case be serialized into - if we stick to the first example, it should be just a simple string - but one could probably argue that *{Case:"Error"}* would be better choice. The convertor code is easy to adapt.
 
-```FSharp
+```fsharp
 let data = Error
 let json = JsonConvert.SerializeObject(datas
 json = {"Error"}
@@ -123,14 +121,14 @@ The code
 --------
 Now it should be more or less clear what I wanted to achieve. Here is the code for such convertor.
 
-```FSharp
+```fsharp
 type DuConverter() =
     inherit JsonConverter()
 
     override __.WriteJson(writer, value, serializer) =
         let unionType = value.GetType()
-        let unionCases = FSharpType.GetUnionCases(unionType)
-        let case, fields = FSharpValue.GetUnionFields(value, unionType)
+        let unionCases = fsharpType.GetUnionCases(unionType)
+        let case, fields = fsharpValue.GetUnionFields(value, unionType)
         let allCasesHaveValues = unionCases |> Seq.forall (fun c -> c.GetFields() |> Seq.length > 0)
 
         let distinctCases = unionCases |> Seq.distinctBy (fun c->c.GetFields() |> Seq.map (fun f-> f.DeclaringType))
@@ -181,7 +179,7 @@ type DuConverter() =
                 |> Seq.map (fun ((_, fieldName), (fieldType,fieldValue)) -> fieldName,fieldType,fieldValue)
                 |> Seq.toArray
         //all cases of the targe discriminated union
-        let unionCases = FSharpType.GetUnionCases(destinationType)
+        let unionCases = fsharpType.GetUnionCases(destinationType)
 
         //the first simple case - this DU contains just simple values - as enum - get the value
         let _,_,firstFieldValue = fieldsValues.[0]
@@ -201,9 +199,9 @@ type DuConverter() =
 
         match foundDirectCase, fieldsCount with
             //simpliest case - just like an enum
-            | Some case, 1 -> FSharpValue.MakeUnion(case,[||])
+            | Some case, 1 -> fsharpValue.MakeUnion(case,[||])
             //case is specified - just create the case with the values as parameters
-            | Some case, n -> FSharpValue.MakeUnion(case,valuesOnly)
+            | Some case, n -> fsharpValue.MakeUnion(case,valuesOnly)
             //case not specified - look up the record type which suites the best
             | None, _ ->
                 //this is the second case - this disc union is not of simple value - it may be records or multiple values
@@ -232,14 +230,14 @@ type DuConverter() =
                         //creating the record - Json.NET can handle that already
                         let unionCaseValue = serializer.Deserialize(jsonReader,recordType)
                         //convert the record to the parent discrimianted union
-                        let parentDUValue = FSharpValue.MakeUnion(case,[|unionCaseValue|])
+                        let parentDUValue = fsharpValue.MakeUnion(case,[|unionCaseValue|])
                         parentDUValue
                     | None -> failwith "can't find such disc union type"
 
     override __.CanConvert(objectType) =
-        FSharpType.IsUnion objectType &&
+        fsharpType.IsUnion objectType &&
         //it seems that both option and list are implemented using discriminated unions, so we tell json.net to ignore them and use different serializer
         not (objectType.IsGenericType  && objectType.GetGenericTypeDefinition() = typedefof<list<_>>) &&
         not (objectType.IsGenericType  && objectType.GetGenericTypeDefinition() = typedefof<option<_>>) &&
-        not (FSharpType.IsRecord objectType)
+        not (fsharpType.IsRecord objectType)
 ```
