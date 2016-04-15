@@ -93,7 +93,7 @@ the basic once, they are "made of" them.
 
 -   **Equities** - stocks, shares
 -   **Debt** - bonds or mortages. This products are also called **Fixed
-    Income** products, because the borrower or issuer aggree on regular
+    Income** products, because the borrower or issuer agree on regular
     payments
 -   **FX - Currencies and Rates**
 -   **Commodities** - oil, gold, whatever. Not really Financial
@@ -133,7 +133,7 @@ just a fancy world used for buying or selling two options at the same
 time. As you can see later one can choose to do that for multiple
 reasons.
 
-### <a name="call"></a>Call Option 
+### <a name="call"></a>Call Option
 
 Call is the right, but not the obligation to buy given underlying (stock
 or commodity) at given price until given date.

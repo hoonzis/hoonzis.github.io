@@ -13,15 +13,15 @@ blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-31911218505550435
 blogger_orig_url: http://hoonzis.blogspot.com/2012/09/fakes-is-new-test-isolation-framework.html
 ---
 
-[Fakes](http://msdn.microsoft.com/en-us/library/hh549175(v=vs.110)) is a new test isolation framework from Microsoft. It is inspired by and resembles to [Moles](http://research.microsoft.com/en-us/projects/moles/) a framework which I have described in one of my previous blog posts. 
+[Fakes](http://msdn.microsoft.com/en-us/library/hh549175(v=vs.110)) is a new test isolation framework from Microsoft. It is inspired by and resembles to [Moles](http://research.microsoft.com/en-us/projects/moles/) a framework which I have described in one of my previous blog posts.
 In this post I will briefly describe Fakes and than show the steps which have to be taken when migrating from Moles. You will find that the migration itself is not that complicated. Besides some changes in the structure of the project only few changes are needed in the code.
 
 Code example related to this post are available at [GitHub](https://github.com/hoonzis/PexMolesAndFakes). Fakes framework contains two constructs which can be used to isolate code:
 
-* Stubs – should be used to implement interfaces and stub the behavior of public methods. 
+* Stubs – should be used to implement interfaces and stub the behavior of public methods.
 * Shims – allow mocking the behavior of ANY method, including static and private methods inside .NET assemblies.
 
-Stubs are generated classes. For each public method in the original interface a delegate is create which holds the action that should be executed while invoking the original method. In the case of Shims, such delegate is generated for all methods, even the private and static ones. 
+Stubs are generated classes. For each public method in the original interface a delegate is create which holds the action that should be executed while invoking the original method. In the case of Shims, such delegate is generated for all methods, even the private and static ones.
 
 When using Stubs, you provide mocked implementation of any interface to the class or method which you are testing. This is done transparently before compilation and no changes are made to the code after the compilation. On the other hand Shims use the technique called IL weaving (injection of MSIL assembly at runtime). This way the code which should be executed is replaced at runtime by the code provided in the delegate.
 
@@ -45,7 +45,7 @@ If you have already used Moles before, you might be wondering, how much code cha
 * Change the structure of the project and generate new stubs
 * Rewrite the unit tests to use newly generated classes
 
-To prepare the solution we have to remove all the references to Moles as well as the **.moles** files which were previously used during the code generation by the Moles framework. Next step is the generations of new stubs using Fakes framework. This is as simple as it has been before. Open the references window and right click on the DLL for which you want to generate the stubs. Than you should be able to select **Add Fakes Assembly** from the menu. 
+To prepare the solution we have to remove all the references to Moles as well as the **.moles** files which were previously used during the code generation by the Moles framework. Next step is the generations of new stubs using Fakes framework. This is as simple as it has been before. Open the references window and right click on the DLL for which you want to generate the stubs. Than you should be able to select **Add Fakes Assembly** from the menu.
 Following images show the difference between the old and new project structure (also note that I was using VS 2010 with Moles and I am now using VS 2012 with Fakes). After this is done, one needs to take care of the code changes.
 
 [![moles](http://lh5.ggpht.com/-9V7HQSZhYHw/UGi3opGKBaI/AAAAAAAAAcw/U3SZYHnvWVM/image_thumb%25255B1%25255D.png?imgmax=800)](http://lh4.ggpht.com/-oc7YGzDMH0k/UF9-wzQZ-ZI/AAAAAAAAAcY/4hPypdEZcXY/image_thumb%25255B1%25255D.png?imgmax=800)
@@ -53,9 +53,9 @@ Following images show the difference between the old and new project structure (
 
 ### Rewriting code using Shims
 
-Here is a classical example of testing a method which depends on **DataTime.Now** value. The first snippet is isolated using **Moles** and the second contains the same test using **Fakes:*
+Here is a classical example of testing a method which depends on **DataTime.Now** value. The first snippet is isolated using **Moles** and the second contains the same test using **Fakes:**
 
-```csharp
+```cs
 [TestMethod]
 [HostType("Moles")]
 public void GetMessage()
@@ -70,7 +70,7 @@ public void GetMessage()
 ```
 
 
-```csharp
+```cs
 [TestMethod]
 public void GetMessage()
 {
@@ -86,7 +86,7 @@ public void GetMessage()
 }
 ```
 
-**The main differences:*
+### The main differences
 
 * Methods using Shims, do not need the **HostType** annotation previously needed by Moles.
 * On the other hand a **ShimsContext** has to be created and later disposed when the stubbing is not needed any more. The using directive provides a nice way to dispose the context right after its usage and marks the code block in which the system has “stubbed” behavior.
@@ -106,7 +106,7 @@ repositories to be specified in the constructor. The behavior of these
 repositories is stubbed. This is might be typical business layer code of
 any CRUD application. First let’s see the example using Moles.
 
-```csharp
+```cs
 [TestMethod]
 public void TestMakeTransfer()
 {
@@ -147,7 +147,7 @@ to see if the values have been changed in this list.
 
 Let’s see the same example using Fakes:
 
-```csharp
+```cs
 [TestMethod]
 public void TestMakeTransfer()
 {
