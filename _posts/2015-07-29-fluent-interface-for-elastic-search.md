@@ -21,22 +21,22 @@ One type of aggregations that I use quite often are **Sums** (or other statistic
 
 ```cs
 var result = client.Search<Car>(s => s
-	.Aggregations(fstAgg => fstAgg
-		.Terms("firstLevel", f => f
-			.Field(z => z.CarType)
-				.Aggregations(sums => sums
-					.Sum("priceSum", son => son
-					.Field(f4 => f4.Price)
-				)
-			)
-		)
-	)
+  .Aggregations(fstAgg => fstAgg
+    .Terms("firstLevel", f => f
+      .Field(z => z.CarType)
+        .Aggregations(sums => sums
+          .Sum("priceSum", son => son
+          .Field(f4 => f4.Price)
+        )
+      )
+    )
+  )
 );
 
 var carTypes = result.Aggs.Terms("firstLevel");
 foreach (var carType in carTypes.Items)
 {
-	var priceSum = (decimal)carType.Sum("priceSum").Value;
+  var priceSum = (decimal)carType.Sum("priceSum").Value;
 }
 
 ```
@@ -47,8 +47,8 @@ The same query using **FluentNest** extensions methods looks like this:
 
 ```cs
 groupedSum = Statistics
-	.SumBy<Car>(s => s.Price)
-	.GroupBy(s => s.EngineType);
+  .SumBy<Car>(s => s.Price)
+  .GroupBy(s => s.EngineType);
 
 var result = client.Search<Car>(search => search.Aggregations(x => groupedSum);
 ```
@@ -57,19 +57,19 @@ We can as well nest the *GroupBy* term into another group. Imagine you want to s
 
 ```cs
 var result = client.Search<Car>(s => s
-	.Aggregations(fstAgg => fstAgg
-		.Terms("firstLevel", f => f
-			.Field(z => z.CarType)
-			.Aggregations(sndLevel => sndLevel
-				.Terms("secondLevel", f2 => f2.Field(f3 => f3.EngineType)
-					.Aggregations(sums => sums
-						.Sum("priceSum", son => son
-						.Field(f4 => f4.Price))
-					)
-				)
-			)
-		)
-	)
+  .Aggregations(fstAgg => fstAgg
+    .Terms("firstLevel", f => f
+      .Field(z => z.CarType)
+      .Aggregations(sndLevel => sndLevel
+        .Terms("secondLevel", f2 => f2.Field(f3 => f3.EngineType)
+          .Aggregations(sums => sums
+            .Sum("priceSum", son => son
+            .Field(f4 => f4.Price))
+          )
+        )
+      )
+    )
+  )
 );
 ```
 
@@ -77,9 +77,9 @@ Now to define the aggregation, we can just add another *GroupBy* to the existing
 
 ```cs
 groupedSum = Statistics
-	.SumBy<Car>(s => s.Price)
-	.GroupBy(s => s.CarType)
-	.GroupBy(s => s.EngineType)
+  .SumBy<Car>(s => s.Price)
+  .GroupBy(s => s.CarType)
+  .GroupBy(s => s.EngineType)
 ```
 
 Helper methods are available in the library, which will allow you to unwrap what you need from the ElasticSearch query result.
@@ -88,7 +88,7 @@ Helper methods are available in the library, which will allow you to unwrap what
 var carTypes = result.Aggs.GetGroupBy<Car>(x => x.CarType);
 foreach (var carType in carTypes)
 {
-	var engineTypes = carType.GetGroupBy<Car>(x => x.EngineType);
+  var engineTypes = carType.GetGroupBy<Car>(x => x.EngineType);
 }
 ```
 
@@ -111,8 +111,8 @@ Another overload can give you an enumerable of predefined types if you pass the 
 ```cs
 var types = result.Aggs.GetGroupBy<Car, CarType>(x => x.CarType, k => new CarType
 {
-	Type = k.Key,
-	Price = k.GetSum(x=>x.Price).Value
+  Type = k.Key,
+  Price = k.GetSum(x=>x.Price).Value
 });
 ```
 Since the *Price* field is decimal, the *GetSum* method shall return decimal as well.
@@ -122,8 +122,8 @@ In some cases you might need to group dynamically on multiple criteria specified
 
 ```cs
 var agg = Statistics
-	.SumBy<Car>(s => s.Price)
-	.GroupBy(new List<string> {"engineType", "carType"});
+  .SumBy<Car>(s => s.Price)
+  .GroupBy(new List<string> {"engineType", "carType"});
 
 var result = client.Search<Car>(search => search.Aggregations(x => agg));
 ```
@@ -133,9 +133,9 @@ You can defined and obtain multiple statistics in the same time. This has been a
 
 ```cs
 var aggs = Statistics
-	.SumBy(x=>x.Price)
-	.AndCardinalityBy(x=>x.EngineType)
-	.AndCondCountBy(x=>x.Name, c=>c.EngineType == "Engine1");
+  .SumBy(x=>x.Price)
+  .AndCardinalityBy(x=>x.EngineType)
+  .AndCondCountBy(x=>x.Name, c=>c.EngineType == "Engine1");
 ```
 
 ### Conditional statistics
@@ -143,16 +143,16 @@ There are multiple ways to calculate a conditional sum or conditional count. One
 
 ```cs
 var result = client.Search<Car>(search => search
-	.Filter("filter", fd=>fd.Term(fd=>fd.EngineType,"Engine1"))
-	.Aggregations(x =>x.Sum("sumAgg",f=>f.Field(x=>x.Price))));
+  .Filter("filter", fd=>fd.Term(fd=>fd.EngineType,"Engine1"))
+  .Aggregations(x =>x.Sum("sumAgg",f=>f.Field(x=>x.Price))));
 ```
 
 This can be rewritten as a very simple query using FluentNest:
 
 ```cs
 client.Search<Car>(search => search
-	.FilteredOn(x=>x.EngineType == "Engine1")
-	.Aggregations(a=>priceSum);
+  .FilteredOn(x=>x.EngineType == "Engine1")
+  .Aggregations(a=>priceSum);
 ```
 
 However there is one big problem. The filter is applied on all the data so all aggregations will be affected.
@@ -161,16 +161,16 @@ If you want multiple conditional aggregations based on different conditions, you
 
 ```cs
 var result = client.Search<Car>(search => search
-    .Aggregations(agg => agg
-        .Filter("filterOne", f => f.Filter(innerFilter => innerFilter.Term(fd => fd.EngineType, EngineType.Diesel))
-        .Aggregations(innerAgg => innerAgg.Sum("sumAgg", innerField =>
-            innerField.Field(field => field.Price)))
-        )
-        .Filter("filterTwo", f => f.Filter(innerFilter => innerFilter.Term(fd => fd.CarType, "Type1"))
-        .Aggregations(innerAgg => innerAgg.Sum("sumAgg", innerField =>
-            innerField.Field(field => field.Price)))
-        )
+  .Aggregations(agg => agg
+    .Filter("filterOne", f => f.Filter(innerFilter => innerFilter.Term(fd => fd.EngineType, EngineType.Diesel))
+    .Aggregations(innerAgg => innerAgg.Sum("sumAgg", innerField =>
+      innerField.Field(field => field.Price)))
     )
+    .Filter("filterTwo", f => f.Filter(innerFilter => innerFilter.Term(fd => fd.CarType, "Type1"))
+    .Aggregations(innerAgg => innerAgg.Sum("sumAgg", innerField =>
+      innerField.Field(field => field.Price)))
+    )
+  )
 );
 
 var sumAgg = result.Aggs.Filter("filterOne");
@@ -183,8 +183,8 @@ This starts to get really hard to read. There is no global filter here, the filt
 
 ```cs
 var aggs = Statistics
-	.CondSumBy<Car>(x=>x.Price, c=>c.EngineType == "Engine1")
-	.AndCondSumBy<Car>(x=>x.Sales, c=>c.CarType == "Car1");
+  .CondSumBy<Car>(x=>x.Price, c=>c.EngineType == "Engine1")
+  .AndCondSumBy<Car>(x=>x.Sales, c=>c.CarType == "Car1");
 
 var result = client.Search<Car>(search => search.Aggregations(a=>aggs)):
 var sum = result.Aggs.GetCondSum<Car>(x=>x.Price, y=>y.EngineType == "Engine1");
@@ -216,13 +216,13 @@ var startDate = new DateTime(2010, 1, 1);
 var endDate = new DateTime(2010, 5, 1);
 
 var result = client.Search<Car>(s => s.Query(
-		q=>q.Filtered(fil=>fil.Filter(
-			x => x.And(
-				left=>left.Range(f=>f.OnField(fd=>fd.Timestamp).Greater(startDate)),
-				right=>right.Range(f=>f.OnField(fd=>fd.Timestamp).Lower(endDate))
-			)
-		)
-	)
+    q=>q.Filtered(fil=>fil.Filter(
+      x => x.And(
+        left=>left.Range(f=>f.OnField(fd=>fd.Timestamp).Greater(startDate)),
+        right=>right.Range(f=>f.OnField(fd=>fd.Timestamp).Lower(endDate))
+      )
+    )
+  )
 ));
 ```
 
@@ -248,10 +248,10 @@ Histogram is another useful aggregation supported by ElasticSearch. One typical 
 
 ```cs
 var result = client.Search<Car>(s => s.Aggregations(a => a.DateHistogram("by_month",
-		d => d.Field(x => x.Timestamp)
-				.Interval(DateInterval.Month)
-				.Aggregations(
-					aggs => aggs.Sum("priceSum", dField => dField.Field(field => field.Price))))));
+    d => d.Field(x => x.Timestamp)
+        .Interval(DateInterval.Month)
+        .Aggregations(
+          aggs => aggs.Sum("priceSum", dField => dField.Field(field => field.Price))))));
 
 var histogram = result.Aggs.DateHistogram("by_month");
 Check.That(histogram.Items).HasSize(10);
@@ -264,8 +264,8 @@ Again here is simplified syntax using *FluentNest*:
 
 ```cs
 var agg = Statistics
-	.SumBy<Car>(x => x.Price)
-	.IntoDateHistogram(date => date.Timestamp, DateInterval.Month);
+  .SumBy<Car>(x => x.Price)
+  .IntoDateHistogram(date => date.Timestamp, DateInterval.Month);
 
 var result = client.Search<Car>(s => s.Aggregations(a =>agg);
 var histogram = result.Aggs.GetDateHistogram<Car>(x => x.Timestamp);
@@ -287,14 +287,14 @@ While looking at queries in the project that I am working on, quite clear patter
 
 ```cs
 var aggs = Statistics.SumBy<Car>(x => x.Price)
-    .AndCondCountBy(x => x.CarId, x => x.New == true)
-    .IntoDateHistogram(d => d.Timestamp, DateInterval.Month);
+  .AndCondCountBy(x => x.CarId, x => x.New == true)
+  .IntoDateHistogram(d => d.Timestamp, DateInterval.Month);
 
 var filter = ...
 
 var sc = new SearchDescriptor<Car>()
-    .FilteredOn(filter)
-    .Aggregations(agg => aggs);
+  .FilteredOn(filter)
+  .Aggregations(agg => aggs);
 
 var json = Encoding.UTF8.GetString(elasticClient.Serializer.Serialize(sc));
 log.Debug($"ES Query: {json}");
@@ -311,13 +311,13 @@ At the end our queries are quite complex. I don't want to enter into the details
 
 ```cs
 var aggDescription = Statistics
-    .SumBy<Car>(x => x.PriceEuro)
-    .AndSumBy(x => x.TotalCompetitors)
-    .AndCondCountBy(x => x.TradeID, x => x.Won == true)
-    .AndCardinalityBy(x => x.TradeID)
+  .SumBy<Car>(x => x.PriceEuro)
+  .AndSumBy(x => x.TotalCompetitors)
+  .AndCondCountBy(x => x.TradeID, x => x.Won == true)
+  .AndCardinalityBy(x => x.TradeID)
   .GroupBy(x => x.Company)
-    .AndSumBy(x => x.PriceEuro)
-    .AndCardinalityBy(x => x.TradeID)  
+  .AndSumBy(x => x.PriceEuro)
+  .AndCardinalityBy(x => x.TradeID)  
 ```
 
 You can imagine that such query would be very complicated using only the NEST client and we were forced to write an abstraction layer. The question is now whether such abstraction library would be useful as well for someone else?
