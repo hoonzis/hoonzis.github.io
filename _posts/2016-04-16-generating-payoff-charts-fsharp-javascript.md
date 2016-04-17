@@ -240,6 +240,7 @@ let legLinesData =
 ```
 
 So far we have calculated the values for all the legs, but not yet the actual strategy payoff line. The strategy payoff is just a sum of all the line payoffs.
+
 ```ocaml
 let strategyLine = [for stockPrice in interestingPoints do yield stockPrice,
 	payOffs |> Seq.sumBy (fun payOff -> payOff stockPrice)
@@ -350,6 +351,7 @@ A chart object is array of lines. We need one line per leg and one line per stra
 
 ### Payoff charts html view
 The view contains a strategy table, with each leg as single row and the chart.
+
 ```html
 <table class="table">
    <tbody data-bind="foreach:legs">
