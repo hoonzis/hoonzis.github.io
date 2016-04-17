@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Options charts in F\# and JavaScript
+title: Options and Stocks charts in F# and JavaScript
 date: '2016-04-16T05:25:00.000-08:00'
 author: Jan Fajfr
 tags:
