@@ -1,19 +1,23 @@
 ---
 layout: post
 title: Options charts in F\# and JavaScript
-date: '2015-12-7T05:25:00.000-08:00'
+date: '2016-04-16T05:25:00.000-08:00'
 author: Jan Fajfr
 tags:
 - Maps
-modified_time: '2015-12-07T05:11:43.965-08:00'
+modified_time: '2016-04-16T05:11:43.965-08:00'
 ---
-I have recently been playing with options, their pricing and pay-off charts generation. I have created a small library call [Pricer](https://github.com/hoonzis/Pricer). This library can do few things:
+I have recently been playing with options, their pricing and pay-off charts generation. I have created a small library called [Pricer](https://github.com/hoonzis/Pricer) which can do few things:
 
 - Calculate options prices
 - Generate data for pay-off charts
 - Analyze stock data from [Quandl](https://www.quandl.com/) and calculate volatility and floating averages
 
-In order to demonstrate what the library can do, I have created a small web application [Payoffcharts.com](http://www.payoffcharts.com/). Here is the list of the visualizations that it does:
+In order to demonstrate what the library can do, I have created a small web application [Payoffcharts.com](http://www.payoffcharts.com/). The web site contains few different visualizations, payoff charts of arbitrary strategy based on options being one of them. The whole project is available on [GitHub](https://github.com/hoonzis/payoffcharts).
+
+This posts describes how to create a payoff chart with bit of F\# and few JavaScript frameworks ([KnockoutJS](http://knockoutjs.com/) and [KoExtensions](https://github.com/hoonzis/KoExtensions)). I give also a description of what payoff chart is and how does the *Pricer* library generate the data for the chart.
+
+Here is the list of the visualizations that the web does:
 
 Payoff chart of any strategy
 ![payoffcharts](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/optionscharts/payoffcharts_viz.PNG)
@@ -244,7 +248,7 @@ let strategyLine = [for stockPrice in interestingPoints do yield stockPrice,
 ]
 ```
 
-## Serving the data by WebAPI F\# controller
+### Serving the data by WebAPI F\# controller
 
 I have used WebAPI F\# project template, event though there are probably more Fsharpy options for building web apps (SuaveIO seems to be the best candidate).
 
@@ -273,24 +277,34 @@ member x.Put([<FromBody>] strategy:Strategy) : IHttpActionResult =
     }
     x.Ok(payoff) :> _
 ```
-## JavaScript front end
-I have built the front end with KnockoutJS, mainly because I know it quite well. The view models reflect quite a lot the F\# domain presented above. I am using Knockout.Validation (all those extend calls).
+
+### JavaScript front end
+I have built the front end with KnockoutJS, mainly because I know it quite well. The view models reflect quite a lot the F\# domain presented above. *StockInfo* and *Leg* are the main containers of data and information.
 
 ```javascript
 function LegViewModel(dto,parent) {
     var self = this;
-
-    self.parent = parent;
-    self.expiry = ko.observable(new Date()).extend({ required: true });
-    self.strike = ko.observable().extend({ required: true });
-    self.kind = ko.observable().extend({ required: true });
+    self.expiry = ko.observable(new Date());
+    self.strike = ko.observable();
+    self.kind = ko.observable();
     self.style = ko.observable("European");
     self.premium = ko.observable();
     self.delta = ko.observable();
 }
 ```
 
-Strategy is just a composition of legs with some additional information.
+```javascript
+function StockInfoViewModel(parent,dto) {
+    var self = this;
+    self.stock = new StockViewModel();
+    self.volatility = ko.observable();
+    self.currentPrice = ko.observable();
+    self.rate = ko.observable();
+    self.busy = ko.observable(false);
+    self.message = ko.observable();
+```
+
+Strategy is just a composition of the previous two (it can have multiple legs, but just one stock). It also contains a *payoff* observable which will hold the chart and the view will bind to it.
 
 ```javascript
 function StrategyViewModel(legs, stock,name,parent){
@@ -298,27 +312,48 @@ function StrategyViewModel(legs, stock,name,parent){
     self.legs = ko.observableArray([]);
     self.stock = ko.observable();
     self.payoff = ko.observable();
-    self.isBusy = ko.observable(false);
-    self.message = ko.observable();
-    self.name = ko.observable();
-    self.parent = parent;
 }
 ```
 
-## Payoff charts html view
+The most important part is the Ajax call to retrieve the chart. It will first serialize the strategy into single json object and this object is passed to the F\# controller described above. The controller returns all the data necessary for drawing the chart.
+
+```javascript
+self.getPayoff = function () {
+  var url = "/api/pricing/";
+  var dto = self.toDto();
+  self.isBusy(true);
+  $.ajax(url, {
+      data: JSON.stringify(dto),
+      type: "PUT",
+      contentType: "application/json",
+      error: self.handleError,
+      success: function (result) {
+        var chartData = result.legPayoffs.map(function (l) {
+          return {
+            linename: l.linename,
+            width: 2,
+            values: tools.valuesToChartData(l.values)
+          }
+        });
+
+        var strategyLine = {
+          linename: "Strategy",
+          values: tools.valuesToChartData(result.strategyPayoff.values),
+          width: 4
+        }
+
+        chartData.push(strategyLine);
+        self.payoff(chartData);
+      }
+  });
+}
+```
+A chart object is array of lines. We need one line per leg and one line per strategy. Line has name, width and set of (x,y) coordinates which are then connected. We construct the charting first by mapping the resulting legs and then we push the strategy line to the array. Then we just assign the result to the *payoff* observable. There is no imperative code here to show the chart. [KoExtensions](https://github.com/hoonzis/KoExtensions) takes care of the visualization.
+
+### Payoff charts html view
+The view contains a strategy table, with each leg as single row and the chart.
 ```html
 <table class="table">
-   <thead>
-   <tr>
-	   <th>Direction</th>
-	   <th>Kind</th>
-	   <th>Strike</th>
-	   <th>Expiry</th>
-	   <th>Price</th>
-	   <th>Delta</th>
-	   <th><button type="submit" class="btn btn-primary btn-xs" data-bind="enable:!isBusy(), click: addLeg">Add Leg</button></th>
-   </tr>
-   </thead>
    <tbody data-bind="foreach:legs">
    <tr>
 	   <td><select class="form-control" data-bind="options: directions,value:direction" id="directions"></select></td>
