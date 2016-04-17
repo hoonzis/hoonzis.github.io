@@ -7,13 +7,7 @@ tags:
 - Maps
 modified_time: '2016-04-16T05:11:43.965-08:00'
 ---
-I have recently been playing with options, their pricing and pay-off charts generation. I have created a small library called [Pricer](https://github.com/hoonzis/Pricer) which can do few things:
-
-- Calculate options prices
-- Generate data for pay-off charts
-- Analyze stock data from [Quandl](https://www.quandl.com/) and calculate volatility and floating averages
-
-In order to demonstrate what the library can do, I have created a small web application [Payoffcharts.com](http://www.payoffcharts.com/). The web site contains few different visualizations, payoff charts of arbitrary strategy based on options being one of them. The whole project is available on [GitHub](https://github.com/hoonzis/payoffcharts).
+I have recently been playing with options, their pricing and pay-off charts generation. I have created a small library called [Pricer](https://github.com/hoonzis/Pricer) which can do several thing like option price calculation, generation of data for payoff charts or volatility estimations for stocks. In order to demonstrate what the library can do, I have created a small web application [Payoffcharts.com](http://www.payoffcharts.com/). The web site contains few different visualizations, payoff charts of arbitrary strategy based on options being one of them. The whole project is available on [GitHub](https://github.com/hoonzis/payoffcharts).
 
 This posts describes how to create a payoff chart with bit of F\# and few JavaScript frameworks ([KnockoutJS](http://knockoutjs.com/) and [KoExtensions](https://github.com/hoonzis/KoExtensions)). I give also a description of what payoff chart is and how does the *Pricer* library generate the data for the chart.
 
