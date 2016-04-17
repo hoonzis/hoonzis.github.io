@@ -67,59 +67,59 @@ When we build a strategy, each part of the strategy (options, or stock) is calle
 
 ```ocaml
 type OptionKind =
-    | Call
-    | Put
+  | Call
+  | Put
 
 type OptionStyle =
-    | American
-    | European
+  | American
+  | European
 
 type OptionLeg = {
-        Direction : float
-        Strike : float
-        Expiry : DateTime
-        Kind : OptionKind
-        Style: OptionStyle
-        PurchaseDate: DateTime
-    }
-    member this.TimeToExpiry = this.Expiry - this.PurchaseDate
+    Direction : float
+    Strike : float
+    Expiry : DateTime
+    Kind : OptionKind
+    Style: OptionStyle
+    PurchaseDate: DateTime
+  }
+  member this.TimeToExpiry = this.Expiry - this.PurchaseDate
 ```
 We will need also the cash leg and a union to as composition of these two types.
 ```ocaml
 type CashLeg = {
-    Direction: float
-    Price:float
+  Direction: float
+  Price:float
 }
 
 type LegInfo =
-    | Cash of CashLeg
-    | Option of OptionLeg
+  | Cash of CashLeg
+  | Option of OptionLeg
 ```
 Each leg (option or cash) will have a price. For options the price is usually called the premium, it is wrapped by a type here to simplify further development.
 
 ```ocaml
 type Pricing = {
-    Premium: float
+  Premium: float
 }
 
 type Leg = {
-    Definition:LegInfo
-    Pricing:Pricing option
+  Definition:LegInfo
+  Pricing:Pricing option
 }
 ```
 We also need a type to specify the underlying (share, commodity) on which the options are defined and a Strategy type to wrap it all.
 
 ```ocaml
 type StockInfo = {
-    Rate:float
-    Volatility: float
-    CurrentPrice: float
+  Rate:float
+  Volatility: float
+  CurrentPrice: float
 }
 
 type Strategy = {
-    Stock : StockInfo
-    Name : String
-    Legs: Leg list
+  Stock : StockInfo
+  Name : String
+  Legs: Leg list
 }
 ```
 
@@ -138,30 +138,30 @@ let buyingCash = {
 
 let sellingCall = {
     Definition = Option {
-        Direction = -1.0
-        Strike = 120.0
-        Expiry = new DateTime(2017,1,1)
-        Kind = Call
-        Style = European
-        PurchaseDate = DateTime.Now
-    }
-    Pricing = Some {
+      Direction = -1.0
+      Strike = 120.0
+      Expiry = new DateTime(2017,1,1)
+      Kind = Call
+      Style = European
+      PurchaseDate = DateTime.Now
+  }
+  Pricing = Some {
 		Premium: 10.0
 	}
 }
 
 let coveredCall = {
-    Name = "Covered Call"
-    Legs = [
-            buyingCash
-            sellingCall
-        ]
-    Stock =
-        {
-            CurrentPrice = 100.0
-            Volatility = 0.20
-            Rate = 0.01
-        }
+  Name = "Covered Call"
+  Legs = [
+        buyingCash
+        sellingCall
+    ]
+  Stock =
+    {
+      CurrentPrice = 100.0
+      Volatility = 0.20
+      Rate = 0.01
+    }
 }
 ```
 
@@ -185,7 +185,7 @@ The following picture shows a detail of the Call payoff chart. We have defined a
 
 Up to this point we actually didn't take into account the price of the options, we have assumed, that we already had it. Next question is: What is the payoff of an option? When calculating the payoff we take into account the premium of the option (the money that we paid to obtain the option).
 
-```
+```ocaml
 let legPayoff leg pricing stockPrice =
 	match leg with
 		| Cash cashLeg -> stockPrice - cashLeg.Price
@@ -200,7 +200,7 @@ This function calculates the violet line from the previous picture.
 - What are the interesting points on X axis?
 - Basically the chart can change only on the strikes
 
-```
+```ocaml
 let getInterestingPoints strategy =
 	let strikes = strategy.Legs |> List.map (fun leg ->
 			match leg.Definition with
@@ -222,14 +222,15 @@ If we have all the interesting X points, we can now compute the option lines (on
 let payOffs = strategy.Legs |> Seq.map (fun leg ->
     let legPricing =
 		  match leg.Pricing with
-                | Some pricing -> pricing
-                | None -> getLegPricing strategy.Stock leg
+              | Some pricing -> pricing
+              | None -> getLegPricing strategy.Stock leg
 
     let pricedLeg = { leg with Pricing = Some legPricing }
     legPayoff pricedLeg.Definition legPricing
 )
 ```
 Now let's get the actual values for all the interesting points on the X axis:
+
 ```ocaml
 let interestingPoints = getInterestingPoints strategy
 let legLinesData =
@@ -237,8 +238,9 @@ let legLinesData =
 		[for stockPrice in interestingPoints -> stockPrice, payOff stockPrice]
 	)
 ```
+
 So far we have calculated the values for all the legs, but not yet the actual strategy payoff line. The strategy payoff is just a sum of all the line payoffs.
-```
+```ocaml
 let strategyLine = [for stockPrice in interestingPoints do yield stockPrice,
 	payOffs |> Seq.sumBy (fun payOff -> payOff stockPrice)
 ]
@@ -257,19 +259,19 @@ member x.Put([<FromBody>] strategy:Strategy) : IHttpActionResult =
 
     let buildLines (data:(Leg*(float*float) list) seq)=
         data |> Seq.map (fun (leg,linedata) ->
-            {
-                Linename = leg.Definition.Name
-                Values = linedata
-            })
+          {
+              Linename = leg.Definition.Name
+              Values = linedata
+          })
 
     let payoff = {
-        Legs = legsData |> Seq.map (fun (leg,_) -> leg)
-        LegPayoffs = buildLines legsData
-        StrategyPayoff =
-        {    
-            Linename = "Strategy"
-            Values = strategyData
-        }
+      Legs = legsData |> Seq.map (fun (leg,_) -> leg)
+      LegPayoffs = buildLines legsData
+      StrategyPayoff =
+      {    
+          Linename = "Strategy"
+          Values = strategyData
+      }
     }
     x.Ok(payoff) :> _
 ```

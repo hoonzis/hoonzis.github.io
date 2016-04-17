@@ -95,7 +95,7 @@ incoming to a single node and passes the value to the activation
 function. The activation function here can be any function, as it is
 passed as parameter but here Sigmoid is used.
 
-```fsharp
+```ocaml
 let pass (input:float[]) (weights:float[,]) activation =
 let length = weights |> Array2D.length2
 seq {
@@ -113,13 +113,13 @@ composed as sequence of **pass** functions.
 The following function is the main loop of the XOR network and we
 iterate over until we obtain good results and the network is adapted.
 
-```fsharp
+```ocaml
 let train network rate input target =
-    let n1 = completepass input network
-    let delta = deltaOutput n1.output target
-    let deltaHidden = passDelta n1.hidden delta n1.hiddenToOutput
-    let updatedHiddenToOut = updateWeights n1.hidden delta n1.hiddenToOutput rate
-    let updatedInToHidden = updateWeights n1.input deltaHidden n1.inputToHidden rate
+  let n1 = completepass input network
+  let delta = deltaOutput n1.output target
+  let deltaHidden = passDelta n1.hidden delta n1.hiddenToOutput
+  let updatedHiddenToOut = updateWeights n1.hidden delta n1.hiddenToOutput rate
+  let updatedInToHidden = updateWeights n1.input deltaHidden n1.inputToHidden rate
 ```
 
 **Completepass** just calls 2 times the pass function value and gets the
@@ -142,7 +142,7 @@ Ouput). This value is multiplied by value **o\*(1-o)** which is the
 derivation of the Sigmoid function. The resulting array contains for
 each node a delta value, which shall be used to adjust the weights.
 
-```fsharp
+```ocaml
 let deltaOutput (output:array<float>) (target:array<float>) =
  (Array.zip output target) |> Array.map (fun (o,t) -> o * (1.0 - o) * (t - o))
 ```
@@ -154,7 +154,7 @@ correct all the weights in the network, the delta has to be propagated
 to the lower layers of the network, so that we can update the weights on
 the input - hidden connections.
 
-```fsharp
+```ocaml
 let passDelta (outputs:float[]) (delta:float[]) (weights:float[,]) =
     let length = weights |> Array2D.length1
     seq {
@@ -171,7 +171,7 @@ value.
 The last missing piece is the function that woudl update weights between
 2 layers.
 
-```
+```ocaml
 let updateWeights (layer:float[]) (delta:float[]) (weights:float[,]) learningRate =
     weights |> Array2D.mapi (fun i j w -> w + learningRate * delta.[j] * layer.[i])
 ```
@@ -182,7 +182,7 @@ optimal weights. However if it is too small it will take longer time to
 get to the correct solution.
 
 At the beginning the weight are set to random values between 0 and 1, or
-slided slightly. From the quick tests that I did it seems that for
+slid slightly. From the quick tests that I did it seems that for
 instance using learning rate of 0.3 it took 20000 iterations to get to a
 neural network that would XOR the values on it's inputs.
 
