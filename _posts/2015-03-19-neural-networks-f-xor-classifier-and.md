@@ -64,9 +64,7 @@ capable of learning linerably non-separable data such as the results of
 XOR function.
 
 ## XOR classifier
-This is the first example. This network is called clasifier because it
-learns the XOR function. It can then "classify" the 2 values in the
-input into single value on the output.
+This is the first example. This network is called classifier because it learns the XOR function. It can then "classify" the 2 values in the input into single value on the output.
 
 Here is how the network looks like:
 
@@ -341,13 +339,12 @@ time T+1, or here T+ delta t. Where delta T is some small time interval.
 
 
 This equation is at the hearth of this algorithm. We now have an exact
-specification of what the value of potential Ui will be in time T+1.
-That is our iterating algorithm has to perfrom exactly this updated.
+specification of what the value of potential *Ui* will be in time T+1.
+That is our iterating algorithm has to perform exactly this updated.
 
 ### Implementation details
 
--   Compute the distance matrix, containing the distance between each 2
-    cities
+-   Compute the distance matrix, containing the distance between each 2 scities
 -   Initialize the network with random values
 -   Pick randomly a node, compute the change in the input potential
 -   Update the value of the node from the input potential change
@@ -363,29 +360,28 @@ potential at any time. I have chosen the second option and I store the
 input potential two dimensional array **u**.
 
 The following code is the calculation of the input potential change of
-single node at coordinates **(city,position)**. This is just
-retranscription of the equation above.
+single node at coordinates **(city,position)**. This is just a F\# translation of the of the equation above.
 
-```fsharp
+```ocaml
 let singlePass (distances:float[,]) (u:float[,]) pms city position =
-    let n = Array2D.length2 u
+  let n = Array2D.length2 u
 
-    let values = u |> toValues pms
+  let values = u |> toValues pms
 
-    let aSum = sumAllBut position (values |> rowi city)
+  let aSum = sumAllBut position (values |> rowi city)
 
-    let bSum = sumAllBut city (values |> coli position)
+  let bSum = sumAllBut city (values |> coli position)
 
-    let cSum = (values |> Seq.cast<float> |> Seq.sum) - float(n+1)
+  let cSum = (values |> Seq.cast<float> |> Seq.sum) - float(n+1)
 
-    let dSum = dSumCalc distances city position values
+  let dSum = dSumCalc distances city position values
 
-    let dudt = -pms.A*aSum - pms.B*bSum - pms.C*cSum - pms.D*dSum
-    //value of input potential in t+ delta_t
-    let r = u.[city,position] + pms.dTime*(-u.[city,position] + dudt)
- //Alternatively according to the paper by Jacek Mandziuk one can just use the update value
- //let r = dudt
-    r
+  let dudt = -pms.A*aSum - pms.B*bSum - pms.C*cSum - pms.D*dSum
+  //value of input potential in t+ delta_t
+  let r = u.[city,position] + pms.dTime*(-u.[city,position] + dudt)
+  //Alternatively according to the paper by Jacek Mandziuk one can just use the update value
+  //let r = dudt
+  r
 ```
 
 There are few things to note. This code takes the distances matrix, the
@@ -397,30 +393,30 @@ potential and returns a matrix of node values. The **rowi** and **coli**
 method return respecively one row or one column from 2 dimensional
 array. The **sumAllBut** method adds all elements of one-dimensional
 array except an element at position which is passed to the method. The
-**dSumCalc** method is the only one with a bit more compexity and it
+**dSumCalc** method is the only one with a bit more complexity and it
 calculates the D value of the equation above (the one that assures the
 minimization of the TSP circuit)
 
-```fsharp
+```ocaml
 let rowi row (network:float[,]) =
-    network.[row,*] |> Array.mapi (fun j e -> (e,j))
+  network.[row,*] |> Array.mapi (fun j e -> (e,j))
 
 let coli col (network:float[,]) =
-    network.[*,col] |> Array.mapi (fun j e -> (e,j))
+  network.[*,col] |> Array.mapi (fun j e -> (e,j))
 
 let sumAllBut (i:int) (values:(float*int)[]) =
-    Array.fold (fun acc (e,j) -> if i<>j then acc + e else acc) 0.0 values
+  Array.fold (fun acc (e,j) -> if i<>j then acc + e else acc) 0.0 values
 
 let dSumCalc distances city position (v:float[,]) =
-    let n = v |> Array2D.length1
-    (distances |> rowi city) |> Array.sumBy (fun (e,i) ->
-        let index1 = (n+position+1) % n
-        let index2  = (n+position-1) % n
-        e*(v.[i,index1] + v.[i,index2])
-    )
+  let n = v |> Array2D.length1
+  (distances |> rowi city) |> Array.sumBy (fun (e,i) ->
+      let index1 = (n+position+1) % n
+      let index2  = (n+position-1) % n
+      e*(v.[i,index1] + v.[i,index2])
+  )
 
 let toValues (pms:HopfieldTspParams) u =
-    u|> Array2D.map (fun (ui) -> v ui pms)
+  u|> Array2D.map (fun (ui) -> v ui pms)
 
 //calculates the value of node from input potential
 let v (ui:float) (parameters:HopfieldTspParams) = (1.0 + tanh(ui*parameters.alfa))/2.0
@@ -428,18 +424,18 @@ let v (ui:float) (parameters:HopfieldTspParams) = (1.0 + tanh(ui*parameters.alfa
 
 The method which updates the input potential of single node can be called in 2 different ways. Either we pick the nodes randomly multiple times or we loop over all the nodes serially. If the update is serial then the only random element of the algorithm is the initialization of the network.
 
-```fsharp
+```ocaml
 let serialIteration u pms distances =
-    u |> Array2D.mapi (fun i j x -> singlePass distances u pms i j)
+  u |> Array2D.mapi (fun i j x -> singlePass distances u pms i j)
 
 let randomIteration u pms distances =
-    let r = new Random(DateTime.Now.Millisecond)
-    let n = Array2D.length1 u
-    for i in 0 .. 1000*n do
-        let city = r.Next(n)
-        let position = r.Next(n)
-        u.[city, position] <- singlePass distances u pms city position
-    u
+  let r = new Random(DateTime.Now.Millisecond)
+  let n = Array2D.length1 u
+  for i in 0 .. 1000*n do
+      let city = r.Next(n)
+      let position = r.Next(n)
+      u.[city, position] <- singlePass distances u pms city position
+  u
 ```
 
 The random iteration here is repeated 1000\*n times where n is the
@@ -447,14 +443,14 @@ number of cities, which is probably more than enough since the network
 seems to converge much sooner. Just for the sake of completeness, here
 is the method that runs 10 times either serial or random iteration.
 
-```fsharp
+```ocaml
 let initAndRunUntilStable cities pms distances =
-    let u = initialize cities pms
-    {1 .. 10} |> Seq.fold (fun uNext i ->
-            match pms.Update with
-                | Random -> randomIteration uNext pms distances
-                | Serial -> serialIteration uNext pms distances
-    ) u
+  let u = initialize cities pms
+  {1 .. 10} |> Seq.fold (fun uNext i ->
+          match pms.Update with
+              | Random -> randomIteration uNext pms distances
+              | Serial -> serialIteration uNext pms distances
+  ) u
 ```
 
 And here high level method, that generates a random example of TSP
@@ -462,14 +458,14 @@ problem, calculates distances between all cities and runs the algorithm
 until a stable and correct solution is found. That is until the network
 returns feasable solution.
 
-```fsharp
+```ocaml
 let sampleRun (pms:HopfieldTspParams ) (n:int) =
-    let cities = generateRandomCities n
-    let distances = calculateDistances cities
-    let networks = Seq.initInfinite (fun i -> initAndRunUntilStable cities pms distances)
-    let paths = networks |> Seq.map (fun v-> currentPath v)
-    let validPath = paths |> Seq.find (fun path -> isFeasable path)
-    cities, validPath
+  let cities = generateRandomCities n
+  let distances = calculateDistances cities
+  let networks = Seq.initInfinite (fun i -> initAndRunUntilStable cities pms distances)
+  let paths = networks |> Seq.map (fun v-> currentPath v)
+  let validPath = paths |> Seq.find (fun path -> isFeasable path)
+  cities, validPath
 ```
 
 ### Results
@@ -480,11 +476,7 @@ paper the authors stated that the convergence rate to feasable solutions
 was about 50%. But depending on the parameters one can get better
 results. See bellow one of the runs of the algorithm on 6 random nodes.
 
-
-
 [![](http://3.bp.blogspot.com/-5z1O5x3IFQA/VQmuMCVuJoI/AAAAAAAAEQU/nkzoMX4XvCM/s320/result.PNG)](http://3.bp.blogspot.com/-5z1O5x3IFQA/VQmuMCVuJoI/AAAAAAAAEQU/nkzoMX4XvCM/s1600/result.PNG)
-
-
 
 Here is the complete list of parameters for Hopfield network and the
 values that I ended up using:
@@ -502,19 +494,19 @@ values that I ended up using:
 I have also used the standard update rule to obtain new value of the
 input potential which takes into account the current input potential.
 
-```fsharp
-     let dudt = -pms.A*aSum - pms.B*bSum - pms.C*cSum - pms.D*dSum
-    //value of input potential in t+ delta_t
-    u.[city,position] = u.[city,position] + pms.dTime*(-u.[city,position] + dudt)
+```ocaml
+   let dudt = -pms.A*aSum - pms.B*bSum - pms.C*cSum - pms.D*dSum
+  //value of input potential in t+ delta_t
+  u.[city,position] = u.[city,position] + pms.dTime*(-u.[city,position] + dudt)
 ```
 
 According to the paper by Jacek Mandziuk one can just use the updated
 values as the new input potential, so that the update rule would become
 only:
 
-```fsharp
-    let dudt = -pms.A*aSum - pms.B*bSum - pms.C*cSum - pms.D*dSum
-    u.[city,position] = dudt;
+```ocaml
+  let dudt = -pms.A*aSum - pms.B*bSum - pms.C*cSum - pms.D*dSum
+  u.[city,position] = dudt;
 ```
 
 This rule didn't work for me. The convergence rate wasn't better neither were the tours lengths. Of course for such version, different values for network parameters have to be used.
@@ -526,4 +518,4 @@ Note that GitHub repository and specifically the Hopfield module contains more c
     and on the parameter **alfa**, which amplyfies the effect of the
     input potential on the value of given node.
 -   Few lines are also available to draw the solution using Windows
-    Forms Charts, through F\##
+    Forms Charts, through F\#
