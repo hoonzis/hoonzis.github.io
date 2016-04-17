@@ -65,7 +65,7 @@ In order to generate the charts, we will need to defined the domain model. All t
 
 When we build a strategy, each part of the strategy (options, or stock) is called leg. As said, leg can be either option or cash (stock). Let's define the options leg first:
 
-```fsharp
+```ocaml
 type OptionKind =
     | Call
     | Put
@@ -85,7 +85,7 @@ type OptionLeg = {
     member this.TimeToExpiry = this.Expiry - this.PurchaseDate
 ```
 We will need also the cash leg and a union to as composition of these two types.
-```fsharp
+```ocaml
 type CashLeg = {
     Direction: float
     Price:float
@@ -97,7 +97,7 @@ type LegInfo =
 ```
 Each leg (option or cash) will have a price. For options the price is usually called the premium, it is wrapped by a type here to simplify further development.
 
-```fsharp
+```ocaml
 type Pricing = {
     Premium: float
 }
@@ -109,7 +109,7 @@ type Leg = {
 ```
 We also need a type to specify the underlying (share, commodity) on which the options are defined and a Strategy type to wrap it all.
 
-```fsharp
+```ocaml
 type StockInfo = {
     Rate:float
     Volatility: float
@@ -122,9 +122,10 @@ type Strategy = {
     Legs: Leg list
 }
 ```
+
 Now that we have the model, let's actually use it to create an example of a strategy. We will use the Covered Call as our example.
 
-```fsharp
+```ocaml
 let buyingCash = {
 	Definition = Cash {
 		Price = 100.0
@@ -163,6 +164,7 @@ let coveredCall = {
         }
 }
 ```
+
 Now let's see how we can generate the payoff chart from the *coveredCall* variable.
 We will put aside the pricing of options, let's assume that we already have the prices (the are stored in the Pricing variable of each leg). How can we generate the payoff chart of any strategy?
 
@@ -173,8 +175,8 @@ In other words, how much do we earn if we exercise the option, when the underlyi
 ```
 let optionValue option stockPrice =
 	match option.Kind with
-			| Call -> max 0.0 (stockPrice - option.Strike)
-			| Put -> max 0.0 (option.Strike - stockPrice)
+		| Call -> max 0.0 (stockPrice - option.Strike)
+		| Put -> max 0.0 (option.Strike - stockPrice)
 ```
 
 The following picture shows a detail of the Call payoff chart. We have defined a function to computed the black line.
@@ -216,7 +218,7 @@ let getInterestingPoints strategy =
 
 If we have all the interesting X points, we can now compute the option lines (one line per each leg). The following function will return a list of functions. Each function will be a payoff calculator which takes X will and returns Y payoff value of the option.
 
-```fsharp
+```ocaml
 let payOffs = strategy.Legs |> Seq.map (fun leg ->
     let legPricing =
 		  match leg.Pricing with
@@ -228,7 +230,7 @@ let payOffs = strategy.Legs |> Seq.map (fun leg ->
 )
 ```
 Now let's get the actual values for all the interesting points on the X axis:
-```fsharp
+```ocaml
 let interestingPoints = getInterestingPoints strategy
 let legLinesData =
 	payOffs |> Seq.map (fun payoff ->
@@ -248,7 +250,7 @@ I have used WebAPI F\# project template, event though there are probably more Fs
 
 The *getStrategyData* method returns a tuple of strategy payoff and each leg payoff.
 
-```fsharp
+```ocaml
 //given complete strategy  (stock and legs, returns the payoff chart data)
 member x.Put([<FromBody>] strategy:Strategy) : IHttpActionResult =
     let strategyData, legsData = Options.getStrategyData strategy
