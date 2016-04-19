@@ -26,7 +26,7 @@ Comparing the American and European option price with different expiry
 ![americaneuropean](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/optionscharts/american_vs_european.PNG)
 
 ## Payoff charts
-A bit of theory is necessary here, just to describe the domain: options and strategies. Options are financial contracts that give you the right to buy some asset in the future for agreed price.
+A bit of theory is necessary here, just to describe the domain: options and strategies. Options are financial contracts that give you the right to buy some asset in the future for agreed price. The code that I will describe in few following paragraphs is part of the [Pricer](https://github.com/hoonzis/Pricer) library and is used later by a F\# WebAPI controller which serves the data to the JavaScript front end. Let's first look at options.
 
 ### Call and Put Options
 - Call is the right to **buy** the stock for agreed price
@@ -84,13 +84,18 @@ type OptionLeg = {
   }
   member this.TimeToExpiry = this.Expiry - this.PurchaseDate
 ```
-We will need also the cash leg and a union to as composition of these two types.
+
+Besides an Option leg we will also define a Cash leg. Cash leg is just a different name for holding stock or commodity or any other underlying directly. One can compose a strategy by holding a stock and an option on the same stock in the same time. We will show later what this could be used for. Cash leg has just a price at which we have bought are at which we are selling the stock.
+
 ```ocaml
 type CashLeg = {
   Direction: float
   Price:float
 }
+```
+We can now compose both legs into a single type.
 
+```ocaml
 type LegInfo =
   | Cash of CashLeg
   | Option of OptionLeg
@@ -251,7 +256,7 @@ let strategyLine = [for stockPrice in interestingPoints do yield stockPrice,
 
 I have used WebAPI F\# project template, event though there are probably more Fsharpy options for building web apps (SuaveIO seems to be the best candidate).
 
-The *getStrategyData* method returns a tuple of strategy payoff and each leg payoff.
+Here is the WebAPI controller. It exposes a PUT http method that I later call from the JavaScript front-end. We call *getStrategyData* method which is exposed by the [Pricer](https://github.com/hoonzis/Pricer) library and returns a tuple of strategy payoff and each leg payoff. More or less what we have described previously. We then take the result and build a nice object which contains the details of each leg, payoff of each leg and the payoff of the strategy.
 
 ```ocaml
 //given complete strategy  (stock and legs, returns the payoff chart data)
