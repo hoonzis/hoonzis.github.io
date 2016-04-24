@@ -27,8 +27,8 @@ In order to determine the price of the option, one has to guess how the shares w
 
 These two assumptions are contained in the following equation, which describes the stock movement as generalized [Wiener process](https://en.wikipedia.org/wiki/Wiener_process) (type of stochastic process).
 
-```
-dS = alpha*S*dt + sigma*S*dW
+```ocaml
+let dS = alpha*S*dt + sigma*S*dW
 ```
 
 This equation describes the change in the share price (dS) in time (dt), as a function of the current share price (S), the drift  (alpha), which is the long term direction of the stock, the volatility (sigma) and (dW) random value, which represents the random swing in the share price in the short time (dt). The volatility affects how big the random swings in the share price will be.
@@ -93,7 +93,7 @@ The algorithm has the following steps:
 
 The price of the derivative in the end node is calculated with the **optionValue** function. For call option it would be *max(S-X,0)* for a put option *max(X-S,0)*, where *X* is the strike of the option. The following algorithm takes the number of steps in the tree as parameter and an option definition. Option has a property called **TimeToExpiry** which is the value between the purchase date of the option and the maturity in days. This time is then divided by the number of steps to obtain **deltaT** the time interval of a single step.
 
-```cs
+```ocaml
 let deltaT = option.TimeToExpiry/float steps
 let up = exp(stock.Volatility*sqrt deltaT)
 let down = 1.0/up
@@ -143,7 +143,7 @@ That can be surprisingly easy, let's define a function for single step backwards
 
 This is achieved thanks to **Seq.pairwise** which iterates over all consecutive values in the array - in our case the first item will be *P_up* and second *P_down*.
 
-```cs
+```ocaml
 let step (derPrice:float list) (pricing:BinomialPricing) =
     derPrice  |> Seq.pairwise
               |> Seq.map (fun (down,up)-> (pricing.PUp*up+pricing.PDown*down)*(1.0/pricing.Rate))
@@ -157,47 +157,47 @@ let rec reducePrices (derPrice:float list) (pricing:BinomialPricing) =
 
 Rewriting all in functional way would resolve into something similar to the following snippet. I have changed the algorithm a bit to keep track of the share and the option price. Now the list of prices passed from one step to another contains a tuples of share price and option price.
 
-```fsharp
+```ocaml
 let binomialPricingFunc (pricing:BinomialPricing) =
-    let optionVal stock =
-        match pricing.Option.Kind with
-                | Call -> max 0.0 (stock - pricing.Option.Strike)
-                | Put -> max 0.0 (pricing.Option.Strike - stock)
+  let optionVal stock =
+    match pricing.Option.Kind with
+            | Call -> max 0.0 (stock - pricing.Option.Strike)
+            | Put -> max 0.0 (pricing.Option.Strike - stock)
 
-    let prices = generateEndNodePrices pricing.Ref pricing.Up pricing.Periods optionVal
+  let prices = generateEndNodePrices pricing.Ref pricing.Up pricing.Periods optionVal
 
-    let step (prices:(float*float) list) =
-        prices
-            |> Seq.pairwise
-            |> Seq.map (fun ((sDown,dDown),(sUp,dUp)) ->
-                let derValue = (pricing.PUp*dUp+pricing.PDown*dDown)*(1.0/pricing.Rate)
-                let stockValue = sUp*pricing.Down
-                let der' = if pricing.Option.Style = American then
-                                let prematureExValue = optionVal stockValue
-                                max derValue prematureExValue
-                            else derValue
-                prices' @ [stockValue,der'])[]
+  let step (prices:(float*float) list) =
+      prices
+        |> Seq.pairwise
+        |> Seq.map (fun ((sDown,dDown),(sUp,dUp)) ->
+            let derValue = (pricing.PUp*dUp+pricing.PDown*dDown)*(1.0/pricing.Rate)
+            let stockValue = sUp*pricing.Down
+            let der' = if pricing.Option.Style = American then
+                            let prematureExValue = optionVal stockValue
+                            max derValue prematureExValue
+                        else derValue
+            prices' @ [stockValue,der'])[]
 
-    let rec reducePrices prices =
-        match prices with
-                | [(stock,der)] -> der
-                | prs -> reducePrices (step prs)
+  let rec reducePrices prices =
+      match prices with
+              | [(stock,der)] -> der
+              | prs -> reducePrices (step prs)
 
-    reducePrices prices
+  reducePrices prices
 ```
 
 Now one last remark, I am using a method call **generateEndNodePrices** which gives me the list of the prices in the last nodes. Even this function can be written in nice functional way:
 
-```fsharp
+```ocaml
 let generateEndNodePrices (ref:float) (up:float) (periods:int) optionVal =
-        let down = 1.0 / up
-        let lowestStock = ref*(down**(float periods))
-        let first = lowestStock,optionVal lowestStock
-        let values = Seq.unfold (fun (stock,der)->
-            let stock' = stock*up*up
-            let der' = optionVal stock'
-            Some ((stock,der),(stock', der'))) first
-        values |> Seq.take periods |> List.ofSeq
+  let down = 1.0 / up
+  let lowestStock = ref*(down**(float periods))
+  let first = lowestStock,optionVal lowestStock
+  let values = Seq.unfold (fun (stock,der)->
+    let stock' = stock*up*up
+    let der' = optionVal stock'
+    Some ((stock,der),(stock', der'))) first
+  values |> Seq.take periods |> List.ofSeq
 ```
 
 All it takes is to have the share price (*ref*) and the multiplicator to obtain it's price in the next step if the price goes up. We can then use **unfold** to get the price list.

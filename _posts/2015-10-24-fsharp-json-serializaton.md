@@ -25,7 +25,7 @@ I am using Discriminated Union in several different ways here are typical 3 exam
 ### Discriminated Union as enumeration
 Simple example will make this clear. The DU values have name and don't hold any other type inside.
 
-```fsharp
+```ocaml
 type Motor =
   | Diesel
   | Electric
@@ -46,7 +46,7 @@ In this  case I would expect a serialization and deserialization into a single s
 ### Discriminating only between record types
 Here is the second case, which resembles a simple inheritance case from Object Oriented world.
 
-```fsharp
+```ocaml
 type OptionLeg = {
   Strike:float
   Expiration:DateTime
@@ -74,7 +74,7 @@ The compiler will infer the type of test as **CashLeg**. In the resulting Json I
 ```
 Since Json.NET already handles records in the implementation we can check and if a DU is composed of single record, just serialize the record. During the deserialization however the convertor should automatically determine which case was passed in by looking at the fields and deserialize into that concrete case. This might be a bit tricky, but sounds feasible. The following JSON should be automatically serialized into OptionLeg even if **Leg** type is expected.
 
-```fsharp
+```ocaml
 {
   Strike:100,
   Expiration: new Date()
@@ -84,7 +84,7 @@ Since Json.NET already handles records in the implementation we can check and if
 ### DU holding different data types
 This is the last example which also shows why DU are so cool.
 
-```fsharp
+```ocaml
 type Result =
         | Error
         | Success of String
@@ -99,7 +99,7 @@ json = {"Case":"SuperSuccess","Item1":"All","Item2":"IsOK"}
 In this case the serialized object should contain the name of the DU case and the serialized vales of the tuple:
 The same should work for a DU which is not composed of a tuple but by a single element:
 
-```fsharp
+```ocaml
 let data = Success "Allright"
 let json = JsonConvert.SerializeObject(data)
 json = {"Case":"Success","Item1":"Allright"}
@@ -107,7 +107,7 @@ json = {"Case":"Success","Item1":"Allright"}
 
 Now the question is what should the **Error** case be serialized into - if we stick to the first example, it should be just a simple string - but one could probably argue that *{Case:"Error"}* would be better choice. The convertor code is easy to adapt.
 
-```fsharp
+```ocaml
 let data = Error
 let json = JsonConvert.SerializeObject(datas
 json = {"Error"}
@@ -119,7 +119,7 @@ List is implemented as discriminated union, so is the Option type, we have to be
 ### The code
 Now it should be more or less clear what I wanted to achieve. Here is the code for such convertor.
 
-```fsharp
+```ocaml
 type DuConverter() =
     inherit JsonConverter()
 
