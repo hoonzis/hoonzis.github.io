@@ -212,21 +212,15 @@ The initial Hopfied network had only binary values (0/1) but to solve
 TSP and for other problems continuous version of the network is used,
 where every node has value in range \[0,1\].
 
-The value of each node depends on the input potential of the node (Ui)
-and in order to keep it between (0,1) the **tanh** function is used:
+The value of each node depends on the input potential of the node (Ui) and in order to keep it between (0,1) the **tanh** function is used:
 
-[![](http://3.bp.blogspot.com/-sevgaBZmgyA/VQmuOLH8rQI/AAAAAAAAEP4/zN6-0N-n2OA/s320/v_value.PNG)](http://3.bp.blogspot.com/-sevgaBZmgyA/VQmuOLH8rQI/AAAAAAAAEP4/zN6-0N-n2OA/s1600/v_value.PNG)
+![v_value](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/neuralnetworks/v_value.PNG)
 
+The value of the input potential of each node depends on the values of all nodes that are connected to it and the values of the connections weights. This is actually identical to the way that the nodes in the XOR classifier behaved.
 
+![u_value](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/neuralnetworks/u_value.PNG)
 
-The value of the input potential of each node depends on the values of
-all nodes that are connected to it and the values of the connections
-weights. This is actually identical to the way that the nodes in the XOR
-classifier behaved.
-
-[![](http://3.bp.blogspot.com/-xL811LPVs7c/VQmuMjXklkI/AAAAAAAAEPc/60g9vj-Bs9c/s400/u_value.PNG)](http://3.bp.blogspot.com/-xL811LPVs7c/VQmuMjXklkI/AAAAAAAAEPc/60g9vj-Bs9c/s1600/u_value.PNG)
 ### Network energy
-
 Each state of the HNN can be described by a single value called
 [Energy](http://en.wikipedia.org/wiki/Hopfield_network#Energy). While
 iterating and changing the state, the energy of HNN will either stay the
@@ -235,7 +229,6 @@ convert to a local minimum - the state of the HNN that we target to
 solve the TSP
 
 ### Hopfiled approach to TSP
-
 The first and original approach to solve TSP was described in 1985 by
 Tank and Hopfield in their paper "Neural Computation of Decisions in
 Optimization Problems". Since then many more attempts were made. I have
@@ -257,22 +250,15 @@ details. The others once then made it (almost) clear how to implement
 the solution.
 
 ### Encoding TSP in Hopfield network
+The neural network used to encode the TSP and it's solution is square matrix of nodes having N rows (one for each city) and N columns (one for each position in the tour), where N is the number of cities. When the algorithm finishes and the network converges to it's final state, each node will have value of either 0 or 1. As said the network in fully inter-connected so there is an edges between each node, which is not shown in the image bellow.
 
-The neural network used to encode the TSP and it's solution is square
-matrix of nodes having N rows (one for each city) and N columns (one for
-each position in the tour), where N is the number of cities. When the
-algorithm finishes and the network converges to it's final state, each
-node will have value of either 0 or 1. As said the network in fully
-inter-connected so there is an edges between each node, which is not
-shown in the image bellow.
-  [![](http://3.bp.blogspot.com/-W5MfCdp_WGY/VQmuMPTrzMI/AAAAAAAAEPU/oZgvGO84YbA/s320/tsp_example.PNG)](http://3.bp.blogspot.com/-W5MfCdp_WGY/VQmuMPTrzMI/AAAAAAAAEPU/oZgvGO84YbA/s1600/tsp_example.PNG)   [![](http://2.bp.blogspot.com/-rD5N9wFRJhk/VQmuMK4h2BI/AAAAAAAAEQM/2M8lzPis1C8/s320/tsp_solution.PNG)](http://2.bp.blogspot.com/-rD5N9wFRJhk/VQmuMK4h2BI/AAAAAAAAEQM/2M8lzPis1C8/s1600/tsp_solution.PNG)
+![tsp_example](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/neuralnetworks/tsp_example.PNG)
 
-If the node in i-th row and j-th column has value 1, the city (i) will
-be in the tour on position (j).
+![tsp_solution](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/optionscharts/tsp_solution.PNG)
 
-As described above the network evolves and each node changes it's value
-over time. The secret of the algorithm is thus to provide such update
-rule that at the end the matrix of nodes will follow these criteria:
+If the node in i-th row and j-th column has value 1, the city (i) will be in the tour on position (j).
+
+As described above the network evolves and each node changes it's value over time. The secret of the algorithm is thus to provide such update rule that at the end the matrix of nodes will follow these criteria:
 
 -   Only one node in each row will have value 1
 -   Only one node in each column will have value 1
@@ -281,14 +267,12 @@ rule that at the end the matrix of nodes will follow these criteria:
 
 To come up with such update rule, Energy function has to be determine which will attain it's minimum for optimal solution of TSP. The energy function has to take into account the above specified rules. The following definition will satisfy the rules. Note that the following equations were taken from the [J.Y Potvin's -paper](http://www.iro.umontreal.ca/~dift6751/paper_potvin_nn_tsp.pdf)
 
-[![](http://3.bp.blogspot.com/--B-tqg70mjU/VQqJ_Sj7YpI/AAAAAAAAEQk/9hHlQfEADHs/s400/energy.PNG)](http://3.bp.blogspot.com/--B-tqg70mjU/VQqJ_Sj7YpI/AAAAAAAAEQk/9hHlQfEADHs/s1600/energy.PNG)
+![energy](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/optionscharts/energy.PNG)
 
 A,B,C and D are constants and the 4 summations here correspond to the 4 above mentioned points.
 
 ### Describing the dynamic of the network
-
-There are two ways to describe the behavior and the dynamic of the
-network:
+There are two ways to describe the behavior and the dynamic of the network:
 
 -   From the TSP energy function and the standard Hopfield network
     energy function we determine the weights between the nodes. Then we
@@ -298,7 +282,7 @@ network:
     would be an approach similar to the one taken on the XOR. This has
     one disadvantage, that is that the connection weights have to be
     determined from the equality between the standard Hopfield model
-    enery function and the TSP Hopfield model function. There is an
+    energy function and the TSP Hopfield model function. There is an
     easier way without determining the connections weights.
 -   The easier way is to describe the change of the input potential
     without determining the weights of the edges. Then we can just
@@ -308,43 +292,23 @@ network:
     specific weighed connections between nodes. This options is
     described further.
 
-### The change in the node's input potential
-
-One of the definition of the input potential of a node (i) can be
-described by:
-
-
+#### The change in the node's input potential
+One of the definition of the input potential of a node (i) can be described by:
 
 [![](http://1.bp.blogspot.com/-ddwL-U7I_vg/VQmuM7azq8I/AAAAAAAAEPs/Xhf1AVbq5Yg/s400/ui_alt_definition.PNG)](http://1.bp.blogspot.com/-ddwL-U7I_vg/VQmuM7azq8I/AAAAAAAAEPs/Xhf1AVbq5Yg/s1600/ui_alt_definition.PNG)
 
-
-
-What we want to determine, is how this value will change over time, when
-the network evolves. The change of the potential over time is it's
-partial derivation with respect to the time.
-
-
+What we want to determine, is how this value will change over time, when the network evolves. The change of the potential over time is it's partial derivation with respect to the time.
 
 [![](http://1.bp.blogspot.com/-SOkKPl_WMPI/VQmuNF3lm5I/AAAAAAAAEQI/M2C14r2zFH0/s400/ui_change.PNG)](http://1.bp.blogspot.com/-SOkKPl_WMPI/VQmuNF3lm5I/AAAAAAAAEQI/M2C14r2zFH0/s1600/ui_change.PNG)
 
-
-
-When doing a computer simulation we will described the value of Ui in
-time T+1, or here T+ delta t. Where delta T is some small time interval.
-
-
+When doing a computer simulation we will described the value of Ui in time T+1, or here T+ delta t. Where delta T is some small time interval.
 
 [![](http://3.bp.blogspot.com/-HIxnCjPdc-0/VQmuNtqyawI/AAAAAAAAEQE/RB4siWWrOwo/s400/ui_change_cform.PNG)](http://3.bp.blogspot.com/-HIxnCjPdc-0/VQmuNtqyawI/AAAAAAAAEQE/RB4siWWrOwo/s1600/ui_change_cform.PNG)
 
-
-
-This equation is at the hearth of this algorithm. We now have an exact
-specification of what the value of potential *Ui* will be in time T+1.
-That is our iterating algorithm has to perform exactly this updated.
+This equation is at the hearth of this algorithm. We now have an exact specification of what the value of potential *Ui* will be in time T+1. That is our iterating algorithm has to perform exactly this updated.
 
 ### Implementation details
-
--   Compute the distance matrix, containing the distance between each 2 scities
+-   Compute the distance matrix, containing the distance between each 2 cities
 -   Initialize the network with random values
 -   Pick randomly a node, compute the change in the input potential
 -   Update the value of the node from the input potential change
@@ -469,7 +433,6 @@ let sampleRun (pms:HopfieldTspParams ) (n:int) =
 ```
 
 ### Results
-
 The results are not overwhelming, on the other hand I have only
 implemented the most simple version of the algorithm. In the original
 paper the authors stated that the convergence rate to feasable solutions
