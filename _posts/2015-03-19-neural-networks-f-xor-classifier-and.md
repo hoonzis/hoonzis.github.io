@@ -15,29 +15,25 @@ It seems that recently thanks to the buzz around Deep Learning, Neural Networks 
 
 Neural Networks
 ===============
-Artificial neural networks are computational models with particular properties such as the ability to adapt or learn, to generalize or to cluster and organize data. These models are inspired by the way that the human brain works. The building blocks of Neural Networks are inspired by Neurons - the building blocks of our brain. Neural Network can be seen as interconnected graph of nodes, where each node takes a role of a neuron. Each neuron can receive multiple signals, modify it and send it to other neurons to which it is connected. In this graph some vertexes are used to set the input, some of them are used to perform the computation and other onces will hold the output values.
+Artificial neural networks are computational models with particular properties such as the ability to adapt or learn, to generalize or to cluster and organize data. These models are inspired by the way that the human brain works. The building blocks of Neural Networks are inspired by Neurons - the building blocks of our brain. Neural Network can be seen as interconnected graph of nodes, where each node takes a role of a neuron. Each neuron can receive multiple signals, modify it and send it to other neurons to which it is connected. In this graph some vertexes are used to set the input, some of them are used to perform the computation and other once will hold the output values.
 
 Nodes are connected by edges which have different weights. The weight of the edge specifies how the signals is modified when passing from one node to another.
 
 ### Perceptron
+Perceptron is a basic block of linear neural networks. It is composed of multiple input nodes and a decision node. Perceptron is a single layer network. Input values are linked directly to the output node, connected by edges with certain weights.
 
-Perceptron is a basic block of linear neural networks. It is composed of
-multiple input nodes and a decision node. Perceptron is a single layer
-network. Input values are linked directly to the output node, connected
-by edges with certain weights.
-
-[![](http://3.bp.blogspot.com/-VReCg6iqrF0/VQmuBdLVLvI/AAAAAAAAEOw/-wxaOWzU26U/s320/perceptron.PNG)](http://3.bp.blogspot.com/-VReCg6iqrF0/VQmuBdLVLvI/AAAAAAAAEOw/-wxaOWzU26U/s1600/perceptron.PNG)
+![perceptron](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/neuralnetworks/perceptron.PNG)
 
 The output node takes the incoming values, sums them and based on the result returns an output. The output could be binary or continuous value. For instance a threshold can be used to say whether the output is 1 or 0.
 
 In practice, very often the Sigmoid (logistic) function is used to output value within the interval \[0,1\].
 
 ### Linear separability
-Single layer perceptrons can only learn linerearly separable data.
+Single layer perceptron can only learn linerearly separable data.
 
 Imagine we want to separate a set of datapoints into multiple clusters. We visualize the data in 2-dimensional euclidean space. If we can separate the cluster by drawing direct line between the data points, the data is linearly separable. The same can be applied on multi-dimensional data.
 
-[![](http://4.bp.blogspot.com/-Tgaknx4kIHg/VQmuFgc67JI/AAAAAAAAEPA/kaqHsNBCuBE/s320/separable_data.PNG)](http://4.bp.blogspot.com/-Tgaknx4kIHg/VQmuFgc67JI/AAAAAAAAEPA/kaqHsNBCuBE/s1600/separable_data.PNG)
+![separable_data](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/neuralnetworks/separable_data.PNG)
 
 In a world of logical functions (we are building XOR classifier), this
 limitation means that a single layer perceptron is able to learn AND or
@@ -48,50 +44,27 @@ from the negatives once. On the other hand there is no straight line
 that separates the positive XOR results (\[0,1\] and \[1,0\]) from the
 negatives (\[0,0\] and \[1,1\])
 
-[![](http://1.bp.blogspot.com/-b-Xq2GIIKys/VQmuFkN4K9I/AAAAAAAAEPE/Ctj9PiGYGQI/s320/or_data.PNG)](http://1.bp.blogspot.com/-b-Xq2GIIKys/VQmuFkN4K9I/AAAAAAAAEPE/Ctj9PiGYGQI/s1600/or_data.PNG)
-[![](http://3.bp.blogspot.com/-b0rzcCZmOD0/VQmuOlXpDRI/AAAAAAAAEP8/oEwEPTO8JK8/s320/xor_data.PNG)](http://3.bp.blogspot.com/-b0rzcCZmOD0/VQmuOlXpDRI/AAAAAAAAEP8/oEwEPTO8JK8/s1600/xor_data.PNG)
+![or_data](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/neuralnetworks/or_data.PNG)
+![xor_data](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/neuralnetworks/xor_data.PNG)
 
 ### Feed forward multilayer networks
+Feed forward network can be thought as composition of perceptrons. Such network has one input layer, multiple hidden layers and one output layer. The feed forward network does not contain cycles, unlike the Hopfield network in the next examples (which is recurrent neural network).
 
-Feed forward network can be thought as composition of perceptrons. Such
-network has one input layer, multiple hidden layers and one output
-layer. The feed forward network does not contain cycles, unlike the
-Hopfield network in the next examples (which is recurrent neural
-network).
-
-Unlike single layer perceptron, multilayer feed forward network is
-capable of learning linerably non-separable data such as the results of
-XOR function.
+Unlike single layer perceptron, multilayer feed forward network is capable of learning linerably non-separable data such as the results of XOR function.
 
 ## XOR classifier
-This is the first example. This network is called classifier because it learns the XOR function. It can then "classify" the 2 values in the input into single value on the output.
+This is the first example. This network is called classifier because it learns the XOR function. It can then "classify" the 2 values in the input into single value on the output. Here is how the network looks like:
 
-Here is how the network looks like:
+![xor](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/neuralnetworks/xor.PNG)
 
-[![](http://1.bp.blogspot.com/-UVM3imr3fyU/VQmuOtKeUtI/AAAAAAAAEQA/QUD43O87Z7E/s320/xor.PNG)](http://1.bp.blogspot.com/-UVM3imr3fyU/VQmuOtKeUtI/AAAAAAAAEQA/QUD43O87Z7E/s1600/xor.PNG)
+The NN diagram was drawn in latex, using the **tkz-berge** package. [Look here if you want to know how] (http://www.hoonzis.com/graph-theory-in-latex/).
 
-The NN diagram was drawn in latex, using the tkz-berge package. [Look
-here if you want to know
-how](http://hoonzis.blogspot.fr/2012/03/graph-theory-in-latex.html).
+The network starts with random weights and continuously updates the weights so that the result in the output node corresponds to the XOR of input values. In order to update the weights Backpropagation (Backwards propagation of errors) technique is used.
 
-The network starts with random weights and continously updates the
-weights so that the result in the output node corresponds to the XOR of
-input values. In order to update the weights Backpropagation (Backwards
-propagation of errors) technique is used.
-
-The value of the output is compared to the real value (which is known).
-The error is determined as the differences between the output and the
-real value. Then the weights of the edges has to be updated to
-minimalize the error as shown later.
+The value of the output is compared to the real value (which is known). The error is determined as the differences between the output and the real value. Then the weights of the edges has to be updated to minimalize the error as shown later.
 
 ### Implementation
-
-Each layer can be represented as one dimensional array, the weights are
-stored using 2-dimensional array (\[0,1\] is the weight between nodes 0
-and 1). Here is the function which calculates the sum of values
-incoming to a single node and passes the value to the activation
-function. The activation function here can be any function, as it is
-passed as parameter but here Sigmoid is used.
+Each layer can be represented as one dimensional array, the weights are stored using 2-dimensional array (\[0,1\] is the weight between nodes 0 and 1). Here is the function which calculates the sum of values incoming to a single node and passes the value to the activation function. The activation function here can be any function, as it is passed as parameter but here Sigmoid is used.
 
 ```ocaml
 let pass (input:float[]) (weights:float[,]) activation =
@@ -107,9 +80,7 @@ By applying the **pass** multiple times, the whole network can be
 composed as sequence of **pass** functions.
 
 ### The training procedure
-
-The following function is the main loop of the XOR network and we
-iterate over until we obtain good results and the network is adapted.
+The following function is the main loop of the XOR network and we iterate over until we obtain good results and the network is adapted.
 
 ```ocaml
 let train network rate input target =
@@ -120,20 +91,13 @@ let train network rate input target =
   let updatedInToHidden = updateWeights n1.input deltaHidden n1.inputToHidden rate
 ```
 
-**Completepass** just calls 2 times the pass function value and gets the
-input values trough the hidden layer to the output. The output is then
-compared to desired result and error is estimated. From this error an
-array of "delta" values per each output node is determined which is then
-used to update the weights.
+Function **Completepass** just calls 2 times the pass function value and gets the input values trough the hidden layer to the output. The output is then compared to desired result and error is estimated. From this error an array of "delta" values per each output node is determined which is then used to update the weights.
 
-In the case of XOR network, there is only one output, so the delta will
-one dimensional array.
+In the case of XOR network, there is only one output, so the delta will one dimensional array.
 
-The delta has to be propagated lower so that we can also update the
-weights between the input and hidden layer.
+The delta has to be propagated lower so that we can also update the weights between the input and hidden layer.
 
 ### Backpropagating the error
-
 First the error of each layer has to be calculated. In the example
 bellow the error of the output layer is the value **(t-o)** or (Target -
 Ouput). This value is multiplied by value **o\*(1-o)** which is the
@@ -146,11 +110,7 @@ let deltaOutput (output:array<float>) (target:array<float>) =
 ```
 
 ### Delta propagation
-
-Calculating the delta value for the output layer is not sufficient to
-correct all the weights in the network, the delta has to be propagated
-to the lower layers of the network, so that we can update the weights on
-the input - hidden connections.
+Calculating the delta value for the output layer is not sufficient to correct all the weights in the network, the delta has to be propagated to the lower layers of the network, so that we can update the weights on the input - hidden connections.
 
 ```ocaml
 let passDelta (outputs:float[]) (delta:float[]) (weights:float[,]) =
@@ -184,9 +144,7 @@ slid slightly. From the quick tests that I did it seems that for
 instance using learning rate of 0.3 it took 20000 iterations to get to a
 neural network that would XOR the values on it's inputs.
 
-Hopfield-Tank network and Travelling Salesman Problem
-=====================================================
-
+## Hopfield-Tank network and Travelling Salesman Problem
 TSP is one of the well known Combinatorial optimization problems and as
 such, it has been solved in many different ways (Integer Linear
 Programming, Genetic or Biologically inspired algorithms and other
@@ -194,13 +152,9 @@ heuristics). Neural Networks are one of the many approaches to provide a
 solution to this problem.
 
 Even within Neural Networks several different approaches have been
-developed to solve TSP (eg. [elastic
-nets](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.56.9682),[self-organizing
-map](https://www.youtube.com/watch?v=8tnxgfE6glI)). The approach
-demonstrated here is the oldest one: Hopfield neural network.
+developed to solve TSP (eg. [elastic nets](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.56.9682),[self-organizing map](https://www.youtube.com/watch?v=8tnxgfE6glI)). The approach demonstrated here is the oldest one: Hopfield neural network.
 
 ### Hopfield neural network
-
 Hopfield NN is a recurrent neural network (connections in the network
 form cycles). The units (nodes) in a Hopfield network can have only 2
 values: 0|1 or -1|1 depending on literature, but in either case values
@@ -254,7 +208,7 @@ The neural network used to encode the TSP and it's solution is square matrix of 
 
 ![tsp_example](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/neuralnetworks/tsp_example.PNG)
 
-![tsp_solution](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/optionscharts/tsp_solution.PNG)
+![tsp_solution](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/neuralnetworks/tsp_solution.PNG)
 
 If the node in i-th row and j-th column has value 1, the city (i) will be in the tour on position (j).
 
@@ -267,7 +221,7 @@ As described above the network evolves and each node changes it's value over tim
 
 To come up with such update rule, Energy function has to be determine which will attain it's minimum for optimal solution of TSP. The energy function has to take into account the above specified rules. The following definition will satisfy the rules. Note that the following equations were taken from the [J.Y Potvin's -paper](http://www.iro.umontreal.ca/~dift6751/paper_potvin_nn_tsp.pdf)
 
-![energy](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/optionscharts/energy.PNG)
+![energy](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/neuralnetworks/energy.PNG)
 
 A,B,C and D are constants and the 4 summations here correspond to the 4 above mentioned points.
 
@@ -295,15 +249,15 @@ There are two ways to describe the behavior and the dynamic of the network:
 #### The change in the node's input potential
 One of the definition of the input potential of a node (i) can be described by:
 
-[![](http://1.bp.blogspot.com/-ddwL-U7I_vg/VQmuM7azq8I/AAAAAAAAEPs/Xhf1AVbq5Yg/s400/ui_alt_definition.PNG)](http://1.bp.blogspot.com/-ddwL-U7I_vg/VQmuM7azq8I/AAAAAAAAEPs/Xhf1AVbq5Yg/s1600/ui_alt_definition.PNG)
+![ui_alt_definition](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/neuralnetworks/ui_alt_definition.PNG)
 
 What we want to determine, is how this value will change over time, when the network evolves. The change of the potential over time is it's partial derivation with respect to the time.
 
-[![](http://1.bp.blogspot.com/-SOkKPl_WMPI/VQmuNF3lm5I/AAAAAAAAEQI/M2C14r2zFH0/s400/ui_change.PNG)](http://1.bp.blogspot.com/-SOkKPl_WMPI/VQmuNF3lm5I/AAAAAAAAEQI/M2C14r2zFH0/s1600/ui_change.PNG)
+![ui_change](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/neuralnetworks/ui_change.PNG)
 
 When doing a computer simulation we will described the value of Ui in time T+1, or here T+ delta t. Where delta T is some small time interval.
 
-[![](http://3.bp.blogspot.com/-HIxnCjPdc-0/VQmuNtqyawI/AAAAAAAAEQE/RB4siWWrOwo/s400/ui_change_cform.PNG)](http://3.bp.blogspot.com/-HIxnCjPdc-0/VQmuNtqyawI/AAAAAAAAEQE/RB4siWWrOwo/s1600/ui_change_cform.PNG)
+![ui_change_cform](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/neuralnetworks/ui_change_cform.PNG)
 
 This equation is at the hearth of this algorithm. We now have an exact specification of what the value of potential *Ui* will be in time T+1. That is our iterating algorithm has to perform exactly this updated.
 
@@ -317,11 +271,7 @@ This equation is at the hearth of this algorithm. We now have an exact specifica
     number of iterations - stop the process
 -   Translate the network into a city path
 
-The network can be stored in 2-dimensional matrix. One can choose
-between storing the input potential of each node or the value of the
-each node, because the value of the node can be calculated from the
-potential at any time. I have chosen the second option and I store the
-input potential two dimensional array **u**.
+The network can be stored in 2-dimensional matrix. One can choose between storing the input potential of each node or the value of the each node, because the value of the node can be calculated from the potential at any time. I have chosen the second option and I store the input potential two dimensional array **u**.
 
 The following code is the calculation of the input potential change of
 single node at coordinates **(city,position)**. This is just a F\# translation of the of the equation above.
@@ -348,18 +298,11 @@ let singlePass (distances:float[,]) (u:float[,]) pms city position =
   r
 ```
 
-There are few things to note. This code takes the distances matrix, the
-current state of the network (the value of input potential of each
-node), parameters of the network (constants A,B,C,D from equations
-above) and row (city) and the column (position) of the node that we are
-updating. The **toValues** method takes the current value of each node
-potential and returns a matrix of node values. The **rowi** and **coli**
-method return respecively one row or one column from 2 dimensional
-array. The **sumAllBut** method adds all elements of one-dimensional
-array except an element at position which is passed to the method. The
-**dSumCalc** method is the only one with a bit more complexity and it
-calculates the D value of the equation above (the one that assures the
-minimization of the TSP circuit)
+There are few things to note. This code takes the distances matrix, the current state of the network (the value of input potential of each node), parameters of the network (constants A,B,C,D from equations
+above) and row (city) and the column (position) of the node that we are updating. The **toValues** method takes the current value of each node potential and returns a matrix of node values. The **rowi** and **coli** method return respecively one row or one column from 2 dimensional
+array.
+
+The **sumAllBut** method adds all elements of one-dimensional array except an element at position which is passed to the method. The **dSumCalc** method is the only one with a bit more complexity and it calculates the D value of the equation above (the one that assures the minimization of the TSP circuit)
 
 ```ocaml
 let rowi row (network:float[,]) =
@@ -417,10 +360,7 @@ let initAndRunUntilStable cities pms distances =
   ) u
 ```
 
-And here high level method, that generates a random example of TSP
-problem, calculates distances between all cities and runs the algorithm
-until a stable and correct solution is found. That is until the network
-returns feasable solution.
+And here high level method, that generates a random example of TSP problem, calculates distances between all cities and runs the algorithm until a stable and correct solution is found. That is until the network returns feasible solution.
 
 ```ocaml
 let sampleRun (pms:HopfieldTspParams ) (n:int) =
@@ -439,23 +379,18 @@ paper the authors stated that the convergence rate to feasable solutions
 was about 50%. But depending on the parameters one can get better
 results. See bellow one of the runs of the algorithm on 6 random nodes.
 
-[![](http://3.bp.blogspot.com/-5z1O5x3IFQA/VQmuMCVuJoI/AAAAAAAAEQU/nkzoMX4XvCM/s320/result.PNG)](http://3.bp.blogspot.com/-5z1O5x3IFQA/VQmuMCVuJoI/AAAAAAAAEQU/nkzoMX4XvCM/s1600/result.PNG)
+![result](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/neuralnetworks/result.PNG)
 
-Here is the complete list of parameters for Hopfield network and the
-values that I ended up using:
+Here is the complete list of parameters for Hopfield network and the values that I ended up using:
 
--   Alpha: the parameters which shapes the Sigmoid decision function
-    applied on each node (500)
+-   Alpha: the parameters which shapes the Sigmoid decision function applied on each node (500)
 -   A: input potential change function, sum of rows (500)
 -   B: input potential change function, sum of columns (500)
 -   C: input potential change function, max N cities (200)
--   D: input potential change function, minimalization of tour
-    length (300)
--   dTime: represents the delta T, the small update in time for each
-    update of the input potential value (0.00001)
+-   D: input potential change function, minimization of tour length (300)
+-   dTime: represents the delta T, the small update in time for each update of the input potential value (0.00001)
 
-I have also used the standard update rule to obtain new value of the
-input potential which takes into account the current input potential.
+I have also used the standard update rule to obtain new value of the input potential which takes into account the current input potential.
 
 ```ocaml
    let dudt = -pms.A*aSum - pms.B*bSum - pms.C*cSum - pms.D*dSum
@@ -463,9 +398,7 @@ input potential which takes into account the current input potential.
   u.[city,position] = u.[city,position] + pms.dTime*(-u.[city,position] + dudt)
 ```
 
-According to the paper by Jacek Mandziuk one can just use the updated
-values as the new input potential, so that the update rule would become
-only:
+According to the paper by Jacek Mandziuk one can just use the updated values as the new input potential, so that the update rule would become only:
 
 ```ocaml
   let dudt = -pms.A*aSum - pms.B*bSum - pms.C*cSum - pms.D*dSum
@@ -476,9 +409,5 @@ This rule didn't work for me. The convergence rate wasn't better neither were th
 
 Note that GitHub repository and specifically the Hopfield module contains more code:
 
--   Method to determine the correct parameters. The performance of the
-    algorithm greatly depends on the parameters of the Energy function
-    and on the parameter **alfa**, which amplyfies the effect of the
-    input potential on the value of given node.
--   Few lines are also available to draw the solution using Windows
-    Forms Charts, through F\#
+- Method to determine the correct parameters. The performance of the algorithm greatly depends on the parameters of the Energy function and on the parameter **alfa**, which amplifies the effect of the input potential on the value of given node.
+- Few lines are also available to draw the solution using Windows Forms Charts, through F\#
