@@ -90,3 +90,5 @@ exclude:
     - CNAME
     - bloggerfiles
     - sources
+
+excerpt_separator: <!--more-->
