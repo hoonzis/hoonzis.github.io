@@ -1,11 +1,11 @@
 ---
 layout: post
 title: Realestate analysis with MapBox and Turf
-date: '2015-12-7T05:25:00.000-08:00'
+date: '2016-01-05T05:25:00.000-08:00'
 author: Jan Fajfr
 tags:
 - Maps
-modified_time: '2015-12-07T05:11:43.965-08:00'
+modified_time: '2016-01-05T05:11:43.965-08:00'
 ---
 Couple months ago I was thinking about buying a flat in Prague. That is pretty bold decision and requires some analysis before. Before looking further into the market I was looking for a web that would give me the average prices per meter in different city regions. I didn't find anything and since I have always liked building stuff around maps I have created a simple web page. Everything is in JavaScript besides the backend part for gathering the data, which is F\#.
 
@@ -107,6 +107,7 @@ var partsColorScale = d3.scale.linear()
     .interpolate(d3.interpolateRgb)
     .range(["white", "red"]);
 ```
+
 The last step would be to add click event handler. We can do that by attaching a function to the *click* event of the Mapbox layer. This function takes as parameter, which contains some mouse event information such as position of the cursor, but it holds also the layer, which we can use to access the feature and the metadata that we have stored there before.
 
 ```javascript
@@ -267,6 +268,68 @@ flatsLayers.eachLayer(function (f) {
 map.addLayer(self.clusteredFlats);
 ```
 
-This is very easy specially if you already have the collection of the points as valid geo-json (in my case the *flats*) property. The *MarkerClusterGroup* (comming from leaflet) contains a method *addLayer* which adds a single layer to the cluster. So we have to only convert the geo-json to layers collection.
+![clusters](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/appartee/clusters.PNG)
 
-Note that here are I am also adding popup, which will contain all the properties of the maker synced to json.
+This is very easy specially if you already have the collection of the points as valid GeoJson (in my case the *flats*) property. The *MarkerClusterGroup* (available in the leaflet cluster plugin) contains a method *addLayer* which adds a single layer to the cluster. So we have to only convert the GeoJson to layers collection.
+
+Note that here are I am also adding popup, which will contain all the properties of the maker serialized to json string.
+
+If you want to achieve custom styling of markers and clusters as I did, then you have to add a bit more code. Adding custom icon to the markers can be achieved within the loop that adds the flats to the cluster.
+
+```javascript
+self.flatsLayer.eachLayer(function (f) {
+      var pms = self.formatPms(f.feature.properties.pms);
+      var color = self.colorScale(f.feature.properties.pms);
+      f.setIcon(new L.DivIcon({
+          iconSize: [40, 20],
+          html: '<div style="color:#fff;background:' + color+ '">' + pms + '</div>'
+      }));
+      self.clusteredFlats.addLayer(f);
+  });
+```
+
+![clusters_detail](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/appartee/clusters_detail.PNG)
+
+Note that I have also added a method to format the prices per meter to safe some space, that is used in the markers code above.
+
+```javascript
+self.formatPms = function(pms) {
+    return (pms / 1000).toFixed(1) + "k";
+}
+```
+
+Styling the clusters requires passing a styling function to the *MarkerClusterGroup* constructor. As it was the case above with the marker's icon I have used the *DivIcon* function to which takes the size and html.
+
+```javascript
+self.clusteredFlats = new L.MarkerClusterGroup({
+    iconCreateFunction: function (cluster) {
+        var clusterPms = self.getClusterAveragePms(cluster);
+        var color = self.colorScale(clusterPms);
+        return new L.DivIcon({
+            iconSize: [60, 40],
+            html: '<div style="text-align:center;color:#fff;background:'+color+'">count: ' + cluster.getChildCount() + '<br/>avg: ' + self.formatPms(clusterPms) + '</div>'
+        });
+    }
+});
+```
+Note that there are simpler ways to style the marker, if you want just to change the color or size of the default marker's icon you could use the [default styling icon function](https://www.mapbox.com/mapbox.js/example/v1.0.0/markers-from-csv-custom-style/).
+
+As you might have remarked the clusters icon's shows the average price per meter in the given cluster. The following functions calculates the price per cluster.
+
+```javascript
+self.getClusterAveragePms = function(cluster) {
+    if (cluster._markers.length > 0) {
+        var totalPms = cluster._markers.map(function (m) {
+            return m.feature.properties.pms;
+        }).reduce(function (m1, m2) {
+            return m1 + m2;
+        });
+        return totalPms / cluster._markers.length;
+    } else {
+        var clusterAvgs = cluster._childClusters.map(self.getClusterAveragePms);
+        return clusterAvgs.reduce(function(a, b) { return a + b; }) / clusterAvgs.length;
+    }
+};
+```
+
+Each cluster contains either markers or child clusters. Either we take the average of the markers within the cluster or the average of the child clusters. This method has two flaws that I have omitted for now. It does not handle the case when a cluster is compose of clusters and valence markers and the average of child clusters is not weighted. The child clusters have different number of markers and so a weighted average should be used with respect to the cardinality of the cluster.

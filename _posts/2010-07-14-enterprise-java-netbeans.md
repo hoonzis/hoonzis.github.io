@@ -12,17 +12,13 @@ thumbnail: http://2.bp.blogspot.com/_fmvjrARTMYo/TEBmdsdJm-I/AAAAAAAAAHI/ql1vT_4
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-7514540512490015079
 blogger_orig_url: http://hoonzis.blogspot.com/2010/07/enterprise-java-netbeans.html
 ---
-This is a very old article from the times, when I was very new to Java
-world. Nowadays I would probably not recommend looking into JSF and J2EE,
-but it can serve well someone who decided for these technologies and
-wants to get started. This article is divided into 3 parts:
+This is a very old article from the times, when I was very new to Java world. Nowadays [2013] I would probably not recommend looking into JSF and J2EE, but it can serve well someone who decided for these technologies and wants to get started. This article is divided into 3 parts:
 
 - [Part 1](http://www.hoonzis.com/enterprise-java-netbeans/)
 - [Part 2](http://www.hoonzis.com/netbeans-enterprise-java-2-some-more-of/)
 - [Part 3](http://www.hoonzis.com/j2ee-netbeans-jsf-persistence-api-part/)
 
-[**Source code
-here.**](https://skydrive.live.com/redir?resid=F8AFB4F072D6DB62!4913)
+[Source code here.](https://skydrive.live.com/redir?resid=F8AFB4F072D6DB62!4913)
 
 I spend most of my time with .NET technologies, but I am aware of that
 J2EE is very powerful and number one technology in the enterprise
@@ -35,7 +31,6 @@ Derby Database. We will create application that allows the management of
 "Companies and their Products".
 
 ### First you will need:
-
 - NetBeans 6.7.1 + [UML tools](uml.netbeans.org/). I used 6.7.1
 because it supported the UML modelling tools with reverse engineer and
 code generation. The package was not so far ported for the newer
@@ -50,7 +45,6 @@ everything. Just keep in mind that it was tested on the 6.7.1/GlassFish
 2.1 version and some setting might not work on the newer versions.
 
 ### Technologies & Recommended Reading
-
 **Java Persistence API** - will help us with Object Relational Mapping -
 it will transfer the Java Objects to the tables in the database.
  **Entity Bean** - represents the object (Company, Product) and its
@@ -64,19 +58,17 @@ layer technology for building dynamic web apps).
 
 
 ### Create the projects
-
-In NetBeans select New -&gt; New Project -&gt; Java EE -&gt; Enterprise Application. Later you will be asked to specify Application Server, here you can select the installed GlassFish instance.
+In NetBeans select New -> New Project -> Java EE -> Enterprise Application. Later you will be asked to specify Application Server, here you can select the installed GlassFish instance.
 
 [![](http://2.bp.blogspot.com/_fmvjrARTMYo/TEBmdsdJm-I/AAAAAAAAAHI/ql1vT_46hiY/s320/netbeans_start_enterprise.PNG)](http://2.bp.blogspot.com/_fmvjrARTMYo/TEBmdsdJm-I/AAAAAAAAAHI/ql1vT_46hiY/s1600/netbeans_start_enterprise.PNG)
 
 In the last tab you can specify the names for the EJB and Web Application Module. That is because NetBeans will create two modules. The EJB module will take care of your "Model and Control", the Web Application Module will take care of the "View".
 
 If you wish to model you Entity Beans with NetBeans UML tool than select
-New Project -&gt; UML -&gt; Java-Platform Model -&gt; Finish, and later
+New Project -> UML -> Java-Platform Model -> Finish, and later
 you can create your Class Diagram.
 
 ### Start modeling
-
 First we want to create our Entity Beans - objects which represent some
 real world entities, which will be stored in the database. In our
 application there are 2: Company and Product. Here is the class diagram
@@ -84,9 +76,9 @@ which we want to create.
 
 [![](http://4.bp.blogspot.com/_fmvjrARTMYo/TD9UvVLJnfI/AAAAAAAAAGw/aXkxFg01ZAI/s320/class_diagram.PNG)](http://4.bp.blogspot.com/_fmvjrARTMYo/TD9UvVLJnfI/AAAAAAAAAGw/aXkxFg01ZAI/s1600/class_diagram.PNG)
 
-From this diagram we can generate the Entity classes. Right click the UML project -&gt; Generate Code. You should obtain following classes:
+From this diagram we can generate the Entity classes. Right click the UML project -> Generate Code. You should obtain following classes:
 
-``` 
+```java
 public class Company {
 
 private int id;
@@ -131,7 +123,7 @@ this.description = val;
 }
 ```
 
-``` 
+```java
 public class Product {
 
 private int id;
@@ -170,10 +162,9 @@ public void setName (String val) {
 Also you can write the classes and use the Reverse Engineer to obtain the class diagram.
 
 ### Creating Entity Beans from classes
+To convert the class to Entity Beans you have to do two simple steps - **add annotations and implement the Serializable interface**.
 
-To convert the the class to Entity Beans you have to do two simple steps - **add annotations and implement the Serializable interface**.
-
-``` 
+```java
 public class Company implements Serializable {
 
 @Id
@@ -204,29 +195,25 @@ You will notice that there will the NetBeans light bulb telling you that there i
 [![](http://4.bp.blogspot.com/_fmvjrARTMYo/TD3pusYq19I/AAAAAAAAAGA/pppUYb-iHAM/s320/image_persistance_unit.PNG)](http://4.bp.blogspot.com/_fmvjrARTMYo/TD3pusYq19I/AAAAAAAAAGA/pppUYb-iHAM/s1600/image_persistance_unit.PNG)
 
 ### Creating the Persistence Unit
-
 Persistence Unit will perform the object - relational mapping for us. To
 create one we will first create a database.
-On the "Services" pane localize Databases -&gt; Java DB -&gt; Create
+On the "Services" pane localize Databases -> Java DB -> Create
 Database and specify the demanded details.
 
 [![](http://3.bp.blogspot.com/_fmvjrARTMYo/TD3pbm9BDBI/AAAAAAAAAF4/5-_Deqqw1Os/s320/create_database.PNG)](http://3.bp.blogspot.com/_fmvjrARTMYo/TD3pbm9BDBI/AAAAAAAAAF4/5-_Deqqw1Os/s1600/create_database.PNG)
 
-Now when we have the Database, we can create Database Connection which
-will be used by the Persistence Unit to connect to the DB
-
-**Databases -&gt; New Connection.*
+Now when we have the Database, we can create Database Connection which will be used by the Persistence Unit to connect to the DB (Databases -> New Connection).
 
 [![](http://3.bp.blogspot.com/_fmvjrARTMYo/TD3sm9MAX6I/AAAAAAAAAGI/jBuR7O93GCw/s320/new_connection.PNG)](http://3.bp.blogspot.com/_fmvjrARTMYo/TD3sm9MAX6I/AAAAAAAAAGI/jBuR7O93GCw/s1600/new_connection.PNG)
 
-Now go back and right click EJB Module of you application and select New -&gt; Persistence Unit.
+Now go back and right click EJB Module of you application and select *New -> Persistence Unit*.
 
 [![](http://4.bp.blogspot.com/_fmvjrARTMYo/TD3tsFjESQI/AAAAAAAAAGQ/jMwEPSjBY2E/s320/new_persistance+unit.PNG)](http://4.bp.blogspot.com/_fmvjrARTMYo/TD3tsFjESQI/AAAAAAAAAGQ/jMwEPSjBY2E/s1600/new_persistance+unit.PNG)
 
 Before we continue with Session Beans we will prepare a Named Query. Named queries are static queries which are later compiled to SQL and used by Persistence Unit. We will use a simple queries getting all the
 companies in the table. We place the query above the class definition.
 
-``` 
+```java
 @Entity
 @NamedQuery(
 name="Company.getAllCompanies",
@@ -242,14 +229,13 @@ Now that you have finished the Persistence Unit you can try to deploy the projec
 [![](http://1.bp.blogspot.com/_fmvjrARTMYo/TEBjoI_WSVI/AAAAAAAAAG4/T5ODHLULHvY/s320/database_structure.PNG)](http://1.bp.blogspot.com/_fmvjrARTMYo/TEBjoI_WSVI/AAAAAAAAAG4/T5ODHLULHvY/s1600/database_structure.PNG)
 
 ### Session Beans
-
 Now we will create the Session Bean, which will provide method and
 actions which we can perform with our Entity Beans.
-Go to Enterprise Beans -&gt; New -&gt; Session Bean, than specify the
+Go to Enterprise Beans -> New -> Session Bean, than specify the
 package and leave the standard settings.
 [![](http://3.bp.blogspot.com/_fmvjrARTMYo/TD4HONy-sYI/AAAAAAAAAGY/64PRH9ir9tw/s320/session_bean.PNG)](http://3.bp.blogspot.com/_fmvjrARTMYo/TD4HONy-sYI/AAAAAAAAAGY/64PRH9ir9tw/s1600/session_bean.PNG)
 
-You can notice that the newly created Bean implements interface ending with "Local". Now we will add the first method which will return all the companies in the database. NetBeans tells you how to do this - Context Menu -&gt; Insert Code -&gt; Add Business Method.
+You can notice that the newly created Bean implements interface ending with "Local". Now we will add the first method which will return all the companies in the database. NetBeans tells you how to do this - Context Menu -> Insert Code -> Add Business Method.
 
 [![](http://2.bp.blogspot.com/_fmvjrARTMYo/TD4H6TMQfiI/AAAAAAAAAGg/AuZtOzZjG-U/s320/add_buss_method.PNG)](http://2.bp.blogspot.com/_fmvjrARTMYo/TD4H6TMQfiI/AAAAAAAAAGg/AuZtOzZjG-U/s1600/add_buss_method.PNG)
 
@@ -257,7 +243,7 @@ The method will be defined in the interface and method stub created in
 the implementation. Now you can edit the code like this:
 
 
-``` 
+```java
 @Stateless
 public class SalesSessionBean implements SalesSessionLocal {
 
@@ -282,11 +268,11 @@ can see that we all calling Named Query which we have created before.
 Now we will create a middle layer between the Session Bean and JSP site
 representing the GUI - this layer is a Backing Bean. Backing bean is a
 Java class which manages and is accessible from the actual JSP page.
-Create new class in the Web Module (New -&gt; Java Class) and name it
+Create new class in the Web Module (New -> Java Class) and name it
 SalesBack. Now here is the implementation:
 
 
-``` 
+```
 public class SalesBack {
 
 @EJB
@@ -314,7 +300,7 @@ In order to be able to use just create Backing Bean in your JSP pages,
 you will need to perform some changes to **faces-config.xml** file. Open
 the file and add the following into the faces-config element:
 
-``` 
+```
 <managed-bean>
 <managed-bean-name>sales</managed-bean-name>
 <managed-bean-class>sales.back.SalesBack</managed-bean-class>
@@ -330,7 +316,7 @@ Later you can reference this Backing Bean as "sales" in your JSP page.
 Now we will show what advantages/components brings Java Server Faces and
 how to use them. First we will create simple page just showing a table
 of all companies in stored in the DB. On the Web Module create a new JSP
-page with JSF. (New -&gt; JSF JSP Page). After you create the page you
+page with JSF. (New -> JSF JSP Page). After you create the page you
 can see that it contains two @taglib directives referencing the JSF
 framework TAGs.
 JSP technology can be extended by "custom tags". When we register the
@@ -342,7 +328,7 @@ named "HTML" introduces all the HTML tags and components that brings JSF
 to create nice GUI and functional GUI (buttons, tables, grids...).
 OK, so now lets put in the code which will show the table of companies.
 
-``` 
+```
 <h1><h:outputText value="Companies List"/></h1><h:dataTable value="#{sales.allCompanies}" var="item">
 <h:column>
 <f:facet name="header"><h:outputText value="Name"/></f:facet>
@@ -376,7 +362,7 @@ using the Faces Servlet. Open the **web.xml** and alter the Faces
 Servlet settings this way:
 
 
-``` 
+```
 <servlet>
 <servlet-name>Faces Servlet</servlet-name>
 <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
@@ -400,11 +386,11 @@ following result.
 [![](http://3.bp.blogspot.com/_fmvjrARTMYo/TD9LDPu1KxI/AAAAAAAAAGo/CwdLx24ltRc/s320/example_1.PNG)](http://3.bp.blogspot.com/_fmvjrARTMYo/TD9LDPu1KxI/AAAAAAAAAGo/CwdLx24ltRc/s1600/example_1.PNG)
 
 Obviously the companies table is empty. So go ahead and using NetBeans
-(Services -&gt; Databases) run some SQL INSERT statements and you should
+(Services -> Databases) run some SQL INSERT statements and you should
 be able to see the inserted data in your table.
 
 
-``` 
+```
 INSERT INTO SALES.COMPANY (companyname, companydescription) values('First company', 'Sales bananas');
 INSERT INTO SALES.COMPANY (companyname, companydescription) values('Second company', 'Sales oranges');
 ```

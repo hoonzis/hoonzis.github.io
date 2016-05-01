@@ -10,18 +10,15 @@ modified_time: '2014-06-27T02:55:19.237-07:00'
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-7285824319203390560
 blogger_orig_url: http://hoonzis.blogspot.com/2011/02/i-was-running-traditional-ms-visual.html
 ---
-I was running traditional MS Visual Studio 2008 Unit Tests and the test
-of the following method was always failing. On the first look I did not
-why but from the fact that when I placed the breakpoint on the return
-line it never got hit, I figured out that there must have been exception
+I was running traditional MS Visual Studio 2008 Unit Tests and the test of the following method was always failing.
+
+
+On the first look I did not why but from the fact that when I placed the breakpoint on the return line it never got hit, I figured out that there must have been exception
 before.
 
-As this was running in the Unit Test, the exception was not thrown but
-just shown in the Error Message column in the Test Results table.
+As this was running in the Unit Test, the exception was not thrown but just shown in the Error Message column in the Test Results table.
 
-
-
-``` 
+```csharp
 public String GetBalance(String globalBalance){
   NumberFormatInfo formatInfo = NumberFormatInfo.InvariantInfo;
   formatInfo.CurrencySymbol = "$";
@@ -31,7 +28,7 @@ public String GetBalance(String globalBalance){
 
 I obtained the following Error Message:
 
-``` 
+```
 System.InvalidOperationException: Instance is read-only..
 ```
 
@@ -41,17 +38,17 @@ surely was not allowed. The right way of doing things would be:
 Since I was looking at the Stack Trace, I decided just to look a bit
 deeper:
 
-``` 
+```
 at System.Globalization.NumberFormatInfo.VerifyWritable()
    at System.Globalization.NumberFormatInfo.set_CurrencySymbol(String value)
-   at 
+   at
 ```
 
 Lets take a look at the source code of the NumberFormatInfo class and
 search for the CurrencySymbol property, for example [at this
 site&gt;](http://reflector.webtropy.com/default.aspx/Net/Net/3@5@50727@3053/DEVDIV/depot/DevDiv/releases/whidbey/netfxsp/ndp/clr/src/BCL/System/Globalization/NumberFormatInfo@cs/1/NumberFormatInfo@cs)
 
-``` 
+```
 public String CurrencySymbol {
   get { return currencySymbol; }
   set {
@@ -88,10 +85,10 @@ public static NumberFormatInfo ReadOnly(NumberFormatInfo nfi) {
 
 Ok so any time the property is set (any of the properties of
 NumberInfoFormat) the VerifyWritable method is called. And this method
-just checks the private field isReadOnly. This makes sence. This
+just checks the private field isReadOnly. This makes sense. This
 property is set up by the ReadOnly static method. So any time you will
 need a read only instance of NumberFormatInfo you can just call:
 
-``` 
+```
 NumberFormatInfo myReadOnlyInstance = NumberFormatInfo.ReadOnly(formatInfo);
 ```

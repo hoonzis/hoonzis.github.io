@@ -19,7 +19,7 @@ task can be "wired" together with OnTaskChanged activity.
 
 The last time I was having this issue was that one of my assemblies in GAC was not up to date. In that time I found the following in the logs:
 
-``` 
+```
 System.TypeLoadException: Could not load type
 'BaseClassesLibrary.Library.MailLibrary' from assembly
 'BaseClassesLibrary, Version=1.0.0.0, Culture=neutral,
@@ -38,7 +38,7 @@ System.Workflow.ComponentModel.ActivityExecutorDelegateInfo\`1.ActivityExec...
 So I was searching for something similar(missing assemblies), but after hours of digging I found the solution. The task is displayed as ASP page. In the code-behind of this page I change the SharePoint task item (because task is a simple **SPListItem**) by calling
 the SPWorkflowTask.AlterTask(...) method and this method takes a *Hashtable* as parameter.
 
-``` 
+```csharp
 //Create the hashtable which will be populated to ExtendedProperties of task AfterProperties
 var taskHash = new Hashtable();
 

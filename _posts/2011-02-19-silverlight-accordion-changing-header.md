@@ -9,9 +9,10 @@ modified_time: '2014-06-27T05:10:20.756-07:00'
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-6603543459515201982
 blogger_orig_url: http://hoonzis.blogspot.com/2011/02/silverlight-accordion-changing-header.html
 ---
+
 Changing the header style for all items in the Siverlight Toolkit's Accordion item is not that easy as you might think it would be. If you wish to change the Container for each Accordion Item, you can just change the **ItemContainerStyle** property, however this will not help you to change the header. You can also apply some changes directly to the Header property of each Item that you add to the accordion.
 
-``` 
+```xml
 <layoutToolkit:Accordion>
     <layoutToolkit:Accordion.ItemContainerStyle>
            <style TargetType="layoutToolkit:AccordionItem">
@@ -23,21 +24,14 @@ Changing the header style for all items in the Siverlight Toolkit's Accordion it
 </laoutToolkit:Accordion>
 ```
 
-But the problem here is that the Border component never stretches across
-the whole header and besides you would have to add this to each Item (or
-change the Item Template).
+But the problem here is that the Border component never stretches across the whole header and besides you would have to add this to each Item (or change the Item Template).
 
 ### Changing the AccordionButtonStyle
+The solution here is to override the AccordionButtonStyle Property of the Accordion. To have some base you can get the style which is presented in the Silverlight Toolkit. To locate here go to **"Siverlight Toolkits Source\\Controls.Layout.Toolkit\\Themes\\generic.xaml"**.
 
-The solution here is to override the AccordionButtonStyle Property of
-the Accordion. To have some base you can get the style which is
-presented in the Silverlight Toolkit. To locate here go to **"Siverlight
-Toolkits Source\\Controls.Layout.Toolkit\\Themes\\generic.xaml"**.
+Here is the style and you can see the changes made to change the background of the Item Header.
 
-Here is the style and you can see the changes made to change the
-background of the Item Header.
-
-``` 
+```xml
 <style TargetType="layoutPrimitivesToolkit:AccordionButton" x:Key="MyAccButtonStyle">
         <setter Property="BorderThickness" Value="0"/>
         <setter Property="Background" Value="White"/>
@@ -268,15 +262,15 @@ background of the Item Header.
                                                 <TranslateTransform/>
                                             </TransformGroup>
                                         </Grid.RenderTransform>
-                                        <path 
-                                            Height="Auto" 
-                                            HorizontalAlignment="Center" 
-                                            Margin="0,0,0,0" x:Name="arrow" 
-                                            VerticalAlignment="Center" 
-                                            Width="Auto" 
-                                            RenderTransformOrigin="0.5,0.5" 
-                                            Stroke="#666" 
-                                            StrokeThickness="2" 
+                                        <path
+                                            Height="Auto"
+                                            HorizontalAlignment="Center"
+                                            Margin="0,0,0,0" x:Name="arrow"
+                                            VerticalAlignment="Center"
+                                            Width="Auto"
+                                            RenderTransformOrigin="0.5,0.5"
+                                            Stroke="#666"
+                                            StrokeThickness="2"
                                             Data="M 1,1.5 L 4.5,5 L 8,1.5">
                                             <Path.RenderTransform>
                                                 <transformgroup>
@@ -289,19 +283,19 @@ background of the Item Header.
                                         </Path>
                                     </Grid>
                                     <layoutToolkit:LayoutTransformer
-                                        FontFamily="{TemplateBinding FontFamily}" 
-                                        FontSize="{TemplateBinding FontSize}" 
-                                        FontStretch="{TemplateBinding FontStretch}" 
-                                        FontStyle="{TemplateBinding FontStyle}" 
-                                        FontWeight="{TemplateBinding FontWeight}" 
-                                        Foreground="{TemplateBinding Foreground}" 
+                                        FontFamily="{TemplateBinding FontFamily}"
+                                        FontSize="{TemplateBinding FontSize}"
+                                        FontStretch="{TemplateBinding FontStretch}"
+                                        FontStyle="{TemplateBinding FontStyle}"
+                                        FontWeight="{TemplateBinding FontWeight}"
+                                        Foreground="{TemplateBinding Foreground}"
                                         HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                        Margin="6,6,6,0" 
-                                        x:Name="header" 
+                                        Margin="6,6,6,0"
+                                        x:Name="header"
                                         Grid.Column="1"
-                                        Grid.Row="0" 
-                                        Grid.RowSpan="1" 
-                                        Content="{TemplateBinding Content}" 
+                                        Grid.Row="0"
+                                        Grid.RowSpan="1"
+                                        Content="{TemplateBinding Content}"
                                         ContentTemplate="{TemplateBinding ContentTemplate}"/>
                                 </Grid>
                             </Grid>
@@ -314,19 +308,16 @@ background of the Item Header.
     </Style>
 ```
 
-Note that in the Visual States I changed not only the Color in the
-animation but also the Opacity to 1 which in the original Style is set
-to some lower value. Also note that you will need to import these
-namespaces:
+Note that in the Visual States I changed not only the Color in the animation but also the Opacity to 1 which in the original Style is set to some lower value. Also note that you will need to import these namespaces:
 
-``` 
+```xml
 xmlns:layoutPrimitivesToolkit="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Layout.Toolkit"
 xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"
 ```
 
 And than you can just easily apply the style like this:
 
-``` 
+```xml
 <layoutToolkit:Accordion AccordionButtonStyle="{StaticResource MyAccButtonStyle}">
 ...your items here...
 </layoutToolkit:Accordion>
