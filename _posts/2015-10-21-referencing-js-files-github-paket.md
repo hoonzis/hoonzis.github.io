@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Referencing JS files from GitHub with Paket
+title: Paket referencing GitHub files
 date: '2015-10-21T09:44:00.000-07:00'
 author: Jan Fajfr
 tags:
