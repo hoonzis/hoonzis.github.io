@@ -8,8 +8,7 @@ tags:
 modified_time: '2015-09-17T01:07:44.866-07:00'
 ---
 
-I was recently testing the [ASP.MVC 5 F# template](https://visualstudiogallery.msdn.microsoft.com/39ae8dec-d11a-4ac9-974e-be0fdadec71b), which works fine but almost always breaks down as soon as you add new item to the solution.
-F# has hard time with folders. The problem has been described [here] (http://stackoverflow.com/questions/22845020/visual-studio-f-project-cant-have-two-folders-in-a-file-tree-with-the-same-na) . And as soon as you add new file to the F# project you will run to the same problem and the next time, you won't be able to load the project file with:
+I was recently testing the [ASP.MVC 5 F# template](https://visualstudiogallery.msdn.microsoft.com/39ae8dec-d11a-4ac9-974e-be0fdadec71b), which works fine but almost always breaks down as soon as you add new item to the solution. F# has hard time with folders. The problem has been described [here](http://stackoverflow.com/questions/22845020/visual-studio-f-project-cant-have-two-folders-in-a-file-tree-with-the-same-na) . And as soon as you add new file to the F# project you will run to the same problem and the next time, you won't be able to load the project file with:
 
 ```
 The project '...' could not be opened because opening it would cause a folder to be rendered multiple times in the solution explorer.
