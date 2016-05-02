@@ -13,3 +13,9 @@ Paket is a dependency manager for .NET projects, besides referencing NuGet packa
 Adding a reference to file on github, is just a matter of editing **paket.dependency** file.
 
 *github hoonzis/KoExtensions src/KoExtensions.js*
+
+Then in the **paket references** of the project that should reference the file, one has to specify to which folder in the solution this file should be moved.
+
+*File:KoExtensions.js scripts*
+
+Running **paket update** will update the project file and add the mentioned file as linked reference:
