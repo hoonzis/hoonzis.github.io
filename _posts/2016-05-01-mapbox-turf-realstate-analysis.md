@@ -1,11 +1,11 @@
 ---
 layout: post
 title: Realestate analysis with MapBox and Turf
-date: '2016-01-05T05:25:00.000-08:00'
+date: '2016-05-01T05:25:00.000-08:00'
 author: Jan Fajfr
 tags:
 - Maps
-modified_time: '2016-01-05T05:11:43.965-08:00'
+modified_time: '2016-05-01T05:11:43.965-08:00'
 ---
 Couple months ago I was thinking about buying a flat in Prague. That is pretty bold decision and requires some analysis before. Before looking further into the market I was looking for a web that would give me the average prices per meter in different city regions. I didn't find anything and since I have always liked building stuff around maps I have created a simple web page. Everything is in JavaScript besides the backend part for gathering the data, which is F\#.
 

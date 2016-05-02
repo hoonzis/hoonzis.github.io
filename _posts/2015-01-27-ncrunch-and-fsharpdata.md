@@ -14,8 +14,7 @@ I have recently run into two separate issues while testing some F\# data provide
 
 For the first issue (missing *FSharp.Data.DesignTime.dll*) the fix depends on whether you are using Paket or Nuget to reference the package *FSharp.Data* package.
 
-NCrunch issues
---------------
+#### NCrunch issues
 NCrunch won't compile your solution when *FSharp.Data* is referenced. This component internally references *FSharp.Data.DesignTime* which has to be available for the compilation - and NCrunch does not have those libs available, because the DLL is not referenced the standard way, but must be provided by Visual Studio.
 
 The current solution is to reference FSharp.Data.DesignTime manually. If you are using Nuget, than the dll can be found in the packages folder as shown bellow:
@@ -38,7 +37,7 @@ If you are using *Paket* then you can locate in the project file, the following 
 </Choose>
 ```
 
-And you can place a similar reference for the *DesigneTime** dll just bellow:
+And you can place a similar reference for the **DesigneTime** dll just bellow:
 
 ```xml
 <Choose>
@@ -54,9 +53,9 @@ And you can place a similar reference for the *DesigneTime** dll just bellow:
   </Choose>
 ```
 
-NUnit runner issues
--------------------
+Notice that you can also remove the **Paket** tag. Removing this tag will assure that Paket will ignore this reference and won't remove it while running **paket install**.
 
+#### NUnit runner issues
 NUnit did load the test correctly, but the test failed with **SystemMissingMethodException**
 
 Luckily the solution [can be found on StackOverflow](http://stackoverflow.com/questions/22608519/fsharp-data-system-missingmethodexception-when-calling-freebase-provider-from) and was caused by the tested library being Portable Class Library instead of standard F# library.

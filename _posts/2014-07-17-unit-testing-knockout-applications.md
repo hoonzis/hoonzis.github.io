@@ -16,8 +16,7 @@ In ideal case any View Model in Knockout based application should be completely 
 
 This post describes how to mock the AJAX calls while unit testing Knockout View Models. At the end I also provide information about the [ChutzPah](http://chutzpah.codeplex.com/) test runner and the way that the tests can be run from within Visual Studio.
 
-Standard ViewModel example
-==========================
+### Standard ViewModel example
 The typical view model that I am using looks like the following one:
 
 ```javascript
@@ -26,7 +25,7 @@ function AssetViewModel(){
     self.city = ko.observable();
     self.country = ko.observable();
     self.size = ko.observable();
-  
+
     self.load = function(){
         $.ajax("/api/assets/" + self.city(), {
             data: dto,
@@ -58,7 +57,7 @@ function AssetViewModel(){
         self.city(updateData.City);
         self.country(updateData.Country);
     }
- 
+
     self.toDto = function () {
         var model = new Object();
         model.City = self.city();
@@ -77,9 +76,7 @@ objects. Other than that, nothing should be surprising here. The
 **save** method sends the dto over the wire and than treats the
 response.
 
-The unit test
--------------
-
+### The unit test
 Nowadays one has a choice between multiple JavaScript testing
 frameworks, [QUnit](http://qunitjs.com/),
 [Jasmine](https://github.com/pivotal/jasmine) or
@@ -87,10 +84,10 @@ frameworks, [QUnit](http://qunitjs.com/),
 common choices - I am staying with QUnit. Testing the **updateData**
 with QUnit might look like this.
 
-``` 
+```
 var vm;
 function initTest() {
-    
+
     var vm = new AssetViewModel();
 }
 
@@ -125,13 +122,10 @@ QUnit has 3 assert methods which can be used in the tests:
 -   **equal** - Compare two values
 -   **deepEqual** - Recursively compare a objects properties
 
-Asynchronous testing
---------------------
+#### Asynchronous testing
+Here is the test for the **save** method which calls the REST server interface.
 
-Here is the test for the **save** method which calls the REST server
-interface.
-
-``` 
+```javascript
 function initTest() {
       $.mockjax({
         url: '/api/assets/Prague',
@@ -159,7 +153,7 @@ $(function () {
             QUnit.equal(vm.size(),20);
         }, 100);
     });
-}
+});
 ```
 
 I am using [MockJax](https://github.com/appendto/jquery-mockjax) library
@@ -182,7 +176,7 @@ Returning a simple JSON data may be sufficient for some case, for others
 however we would maybe like to verify the integrity of the data sent to
 the server, just like when testing the save method
 
-``` 
+```javascript
 var storedAssets = [];
 function initTest() {
       $.mockjax({
@@ -212,18 +206,15 @@ $(function () {
             equal(storedAssets.Size, vm.size());
         }, 100);
     });
-}
+});
 ```
 
 In this case the **save** method passes the JSON data to the server
 side. The server is mocked by **MockJax** which only adds the data to a
 dump array, which can be then used to verify the integrity of the data.
 
-Running Unit Tests in Visual Studio
------------------------------------
-
-There are 3 reasons for which I am using Visual Studion even for
-JavaScript project:
+### Running Unit Tests in Visual Studio
+There are 3 reasons for which I am using Visual Studio even for JavaScript project:
 
 -   Usually the application has some backend written in .NET and I don't
     want to use 2 IDEs for one single application.
@@ -232,11 +223,10 @@ JavaScript project:
     IDE, why should I use other.
 -   ReSharper has really good static analysis of JavaScript and
     HTML files. That saves me a lot of time - typos, unknown references
-    and other issue are catched before I run the application.
+    and other issue are catch before I run the application.
 -   I can run JavaScript unit tests right from the IDE.
 
-To run the Unit Tests I am using
-[ChutzPah](http://chutzpah.codeplex.com/) test runner. ChutzPah
+To run the Unit Tests I am using [ChutzPah](http://chutzpah.codeplex.com/) test runner. ChutzPah
 internally uses the PhantomJS in-memory browser, and interprets the
 tests. While using this framework, one does not need the QUnit wrapper
 HTML page and the Unit Tests can be run as they are.
@@ -252,7 +242,7 @@ reference and load them. This is handled using a configuration file
 following is an example of configuration file that I am using for my
 tests.
 
-``` 
+```javascript
 {
     "Framework": "qunit",
     "References" : [
@@ -265,12 +255,9 @@ tests.
 }
 ```
 
-
-
 [![](http://2.bp.blogspot.com/-AoNjM2nFFJw/U8f0UVShq3I/AAAAAAAABZU/hNoyXOi-Mj4/s320/vs_structure.PNG)](http://2.bp.blogspot.com/-AoNjM2nFFJw/U8f0UVShq3I/AAAAAAAABZU/hNoyXOi-Mj4/s1600/vs_structure.PNG)
 
-JSON DateTime serialization
----------------------------
+### JSON DateTime serialization
 
 This is more a side note. Dates in JSON are serialized into ISO format.
 That is good, the problems is that if you try to deserialize an object

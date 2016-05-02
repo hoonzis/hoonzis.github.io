@@ -14,8 +14,7 @@ blogger_orig_url: http://hoonzis.blogspot.com/2014/11/events-visualization-with-
 ---
 I have recently needed to visualize a set of events which occurred within a certain interval. Each event would have couple parameters and there would be multiple event lines. Let's say that you want to visualize the occurrences of car sales in couple countries. For each sale you would also want to visualize the price and the mark of the sold car. Before writing everything from scratch, I have found [EventDrops](https://github.com/marmelab/EventDrops) project which responded to the majority of my requirements. It had just one flaw and that is that there is no way to chart another characteristics for each event.
 
-EventDrops KnockoutJS integration
-=================================
+#### EventDrops KnockoutJS integration
 
 I have decided to add such possibility and since I am using KnockoutJS and binding to create all of my charts I have also decided to add EventDrops to my [KoExtensions](https://github.com/hoonzis/KoExtensions) project - in order to make it's usage simpler. The resulting chart looks like this:
 
@@ -37,14 +36,14 @@ possibilities:
 
 The html is now really straightforward:
 
-```html 
+```html
 <div data-bind="eventDrops: carSales, chartOptions: carSalesOptions"></div>
 ```
 
 The javascript behind this page contains a bit more to generate the
 data:
 
-```javascript 
+```javascript
 require(['knockout-3.2.0.debug', 'KoExtensions/koextbindings', 'KoExtensions/Charts/linechart', 'KoExtensions/Charts/piechart', 'KoExtensions/Charts/barchart'], function(ko) {
  function createRundomSales(country) {
   var event = {};
@@ -52,7 +51,7 @@ require(['knockout-3.2.0.debug', 'KoExtensions/koextbindings', 'KoExtensions/Cha
 
   event.name = country;
   event.dates = [];
-  
+
   var endTime = Date.now();
   var oneMonth = 30 * 24 * 60 * 60 * 1000;
   var startTime = endTime - oneMonth;
