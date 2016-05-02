@@ -10,11 +10,11 @@ thumbnail: http://2.bp.blogspot.com/-bhTeegAseTs/VMeJ7PPap_I/AAAAAAAAEMM/Dab5HZm
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-7292279599877960101
 blogger_orig_url: http://hoonzis.blogspot.com/2015/01/ncrunch-and-fsharpdata.html
 ---
-I have recently run into two separate issues while testing some F\# data providers based code. I am using ReSharper's NUnit runner and sometimes NCrunch. One of the problem was linked to the availability of *FSharp.Data.DesignTime.dll* on the compile time and other to NUnit not correctly handling Portable Library Class projects. I have tested and had the same issue with FSharp.Data 2.1.0 and 2.2.0.
-
-For the first issue (missing *FSharp.Data.DesignTime.dll*) the fix depends on whether you are using Paket or Nuget to reference the package *FSharp.Data* package.
+I have recently run into two separate issues while testing some F\# data providers based code. I am using ReSharper's NUnit runner and sometimes NCrunch. One of the problem was linked to the availability of *FSharp.Data.DesignTime.dll* on the compile time and other to NUnit not correctly handling Portable Library Class projects. I have tested and had the same issues with FSharp.Data 2.1.0 and 2.2.0.
 
 #### NCrunch issues
+For the first issue (missing *FSharp.Data.DesignTime.dll*) the fix depends on whether you are using Paket or Nuget to reference the package *FSharp.Data* package.
+
 NCrunch won't compile your solution when *FSharp.Data* is referenced. This component internally references *FSharp.Data.DesignTime* which has to be available for the compilation - and NCrunch does not have those libs available, because the DLL is not referenced the standard way, but must be provided by Visual Studio.
 
 The current solution is to reference FSharp.Data.DesignTime manually. If you are using Nuget, than the dll can be found in the packages folder as shown bellow:
