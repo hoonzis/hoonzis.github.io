@@ -13,8 +13,7 @@ blogger_orig_url: http://hoonzis.blogspot.com/2015/03/neural-networks-f-xor-clas
 ---
 It seems that recently thanks to the buzz around Deep Learning, Neural Networks are getting back the attention that they once had. This post contains just a very short introduction to Neural Networks, just enough to understand the F\# code which follows. The aim for me was to learn F\# and see how easy it can be to write NN code in F\#. Two usage of Neural Networks are presented here: XOR classifier (Hello World of NN) and Traveling Salesman Problem solved using Hopfield Neural Network. Both working examples are [at GitHub](https://github.com/hoonzis/MachineLearning)
 
-Neural Networks
-===============
+# Neural Networks
 Artificial neural networks are computational models with particular properties such as the ability to adapt or learn, to generalize or to cluster and organize data. These models are inspired by the way that the human brain works. The building blocks of Neural Networks are inspired by Neurons - the building blocks of our brain. Neural Network can be seen as interconnected graph of nodes, where each node takes a role of a neuron. Each neuron can receive multiple signals, modify it and send it to other neurons to which it is connected. In this graph some vertexes are used to set the input, some of them are used to perform the computation and other once will hold the output values.
 
 Nodes are connected by edges which have different weights. The weight of the edge specifies how the signals is modified when passing from one node to another.

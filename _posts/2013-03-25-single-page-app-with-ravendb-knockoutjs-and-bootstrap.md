@@ -130,16 +130,16 @@ stored directly inside each asset. This applications is composed of two
 collections: Owners and Assets. Here are examples of Owner and Asset
 document.
 
-``` 
+```
 {
    "Name": null,
    "UserName": "test",   
    "Password": "test"
 }
- 
+
 ```
 
-``` 
+```
 {
   "OwnerId": 1,
   "LastChargeId": 5,
@@ -234,7 +234,7 @@ public IEnumerable<Asset> GetAssets(int ownerID)
 {
  return RavenSession.Query<Asset>().Where(x => x.OwnerId == ownerID);
 }
- 
+
 ```
 
 This method is decorated with the *[Authorize\]** attribute. This
@@ -374,12 +374,12 @@ function AssetViewModel(parent,data) {
     self.charges = ko.observableArray([]);
     self.rents = ko.observableArray([]);
     self.parent = parent;
- 
+
   if (data != null) {
         self.isNew(false);
         self.name(data.Name);
         //update all asset data here
-        
+
   //fill the charges collection - note the rents are filled similarly
         if (data.Charges != null) {
             self.charges($.map(data.Charges, function (data) {
@@ -475,7 +475,7 @@ request is executed, the ViewModel uses
 [Knockout.Validation](https://github.com/ericmbarnard/Knockout-Validation)
 plugin to perform this check with the *errors* property.
 
-```javascript 
+```javascript
 self.save = function () {
  if (self.errors().length != 0) {
   self.errors().showAllMessages();
@@ -546,13 +546,13 @@ The charges view is classic master detail view. We have list of items on the lef
   <tbody data-bind="foreach: charges">
    <tr style="cursor: pointer;" data-bind="click: select">
     <td style="vertical-align: middle">
-     
+
     </td>
     <td style="vertical-align: middle">
-     
+
     </td>
     <td style="vertical-align: middle">
-     
+
     </td>
     <td>
      <button type="submit" class="btn" data-bind="visibility: !isNew(), click:remove"><i class="icon-trash"></i></button>
@@ -622,15 +622,15 @@ binding is used withing a foreach binding, in order to display all the
 apartments in the map.
 
 
-    
-     
-      
-      
-     
-     
-     
-    
-     
+
+
+
+
+
+
+
+
+
 
 The map has to be initialized the usual way as described in the official
 google maps tutorial, the binding does not take care of this. This

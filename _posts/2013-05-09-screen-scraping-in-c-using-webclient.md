@@ -11,18 +11,14 @@ blogger_orig_url: http://hoonzis.blogspot.com/2013/05/screen-scraping-in-c-using
 ---
 This post is intended to give you some useful tips to perform screen scraping in C\#. In the ideal every solid web site, application or service should propose a decent API to provide the data to other applications. If the application holds resources of it's users, than it should propose OAuth protected API and thus allow the users to use their data through another application. But since were are not there here are some tips screen scrapping tasks: authentication, state-full web applications, browser headers and others.
 
-Observing the communication
----------------------------
-
+### Observing the communication
 In order to know what kind of HTTP request you have to issue, you have
 to observe what the browser is doing when you browse the web page. There
 is not a better tool for the job than [Fiddler](http://fiddler2.com/).
 One of the features provided which you might find really useful is that
 it can **automatically decrypt HTTPS traffic.**
 
-Getting the data
-----------------
-
+### Getting the data
 Once you determine which web requests you should replay you need the
 infrastructure necessary to execute the requests. .NET provides the
 **WebClient** class. Note that WebClient is a facade for using creating
@@ -30,9 +26,7 @@ and handling HttpWebRequest and HttpWebResponse objects. Feel free to
 use these classes directly if you want, but by default the compiler will
 not like their usage since they are marked as obsolete.
 
-Parsing the data
-----------------
-
+### Parsing the data
 If you are just need to screen scrape a simple site which is invoked by HTTP GET request, than you do not need any special information. You can just fire **WebClient**, obtain the string and than parse the result.
 When parsing the result, you have to keep in mind, that HTML is not a regular language. Therefor Regular Expressions are not guaranteed to work. You might end up with different matches than you would expect. But in majority of cases you will get around with RegEx, like in the following example, matching digits separated by a BR tag.
 
@@ -44,9 +38,7 @@ When parsing the result, you have to keep in mind, that HTML is not a regular la
 var dataTerm = new Regex("<div style=\"margin-left:5px;float:left;font:bold 11px verdana;color:green\">(?<free>\\d*)<br />;(<places>\\d*)<br /></div>");;
 ```
 
-Posting values
---------------
-
+### Posting values
 When submitting a form to a web application, the browser usually performs
 a HTTP POST request and encodes the values to the posting URL. In order
 to create such a request, you have to set the content type of the
@@ -57,7 +49,7 @@ request to **application/x-www-form-urlencoded**. Then you can use the
 using(var client = new WebClient()){
  var contentType = "application/x-www-form-urlencoded";
  client.Headers.Add("Content-Type", contentType);
- 
+
  var values = new NameAndValueCollection();
  values.Add("name", name);
  values.Add("pass", pass);
@@ -65,9 +57,7 @@ using(var client = new WebClient()){
 }
 ```
 
-Handling the authentication
------------------------------
-
+### Handling the authentication
 In some cases you have to pass the authentication before you get to the
 information that you need. Most of the web sites use cookie based
 authentication. Once the user is authenticated the server generates an
@@ -163,9 +153,7 @@ the value of the "Nonce" to the client. The value is usually a part of
 the login page and the authentication and the hashing is done in
 JavaScript
 
-State-full JSF applications
----------------------------
-
+### State-ful JSF applications
 Most of the web applications that we see today are composed of stateless
 services. There are some really good reasons for that, however it is
 still possible that you might have to analyze a stateful application. In
@@ -184,9 +172,7 @@ had to compose always exactly the same set of HTTP requests.
 values.Add("source", "j_id630");
 ```
 
-Make them think you are a serious browser
------------------------------------------
-
+### Make them think you are a serious browser
 Some web page check for the browser accessing the page, you can easily
 make them think you are Mozilla Firefox:
 
@@ -195,7 +181,5 @@ var mozilaAgent = "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64
 client.Headers.Add("User-Agent", mozilaAgent);
 ```
 
-Summary
--------
-
+### Summary
 If there is any other way to obtain the data, than it is probably better way. If you cannot avoid it, I hope this gave you couple hints.

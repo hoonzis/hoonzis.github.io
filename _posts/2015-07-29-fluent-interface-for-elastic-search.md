@@ -242,8 +242,7 @@ var result = client.Search<Car>(s => s.FilteredOn(f=> f.Ranking.HasValue || f.Is
 var result = client.Search<Car>(s => s.FilteredOn(f=> f.Ranking!=null || f.IsAllowed == true);
 ```
 
-Hitograms
----------
+### Hitograms
 Histogram is another useful aggregation supported by ElasticSearch. One typical usage is to simply get documents into buckets using some criteria, other usage that I have been using quite a lot is computing some statistics on each bucket. For instance calculating a sum monthly sales, might be done using a histogram with nested aggregation.
 
 ```cs

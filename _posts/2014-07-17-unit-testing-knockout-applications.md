@@ -67,9 +67,7 @@ function AssetViewModel(){
 }
 ```
 
-You might thing that the **toDto** method is useless if one uses the
-[Knockout Mapping
-plug-in](http://knockoutjs.com/documentation/plugins-mapping.html),
+You might thing that the **toDto** method is useless if one uses the [Knockout Mapping plug-in](http://knockoutjs.com/documentation/plugins-mapping.html),
 however in many cases the view models get much more complex and they
 can't be directly mapped to any kind of data transfer objects or domain
 objects. Other than that, nothing should be surprising here. The

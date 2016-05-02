@@ -15,9 +15,7 @@ blogger_orig_url: http://hoonzis.blogspot.com/2014/05/detecting-extreme-values.h
 ---
 In a set of data points, outliers are such values that theoretically should not appear in the dataset. Typically these can be measurement errors or values caused by human mistakes. In some cases outliers are not caused by errors. These values affect the way that the data is treated and any statistics or report based on data containing outliers are erroneous.
 
-Background
-==========
-
+### Background
 Detecting these values might be very hard or even impossible and a whole
 field of statistics called Robust Statistics covers this subject. If you
 are further interested into the subject please read [Quantitative Data
@@ -30,9 +28,7 @@ efficiently get the outliers and extreme values from the data stored in
 SQL Server and a simple tool to chart data and distribution of data
 using JavaScript
 
-Theory
-------
-
+#### Theory
 Any dataset can be characterized by the way the data is distributed over
 the whole range. The probability that a single point has given value in
 the dataset is defined using the probability distribution function. The
@@ -46,8 +42,9 @@ far away from the center. Intuitively the outliers are points very far
 from the center. Consider the following set of numbers which represent
 in minutes the length of a popular song:
 
-3.9,3.8,3.9,2.7,2.8,1.9,2.7,3.5, 4.4, 2.8, 3.4, 8.6, 4.5, 3.5, 3.6, 3.8,
-4.3, 4.5, 3.5,30,33,31
+```
+3.9,3.8,3.9,2.7,2.8,1.9,2.7,3.5, 4.4, 2.8, 3.4, 8.6, 4.5, 3.5, 3.6, 3.8,4.3, 4.5, 3.5,30,33,31
+```
 
 You have probably spotted the values 30,33 and 31 and you immediately
 identify them as outliers. Even if the Doors would double the length of
@@ -91,9 +88,7 @@ by them. In order to get a description of the dataset not affected by
 the extreme values one needs to find robust replacements for the mean
 and the dispersion.
 
-Robust Center
--------------
-
+### Robust Center
 The simplest and very efficient replacement for the mean as the center
 of the data is the median. Median is such value that half of the points
 in the dataset are smaller are bellow. That is if the data set consists
@@ -115,10 +110,8 @@ by the outliers.
 
 [![](http://4.bp.blogspot.com/-6cVOJuJQ82c/U4jGjZPoWPI/AAAAAAAABWA/ojvFIGU0lF8/s320/histogram2.PNG)](http://4.bp.blogspot.com/-6cVOJuJQ82c/U4jGjZPoWPI/AAAAAAAABWA/ojvFIGU0lF8/s1600/histogram2.PNG)
 
-Robust Dispertion
------------------
-
-Standard variance takes into account the the distance of all the numbers
+### Robust Dispertion
+Standard variance takes into account the distance of all the numbers
 from the center. To rule out the extreme values, we can just use the
 median of distances. The outlier's distance from the center is much
 bigger than other distance and by taking the median of all distances we
@@ -131,9 +124,7 @@ Deviation](http://en.wikipedia.org/wiki/Median_absolute_deviation).
 
 
 
-Detecting the outliers
-----------------------
-
+### Detecting the outliers
 Now that we have the value of "real" center and "real spread" or
 dispersion we can state that the outlier is a value which differs "too
 much" from the center, taking into account the dispersion. Typically we
@@ -145,15 +136,9 @@ coefficient. Hampel identifier labels as outliers any points that are
 more than 5.2 away from the MAD. More details can be [found
 here.](http://econstor.eu/bitstream/10419/77105/2/2001-40.pdf)
 
-
-
 [![](http://2.bp.blogspot.com/-o1rsvaRScC4/U4jJ5WWxjWI/AAAAAAAABWY/z0vH4XMsjkQ/s320/histogram4.PNG)](http://2.bp.blogspot.com/-o1rsvaRScC4/U4jJ5WWxjWI/AAAAAAAABWY/z0vH4XMsjkQ/s1600/histogram4.PNG)
 
-
-
-The overall reliability of this method
---------------------------------------
-
+### The overall reliability of this method
 A question which might arise is up to which kind of messy data this
 method can be used. A common intuition would say that definitely more
 than the half of the data has to be "correct", in order to be able to
@@ -167,9 +152,7 @@ the data is correct. The standard arithmetic mean has a BP = 0. It is
 directly affected by all the numbers and one single outlier can
 completely move the data.
 
-SQL implementation
-------------------
-
+### SQL implementation
 In order to implement detection of outliers in SQL, one needs to first
 have the necessary functions to compute the mean, median and dispersion.
 All these functions are aggregates. Mean (avg) and Dispersion (var) are
@@ -184,11 +167,7 @@ for you which implements the **IBinarySerializable** interface and is
 decorate with couple attributes defined in the Microsoft.SqlServer
 namespace.
 
-
-
 [![](http://1.bp.blogspot.com/--8FhAGynjbw/U4jL_cu513I/AAAAAAAABWo/m6IIFSoYa0I/s320/aggregate_creation.PNG)](http://1.bp.blogspot.com/--8FhAGynjbw/U4jL_cu513I/AAAAAAAABWo/m6IIFSoYa0I/s1600/aggregate_creation.PNG)
-
-
 
 This class has 4 important methods:
 
@@ -277,9 +256,7 @@ That implementation is directly the one described above: we take the
 distance of each element from the center (median) and than we take the
 median of the distances.
 
-Outliers detection with the SQL aggregates
-------------------------------------------
-
+### Outliers detection with the SQL aggregates
 Having implemented both aggregates, detecting the outlier is just a
 matter of a SQL query - giving all the elements which are further away
 from the center than the variance multiplied by a coefficient.
@@ -291,9 +268,7 @@ select * from tbUsers where Height > ( Median(Height) + c*RobustVar(Height)) or 
 You will have to play with the coefficient value **c** to determine
 which multiplication gives you the best results.
 
-JavaScript implementation
--------------------------
-
+### JavaScript implementation
 The same can be implemented in JavaScript. If you are interested in a
 JavaScript implementation you can check out the histogram chart from
 KoExtensions. This charting tool draws the histogram and the data
@@ -320,7 +295,7 @@ outliers at the same time one needs just few lines of code
 
 ```javascript
 var exData = [3.9,3.8,3.9,2.7,2.8,1.9,2.7,3.5, 4.4, 2.8, 3.4, 8.6, 4.5, 3.5, 3.6, 3.8, 4.3, 4.5, 3.5,30,33,31];
-  
+
 function TestViewModel() {
     var self = this;
     self.data = ko.observableArray(exData);
@@ -328,7 +303,6 @@ function TestViewModel() {
 
 var vm = new TestViewModel();
 ko.applyBindings(vm);
-initializeCharts();
 ```
 
 Knockout.JS is a JavaScript MVVM framework tool which gives you all you
