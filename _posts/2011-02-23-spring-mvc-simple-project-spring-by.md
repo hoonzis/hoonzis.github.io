@@ -46,9 +46,7 @@ This is Eclipse "Dynamic Web Application" Project. I have used the latest Eclips
     Security Framework.
 
 ### Package and project structure
-
-The project has a common structure:
-**View &lt;--&gt; Controller &lt;--&gt; Service &lt;--&gt; Repository &lt;--&gt; DB**.
+The project has a common structure (View - Controller - Service - Repository - DB).
 The Repository pattern (implemented by the classes in the DAO package)
 allows the abstraction of the DB technology. The Service layer has
 implemented all the functions of the project. For example in the
@@ -58,7 +56,6 @@ The Controller layer uses the Service layer to fill the model needed
 behind the view and to perform the tasks desired by the user.
 
 ### Model View Controller with Spring
-
 The MVC software architecture permits separate the domain model (M), the
 logic (C) and the user interface (V). Spring implementation of MVC is
 based on DispatcherServlet. DispatcherServlet is classical HttpServlet
@@ -69,7 +66,7 @@ which contains great explanation.
 In the web.xml the DispatcherServlet is defined to handle all the
 requests coming to the web site (see url-pattern).
 
-``` 
+```xml
 <servlet>
    <servlet-name>spring</servlet-name>
    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -84,7 +81,7 @@ requests coming to the web site (see url-pattern).
   <param-name>contextConfigLocation</param-name><param-value>/WEB-INF/spring-servlet.xml
    /WEB-INF/applicationContext-security.xml
   </param-value></context-param>
-  
+
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
@@ -98,9 +95,7 @@ ContextLoader. There is also a link to the file which provides security
 configuration. Spring-servlet.xml contains a lot of configuration. Lets
 now take a look at the part concerning the view.
 
-Apache Tiles
-------------
-
+### Apache Tiles
 With spring you can use several APIs or technologies to build you user
 interface: standard JSP, Java Server Faces, Apache Tiles (they do not
 compete, they serve for different purposes and sometimes overlap). In
@@ -110,7 +105,7 @@ pages (typically for example you have a menu bar, which is always
 present).
 In the Spring-servlet.xml this is the part concerning Tiles:
 
-``` 
+```xml
 <bean class="org.springframework.web.servlet.view.UrlBasedViewResolver" id="viewResolver">
      <property name="viewClass">
          <value>
@@ -130,16 +125,14 @@ In the Spring-servlet.xml this is the part concerning Tiles:
 That tells Spring, that all the views should be resolved using TilesView
 class and the configuration can be found in the tiles.xml file.
 
-Tiles Configuration
--------------------
-
+### Tiles Configuration
 First declared in the Tiles configuration file is the layout. So a
 specific page(layout.jsp) which defines the layout of our pages and
 links to jsp pages which represent these parts. After this definition
 come the declarations of each view. Each view specifies which layout it
 uses and the parts which should be imported.
 
-``` 
+```xml
 <tiles-definitions>
     <definition name="base.definition" template="/WEB-INF/jsp/layout.jsp">
         <put-attribute name="title" value="">
@@ -148,7 +141,7 @@ uses and the parts which should be imported.
         <put-attribute name="body" value="">
         <put-attribute name="footer" value="/WEB-INF/jsp/footer.jsp">
     </put-attribute></put-attribute></put-attribute></put-attribute></put-attribute></definition>
- 
+
     <definition extends="base.definition" name="students">
         <put-attribute name="title" value="Users management">
         <put-attribute name="body" value="/WEB-INF/jsp/students.jsp">
@@ -159,13 +152,11 @@ uses and the parts which should be imported.
 Take a look at the ***layout.jsp*** file and you will fast understand
 how it works.
 
-MVC implementation
-------------------
-
+### MVC implementation
 To understand how MVC works open one of the Controller classes, for
-example: **StudentsController*
+example: **StudentsController**:
 
-``` 
+```java
 @Controller
 public class StudentsController {
 
@@ -179,15 +170,15 @@ public class StudentsController {
   model.addAttribute("studentsList",users);
   return "students";
  }
- 
+
   @RequestMapping(value = "/addstudent", method = RequestMethod.POST)
     public String addContact(@ModelAttribute("student")
     Student user, BindingResult result) {
- 
+
    studentsService.addStudent(user);
         return "redirect:/students";
     }
- 
+
     @RequestMapping("/delete/{studentID}")
     public String deleteContact(@PathVariable("studentID")
     Integer studentID) {
@@ -214,10 +205,9 @@ As said before the methods have different signatures depending on their needs bu
 The most straightforward is the method **listStudents**. This method fills the given Model (which is passed to the method by MVC framework) and returns the name of the view which should be used to show this model. You can take a look at the Tiles configuration to see which JSP will be shown after returning "students" as the name of the view.
 
 ### Object Relational Mapping - the Domain
-
 In the Domain package you can find just two classes: Student and Course. This is the Student class:
 
-``` 
+```java
 @Entity
 @Table(name="student")
 public class Student {
@@ -225,22 +215,22 @@ public class Student {
  @Id
  @GeneratedValue
  private Integer id;
- 
+
  @ManyToMany
  @JoinTable(name="student_course"
   ,joinColumns=@JoinColumn(name="student_id")
   ,inverseJoinColumns=@JoinColumn(name="course_id"))
  private List follows;
- 
+
  @Column
  private String firstname;
- 
+
  @Column
  private String lastname;
 
  @Column
  private String email;
- 
+
  @Column
  private Integer phone;
  public Integer getId() {
@@ -270,22 +260,21 @@ table. Note that there are different ways to manage this using Hibernate
 The course class is quite similar and I will not describe it here.
 
 ### Internalization / Localization
-
 It is quite common demand to make the application supporting multiple languages. Spring framework provides LocalChangeInterceptor, which based on parameter in the url of the page decides, which languages version of the page should be loaded. To configure this feature take a look at the **spring-servlet.xml** file which contains the 3 following beans:
 
-``` 
+```xml
 <!-- Messages and Internalization -->
     <bean id="messageSource"
         class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
         <property name="basename" value="classpath:messages" />
         <property name="defaultEncoding" value="UTF-8" />
     </bean>
-    
+
     <bean id="localeChangeInterceptor"
      class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
         <property name="paramName" value="lang"/>
     </bean>
- 
+
     <bean id="localeResolver"
    class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
    <property name="defaultLocale" value="en"/>
@@ -311,7 +300,7 @@ Now the last step is to take a look in how these strings are references
 in the web pages. For that take a look for example at **menu.jsp** which
 defines the left side menu of the application.
 
-``` 
+```html
 <%@taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <p><spring:message code="label.menu"/></p><ul><li><a href="/TestingProject/students"><spring:message code="label.students"/></a></li>
 <li><a href="/TestingProject/courses"><spring:message code="label.courses"/></a></li>
@@ -323,7 +312,6 @@ the **spring:message** tag is used which loads the correct string
 identified by the "label.students" key.
 
 ### Security
-
 Now the security is taken care of by Spring Security (former Acegi
 Security) framework and I use the very basic settings. Spring Security
 in its core uses basic Filter and FilterChain interfaces which are
@@ -345,7 +333,7 @@ First the following **authentication-manager** tells spring that the
 user is authentified against the database. The same data source is
 already used for ORM mapping.
 
-``` 
+```xml
 <authentication-manager>
   <authentication-provider>
     <jdbc-user-service data-source-ref="dataSource"/>
@@ -353,18 +341,14 @@ already used for ORM mapping.
 </authentication-manager>
 ```
 
-
 However the precedent snippet does not define how the security data is
 stored in the database. That is because it uses the default
 implementation. In other words Spring expects you to provide the data
 source with default structure. This structure is composed of two tables:
 **users** and **authorities**. To see the details take a look at the
-[Apendix A of Spring
-documentation.](http://static.springsource.org/spring-security/site/docs/3.0.x/reference/appendix-schema.html)
-And if you just want to have the DB structure you can create it with
-**security\_db.sql** script which is part of the project:
+[Apendix A of Spring documentation](http://static.springsource.org/spring-security/site/docs/3.0.x/reference/appendix-schema.html). And if you just want to have the DB structure you can create it with **security\_db.sql** script which is part of the project:
 
-``` 
+```sql
 create table users(
       username varchar(50) not null primary key,
       password varchar(50) not null,
@@ -382,7 +366,7 @@ So we have the users which have roles and the data is stored in the
 database. Now the way it is used is specified in the second part of
 "applicationContext-security.xml".
 
-``` 
+```xml
 <http auto-config="true">
         <intercept-url pattern="/admin/*.do" access="ROLE_ADMIN"/>
         <intercept-url pattern="/**" access="ROLE_USER,ROLE_ADMIN,ROLE_TEACHER"/>
@@ -398,20 +382,18 @@ security. There are more advanced manners of securing the method calls
 or visibility of html elements always based on user roles.
 
 ### Hints for the other aspects enterprise application
-
 Unfortunately I did not have time to include in this simple project some
 other aspects of enterprise applications.
 
 #### Validations
-
 To implement data validations spring contains
 org.springframework.validation space, which contains a Validator
 interface containing "validate" method. Here is a short example of how
 validator could be implemented for a "User" class:
 
-``` 
+```java
 public class UserValidator implements Validator {
-  
+
  @Override
  public boolean supports(Class<?> arg0) {
   return User.class.isAssignableFrom(arg0);
@@ -423,16 +405,15 @@ public class UserValidator implements Validator {
   if(!isValidEmailAddress(user.getAdresse_mail())){
    arg1.rejectValue("adresse_mail","adresse_mail.notValid","Not a valid email");
   }
-  
  }
- 
+
  public boolean isValidEmailAddress(String emailAddress){  
      String  expression="^[\\w\\-]([\\.\\w])+[\\w]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";  
      CharSequence inputStr = emailAddress;
      Pattern pattern = Pattern.compile(expression,Pattern.CASE_INSENSITIVE);  
      Matcher matcher = pattern.matcher(inputStr);  
      return matcher.matches();
-   } 
+   }
 }
 ```
 
@@ -445,20 +426,19 @@ the way this field should look like. In the following example the @Email
 annotation would take care of what the above implementation does.
 
 
-``` 
+```java
 public class User {
+  @Email
+  protected String adresse_mail;
 
-@Email
-protected String adresse_mail;
-
-@Basic
-@Column(length=50)
-public String getAdresse_mail() {
- return adresse_mail;
-}
-public void setAdresse_mail(String adresse_mail) {
- this.adresse_mail = adresse_mail;
-}
+  @Basic
+  @Column(length=50)
+  public String getAdresse_mail() {
+    return adresse_mail;
+  }
+  public void setAdresse_mail(String adresse_mail) {
+    this.adresse_mail = adresse_mail;
+  }
 }
 ```
 
@@ -470,7 +450,6 @@ To get more information about JSR 303 validation refer to [this blog
 post.](http://www.openscope.net/2010/02/08/spring-mvc-3-0-and-jsr-303-aka-javax-validation/)
 
 #### Advanced Security Approaches
-
 When working on our application I was having hard time to find out how
 to force Spring Security to you my own database model and perform the
 authentication my way. I found that the easiest way was to implement
@@ -483,8 +462,8 @@ containing users password and users roles. Here is a simple
 implementation:
 
 
-``` 
-@Service("userDetailsService") 
+```java
+@Service("userDetailsService")
 public class UserDetailsServiceImpl implements UserDetailsService {
 
   @Autowired
@@ -495,7 +474,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
       throws UsernameNotFoundException, DataAccessException {
 
     User user = usersDAO.findByLogin(username);
-    
+
     if (user == null)
       throw new UsernameNotFoundException("user not found");
 
@@ -503,26 +482,23 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     for (openschool.domain.model.Role role : user.getRoles()) {
       authorities.add(new GrantedAuthorityImpl(role.getRole()));
     }
-    
+
     String password = user.getPassword();
     boolean enabled = user.isEnabled();
     boolean accountNonExpired = true;
     boolean credentialsNonExpired = true;
     boolean accountNonLocked = true;
-    
-    
+
+
     org.springframework.security.core.userdetails.User springUser;
     springUser = new User(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
-    
+
     return springUser;
   }
 }
 ```
 
-
-
 #### Unit Tests
-
 When using Spring IOC you need to tell to spring what is the application
 context for the unit tests. Normally the application context is
 specified by the **web.xml** file. But the Unit Tests do not have
@@ -532,7 +508,7 @@ injected objects.
 This can be done by annotating the UnitTest class by following
 annotations:
 
-``` 
+```java
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/applicationContext.xml"})
 ```
@@ -543,47 +519,46 @@ applicationContext.xml on the classpath. Just two provide some
 information on how the complete test class can look:
 
 
-``` 
+```java
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/applicationContext.xml"})
-public class UsersDAOTest{
+public class UsersDAOTest {
+  @Autowired
+  UsersDAO usersDao;
 
- @Autowired
- UsersDAO usersDao;
- 
- private Long beforeUserID;
- 
- @Before
- @Transactional
- public void initDB(){
-  Administratif user = new Administratif();
-  user.setLastName("User_before");
-  user.setAdresse_mail("email@email.com");
-  user.setLogin("login");
-  
-  
-  usersDao.addUser(user);
-  beforeUserID = user.getIdUser();
- }
- 
+  private Long beforeUserID;
+
+   @Before
+   @Transactional
+   public void initDB(){
+      Administratif user = new Administratif();
+      user.setLastName("User_before");
+      user.setAdresse_mail("email@email.com");
+      user.setLogin("login");
+
+
+      usersDao.addUser(user);
+      beforeUserID = user.getIdUser();
+   }
+
  @Test
  @Transactional
  public void testAddUser() {
-  
-  User user = new User();
-  user.setLastName("Lastname");
-  user.setAdresse_mail("email@email.com");
-  
-  usersDao.addUser(user);
-  
-  User user2 = usersDao.getUser(user.getIdUser());
-  assertEquals(user, user2); 
-       }
+    User user = new User();
+    user.setLastName("Lastname");
+    user.setAdresse_mail("email@email.com");
+
+    usersDao.addUser(user);
+
+    User user2 = usersDao.getUser(user.getIdUser());
+    assertEquals(user, user2);
+  }
+}
 ```
 
 You might also want to create Test Suites which allow to run multiple tests in the same time, by creating simple class with @Suite annotation:
 
-``` 
+```java
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
  MyTest1.class,
