@@ -7,9 +7,6 @@ tags:
 - Java
 - J2EE
 modified_time: '2014-06-27T05:28:06.643-07:00'
-thumbnail: http://4.bp.blogspot.com/_fmvjrARTMYo/TD9UvVLJnfI/AAAAAAAAAGw/aXkxFg01ZAI/s72-c/class_diagram.PNG
-blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-3792458602013198883
-blogger_orig_url: http://hoonzis.blogspot.com/2010/07/netbeans-enterprise-java-2-some-more-of.html
 ---
 This is part two from old series about J2EE applications using Java Beans.
 
@@ -20,10 +17,9 @@ This is part two from old series about J2EE applications using Java Beans.
 In the first part I described how to develop a simple page which shows
 all the "companies" stored in the company table. Now I would like to
 describe how to add some additional functions - create new company, edit
-company's details. 
+company's details.
 
 ### Class diagram and actual state
-
 [![](http://4.bp.blogspot.com/_fmvjrARTMYo/TD9UvVLJnfI/AAAAAAAAAGw/aXkxFg01ZAI/s320/class_diagram.PNG)](http://4.bp.blogspot.com/_fmvjrARTMYo/TD9UvVLJnfI/AAAAAAAAAGw/aXkxFg01ZAI/s1600/class_diagram.PNG)
 
 And here the page with some with table containing 2 companies.
@@ -31,7 +27,6 @@ And here the page with some with table containing 2 companies.
 [![](http://4.bp.blogspot.com/_fmvjrARTMYo/TEBlaHdpOwI/AAAAAAAAAHA/QnJTpbwvmgs/s320/sample_data.PNG)](http://4.bp.blogspot.com/_fmvjrARTMYo/TEBlaHdpOwI/AAAAAAAAAHA/QnJTpbwvmgs/s1600/sample_data.PNG)
 
 ### What we will add
-
 Now I will add a button to each row of the table, which will direct the
 page to a site where the user could edit the company details and a
 second button which will allow creating a new company. Before creating
@@ -40,10 +35,9 @@ Session Beans (the lowest layer) and additional methods and fields in
 Backing Beans (the middle layer).
 
 ### New methods in Session Beans
-
 In the Session Bean I will add a method called "saveCompany".
 
-``` 
+```java
 public void saveCompany(Company company) {
   company = em.merge(company);
   em.persist(company);
@@ -60,10 +54,9 @@ Context. Than by calling the "persist" method of Entity Manager the
 Company will be stored in the database.
 
 ### Changes in Backing Bean
-
 Now the Backing Bean will need some more changes. I will add a field of type "Company" which will represent a Company which is actually showed or edited. Than instead of using a basic collection of type List I will use a class called DataModel, which is a part of JSF Framework and allows me to get the row selected by the user in the GUI.
 
-``` 
+```java
 public DataModel companiesModel;
 private Company company;
 public DataModel getCompaniesModel(){
@@ -72,12 +65,11 @@ public DataModel getCompaniesModel(){
 }
 ```
 
-
 Now when I have the model I am able to get Company object representing
-the actually selected row. This is show in method "editCompany".
+the actually selected row.
 
-```
-public .String .editCompany(){
+```java
+public Company editCompany(){
    company = (Company)companiesModel.getRowData();
    return company;
 }
@@ -85,7 +77,7 @@ public .String .editCompany(){
 
 You see that the method returns String, concretely "edit-company". That string represents a name of a navigation rule which will be used by JSF Framework. Basically it means that the user will be redirected to another page which is specified in the faces-config.xml file. That I will show later. First let me put the last 2 new methods in Backing Bean, one for saving and one for creating a new company. Again the methods return String values for navigation purposes, it will all be clear soon :).
 
-``` 
+```java
 public String saveCompany(){
   ssl.saveCompany(company);
   return "show-companies";
@@ -98,12 +90,10 @@ public String newCompany(){
 ```
 
 ### New JSF Page to show Company's details
-
-Lets create a new JSF JSP page (On the Web Module -&gt; New -&gt; JSF
-JSP) and call it "company.jsp". This page will be used to specify the
+Lets create a new JSF JSP page (On the Web Module -> New -> JSF JSP) and call it "company.jsp". This page will be used to specify the
 company details. The code is quite simple:
 
-``` 
+```html
 <h1><h:outputText value="Company Details:"/></h1>
 <h:panelGrid columns="2">
 <h:outputText value="Name"/>
@@ -114,24 +104,21 @@ company details. The code is quite simple:
 <h:commandButton id="btnSave" action="#{sales.saveCompany}" value="Save"/>
 </h:form>
 ```
-
-
 You see that it uses the h:form tag. This tag is basically later
 rendered as HTML form tag. This TAG has to be present if your page
 contains buttons or other components that perform some action. You see
-that the action of a button is binded to the "saveCompany" method of our
-Backing Bean and the value of the input fields are binded to the
+that the action of a button is bound to the "saveCompany" method of our
+Backing Bean and the value of the input fields are bound to the
 "company" members again in the Backing Bean.
 
 ### Changes to page containing table of companies
-
 Now lets do some changes to the "companies.jsp" page - the page
 containing the table of all companies. I will add a "Edit" button to
 each row (by defining a new column) and in the bottom of the page I will
 add a "New" button. Both of these buttons will use method previously
 defined in the Backing Bean.
 
-``` 
+```html
 <h:form>
 <h1><h:outputText value="Companies List"/></h1>
 <h:dataTable value="#{sales.companiesModel}" var="item">
@@ -154,7 +141,6 @@ defined in the Backing Bean.
 Notice, that because there are buttons performing actions I had to surround the whole table by **h:form** tag.
 
 ### Changes to faces-config.xml
-
 OK - now we have the pages, last step missing is to explain the
 navigation rules. As I said before these rules are managed by JSF
 Framework, and are "called" by returning string expression of our
@@ -168,7 +154,7 @@ it will resemble the following one.
 
 You can change the view to XML and see the XML declaration of these rules (the Page Flow diagram is there just to visualize the navigation rules.
 
-``` 
+```xml
 <navigation-rule>
 <from-view-id>/companies.jsp</from-view-id>
 <navigation-case>

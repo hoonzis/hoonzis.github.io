@@ -8,9 +8,6 @@ tags:
 - JSF
 - J2EE
 modified_time: '2014-06-27T05:26:32.970-07:00'
-thumbnail: http://4.bp.blogspot.com/_fmvjrARTMYo/TFcPE-ZjuZI/AAAAAAAAAHY/13-nbFLL-B4/s72-c/result.PNG
-blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-5298151891570281471
-blogger_orig_url: http://hoonzis.blogspot.com/2010/07/j2ee-netbeans-jsf-persistence-api-part.html
 ---
 This is part 3 of old series about J2EE, Java Beans and JSF.
 
@@ -19,18 +16,18 @@ This is part 3 of old series about J2EE, Java Beans and JSF.
 - [Part 3](http://www.hoonzis.com/j2ee-netbeans-jsf-persistence-api-part/)
 
 The aim of this part is to extend the detail page of a company by adding a list of products of the company and a drop down list box, which will allow a user to add a new product to the list of the products of the company. Here is who it should look like in the end.
+
 [![](http://4.bp.blogspot.com/_fmvjrARTMYo/TFcPE-ZjuZI/AAAAAAAAAHY/13-nbFLL-B4/s320/result.PNG)](http://4.bp.blogspot.com/_fmvjrARTMYo/TFcPE-ZjuZI/AAAAAAAAAHY/13-nbFLL-B4/s1600/result.PNG)
 
 Generally adding the list of the products of the company to the page will be a piece of cake. You can again use the **dataTable** component provided by JSF. What will be a bit tricky is adding a drop down list. We will use the **selectOnListBox** component populated by **List**. Because this component allows to show **String** value and as I seed we will put in **Product** class. We will have to use a **Converter** component which will translate the **Product** to a single **String** and vice versa.
 
 ### Changes to the Session Bean
-
 Again here I will start with the changes in the lower level. We will
 need to add a method which will provide all the products in the database
 as a List object. Later we will populate a drop down list with these
 products.
 
-``` 
+```java
 public List<product> getAllProducts() {
  List<product> products = em.createNamedQuery("Product.getAllProducts").getResultList();
 return products;
@@ -40,7 +37,7 @@ return products;
 This method is calling a named query which you need to place above the
 "Product" class declaration.
 
-``` 
+```java
 @Entity
 @NamedQuery(name="Product.getAllProducts",query="SELECT p FROM Product p")
 public class Product implements Serializable {
@@ -54,7 +51,7 @@ object by a given ID (the ID field is decorated as a identity in the
 Entity Beans declaration. This method will be used by the **Converter**
 class.
 
-``` 
+```java
 public Product getProductWithId(String id) {
 try {
   return em.find(Product.class, Integer.parseInt(id));
@@ -66,7 +63,6 @@ return null;
 ```
 
 ### The converter class
-
 As it had been said already, we will implement class which allows us
 convert object of type **Product** to a **String**. This class has to
 implement **Converter** interface, provided by the JSF framework. This
@@ -91,34 +87,34 @@ method, you will probably never call them in your code. Here is my
 **ProductConverter** class which I decided to put into package
 **sales.util**.
 
-``` 
+```java
 public class ProductConverter implements Converter{
-public Object getAsObject(FacesContext context, UIComponent component, String value) {
-SalesSessionLocal ssb = lookupSessionBean();
-Product p = ssb.getProductWithId(value);
-return p;
-}
+    public Object getAsObject(FacesContext context, UIComponent component, String value) {
+    SalesSessionLocal ssb = lookupSessionBean();
+    Product p = ssb.getProductWithId(value);
+    return p;
+  }
 
-public String getAsString(FacesContext context, UIComponent component, Object value) {
-String id = String.valueOf(((Product)value).getId());
-return id;
-}
+  public String getAsString(FacesContext context, UIComponent component, Object value) {
+    String id = String.valueOf(((Product)value).getId());
+    return id;
+  }
 
-private SalesSessionLocal lookupSessionBean(){
-try{
-Context c = new InitialContext();
-SalesSessionLocal ssb = (SalesSessionLocal) c.lookup("java:comp/env/SalesSessionBean");
-return ssb;
-}catch(NamingException ex){
-return null;
-}
-}
+  private SalesSessionLocal lookupSessionBean(){
+    try{
+      Context c = new InitialContext();
+      SalesSessionLocal ssb = (SalesSessionLocal) c.lookup("java:comp/env/SalesSessionBean");
+      return ssb;
+    }catch(NamingException ex){
+      return null;
+    }
+    }
 }
 ```
 
 The conversion of the object to the String is quite easy - you just need to decide what describes the object. Here you can see that I just return the products ID. The conversion of an String to object is the processing of looking up the product of given ID in our Entity Manager. We had prepared a method for this lookup in the Sesion Bean, which we are basically calling by the following line.
 
-``` 
+```java
 Product p = ssb.getProductWithId(value);
 ```
 
@@ -127,7 +123,7 @@ Backing Bean we are using the EJB injection by the "@EJB" decoration.
 This means that we just write one single line and we obtain the Session
 Bean (no initialization, the framework takes care of this).
 
-``` 
+```java
 @EJB
 SalesSessionLocal ssl;
 ```
@@ -147,7 +143,7 @@ desired object if we know the name the object. We give the name to the
 object (Sesstion Bean) when we register it in the **web.xml**
 configuration file. Here is the registration of EJB in web.xml.
 
-``` 
+```xml
 <ejb-local-ref>
 <ejb-ref-name>SalesSessionBean</ejb-ref-name>
 <ejb-ref-type>Session</ejb-ref-type>
@@ -158,18 +154,17 @@ configuration file. Here is the registration of EJB in web.xml.
 
 And Here is how we can use the JNDI Lookup to get the Session Bean in  our GlassFish InitialContext.
 
-``` 
+```java
 Context c = new InitialContext();
 SalesSessionLocal ssb = (SalesSessionLocal) c.lookup("java:comp/env/SalesSessionBean");
 ```
 
 ### Changing Faces Configuration
-
 So that's it, the Converter class is ready to be used. Now we have to
 register it in the Faces Configuration; in the **faces-config.xml** file
 add the following:
 
-``` 
+```xml
 <converter>
 <description>Converts Product Entity to String</description>
 <converter-id>ProductConverter</converter-id>
@@ -178,16 +173,15 @@ add the following:
 ```
 
 ### Changes to the Managed Bean (another name for Backing Bean)
-
 Now we will have to add some methods and fields to the Backing Bean to
 assure the functionality. First we will need to provide a field (and off
 course setters and getters) which will store the actual selected
 "Product" in the drop down list.
 
-``` 
+```java
 private Product selectedProduct;
-public Product getSelectedProduct() {
-return selectedProduct;
+  public Product getSelectedProduct() {
+  return selectedProduct;
 }
 
 public void setSelectedProduct(Product selectedProduct) {
@@ -199,7 +193,7 @@ this.selectedProduct = selectedProduct;
 Now the next method called "addProduct" will just add the
 "selectedProduct" to the list of products of the current company.
 
-``` 
+```
 public void addProduct(){
 if(this.company.getProducts() == null){
 this.company.setProducts(new ArrayList());
@@ -215,7 +209,7 @@ The latest method will return a collection of products in as a list of
 drop down list. This method benefits from the previously created method
 for getting all products in the Session Bean.
 
-``` 
+```
 public List getAllProductsSelectList() {
 List items = new ArrayList();
 for (Product p : ssl.getAllProducts()) {
@@ -234,7 +228,7 @@ Now you should be ready to use to converter in your web page. Open the
 page with the details of the company ("company.jsp" in my case), and add
 the following table of products of one company.
 
-``` 
+```
 <h:datatable value="#{sales.company.products}" var="item">
 <h:column>
 <f:facet name="header"><h:outputtext value="Name"></h:outputtext></f:facet>
@@ -253,7 +247,7 @@ in Backing Bean. Now the following peace of code actually adds the drop
 down list box, which allows user to select one product and add it to the
 company.
 
-``` 
+```xml
 <h:outputtext value="Add Product:"></h:outputtext></h3>
 <h:selectonelistbox size="1" value="#{sales.selectedProduct}">
 <f:selectitems value="#{sales.allProductsSelectList}">
@@ -271,13 +265,13 @@ which we have before prepared in the faces-config.xml. If you try this
 example right now, it will not work, instead you will obtain a strange
 validation error in your GlassFish log.
 To be used by custom JSF converter, the entity class needs to override
-the **Equals** method. This is because the selected item is binded to
+the **Equals** method. This is because the selected item is bound to
 the Backing Bean and when the selected item changes, it is compared to
-the binded field in the Backing Bean. So now you have to override the
+the bound field in the Backing Bean. So now you have to override the
 equals method for your "Product" class. To distinguish two products you
 can simply compare their IDs.
 
-``` 
+```java
 @Override
 public boolean equals(Object obj){
   if (obj == null) {
@@ -297,7 +291,7 @@ return true;
 
 To try out your example you need some simple testing data. You can run this script (just check the names of the fields in the database tables before).
 
-``` 
+```sql
 INSERT INTO SALES.COMPANY (companyname, companydescription) values('First company', 'Sales bananas');
 INSERT INTO SALES.COMPANY (companyname, companydescription) values('Second company', 'Sales oranges');
 

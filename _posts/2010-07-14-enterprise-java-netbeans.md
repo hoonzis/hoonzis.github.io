@@ -8,9 +8,6 @@ tags:
 - JSF
 - J2EE
 modified_time: '2014-06-27T05:31:19.661-07:00'
-thumbnail: http://2.bp.blogspot.com/_fmvjrARTMYo/TEBmdsdJm-I/AAAAAAAAAHI/ql1vT_46hiY/s72-c/netbeans_start_enterprise.PNG
-blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-7514540512490015079
-blogger_orig_url: http://hoonzis.blogspot.com/2010/07/enterprise-java-netbeans.html
 ---
 This is a very old article from the times, when I was very new to Java world. Nowadays [2013] I would probably not recommend looking into JSF and J2EE, but it can serve well someone who decided for these technologies and wants to get started. This article is divided into 3 parts:
 
@@ -45,14 +42,14 @@ everything. Just keep in mind that it was tested on the 6.7.1/GlassFish
 2.1 version and some setting might not work on the newer versions.
 
 ### Technologies & Recommended Reading
-**Java Persistence API** - will help us with Object Relational Mapping -
+- **Java Persistence API** - will help us with Object Relational Mapping -
 it will transfer the Java Objects to the tables in the database.
- **Entity Bean** - represents the object (Company, Product) and its
+- **Entity Bean** - represents the object (Company, Product) and its
 fields (Name, Description) which are later represented as columns in
 data table.
- **Session Bean** - rather represents all the actions which can be done
+- **Session Bean** - rather represents all the actions which can be done
 with the Entity Beans (Create new product, List products of company...)
-**JSF** - web application framework used to speedup an ease the GUI
+- **JSF** - web application framework used to speedup an ease the GUI
 creation. I use the 1.2 version, which is build on top of JSP (a lower
 layer technology for building dynamic web apps).
 
@@ -166,22 +163,21 @@ To convert the class to Entity Beans you have to do two simple steps - **add ann
 
 ```java
 public class Company implements Serializable {
+  @Id
+  @GeneratedValue(strategy=GenerationType.IDENTITY)
+  @Column(name="companyID",nullable=false)
+  private int id;
 
-@Id
-@GeneratedValue(strategy=GenerationType.IDENTITY)
-@Column(name="companyID",nullable=false)
-private int id;
+  @Column(name="companyDescription")
+  private String description;
 
-@Column(name="companyDescription")
-private String description;
+  @Column(name="companyName")
+  private String name;
 
-@Column(name="companyName")
-private String name;
+  @ManyToMany
+  private List products;
 
-@ManyToMany
-private List products;
-
-...and all the setters and getter...
+  // ...and all the setters and getter...
 }
 ```
 
@@ -242,18 +238,16 @@ You can notice that the newly created Bean implements interface ending with "Loc
 The method will be defined in the interface and method stub created in
 the implementation. Now you can edit the code like this:
 
-
 ```java
 @Stateless
 public class SalesSessionBean implements SalesSessionLocal {
+  @PersistenceContext
+  private EntityManager em;
 
-@PersistenceContext
-private EntityManager em;
-
-public List getAllCompanies() {
-  List companies = em.createNamedQuery("Company.getAllCompanies").getResultList();
-  return companies;
-}
+  public List getAllCompanies() {
+    List companies = em.createNamedQuery("Company.getAllCompanies").getResultList();
+    return companies;
+  }
 }
 ```
 
@@ -264,7 +258,6 @@ managed by the Entity Manager are our Entity Beans. In the method you
 can see that we all calling Named Query which we have created before.
 
 ### Backing Beans
-
 Now we will create a middle layer between the Session Bean and JSP site
 representing the GUI - this layer is a Backing Bean. Backing bean is a
 Java class which manages and is accessible from the actual JSP page.
@@ -272,21 +265,16 @@ Create new class in the Web Module (New -> Java Class) and name it
 SalesBack. Now here is the implementation:
 
 
-```
+```java
 public class SalesBack {
+  @EJB
+  SalesSessionLocal ssl;
 
-@EJB
-SalesSessionLocal ssl;
-
-public List<company> getAllCompanies(){
-return ssl.getAllCompanies();
-}
+  public List<company> getAllCompanies(){
+  return ssl.getAllCompanies();
+  }
 }
 ```
-
-
-
-
 
 You can see that the class basically references the Session Bean (Be
 careful you have to reference the interface, not the actual
@@ -295,12 +283,11 @@ Session Bean. From this it seems that this layer is not needed, but
 actually it is quiet helpful as you will see later.
 
 ### Faces configuration
-
 In order to be able to use just create Backing Bean in your JSP pages,
 you will need to perform some changes to **faces-config.xml** file. Open
 the file and add the following into the faces-config element:
 
-```
+```xml
 <managed-bean>
 <managed-bean-name>sales</managed-bean-name>
 <managed-bean-class>sales.back.SalesBack</managed-bean-class>
@@ -312,12 +299,11 @@ Be sure to check the Backing Bean class (including the package name).
 Later you can reference this Backing Bean as "sales" in your JSP page.
 
 ### JSF Page
-
 Now we will show what advantages/components brings Java Server Faces and
 how to use them. First we will create simple page just showing a table
 of all companies in stored in the DB. On the Web Module create a new JSP
 page with JSF. (New -> JSF JSP Page). After you create the page you
-can see that it contains two @taglib directives referencing the JSF
+can see that it contains two \@taglib directives referencing the JSF
 framework TAGs.
 JSP technology can be extended by "custom tags". When we register the
 prefixes using the taglib directory, we introduce all the custom tags
@@ -328,7 +314,7 @@ named "HTML" introduces all the HTML tags and components that brings JSF
 to create nice GUI and functional GUI (buttons, tables, grids...).
 OK, so now lets put in the code which will show the table of companies.
 
-```
+```html
 <h1><h:outputText value="Companies List"/></h1><h:dataTable value="#{sales.allCompanies}" var="item">
 <h:column>
 <f:facet name="header"><h:outputText value="Name"/></f:facet>
@@ -353,8 +339,6 @@ definitions you can address one company in the collection by this name
 
 
 ### Faces Servlet configuration in web.xml
-
-
 Ok now that you have created the JSP file is time to try it. Before you
 will have to tell the application server, that if the user navigates to
 your page, the page contains Faces elements and has to be processed
@@ -362,19 +346,17 @@ using the Faces Servlet. Open the **web.xml** and alter the Faces
 Servlet settings this way:
 
 
-```
+```xml
 <servlet>
-<servlet-name>Faces Servlet</servlet-name>
-<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
-<load-on-startup>1</load-on-startup>
+  <servlet-name>Faces Servlet</servlet-name>
+  <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+  <load-on-startup>1</load-on-startup>
 </servlet>
 <servlet-mapping>
-<servlet-name>Faces Servlet</servlet-name>
-<url-pattern>*.jsf</url-pattern>
+  <servlet-name>Faces Servlet</servlet-name>
+  <url-pattern>*.jsf</url-pattern>
 </servlet-mapping>
 ```
-
-
 
 Important part is the Mapping configuration. Basically you are saying
 that each file ending **jsf** will be processed by the Faces Servlet.
@@ -389,8 +371,7 @@ Obviously the companies table is empty. So go ahead and using NetBeans
 (Services -> Databases) run some SQL INSERT statements and you should
 be able to see the inserted data in your table.
 
-
-```
+```sql
 INSERT INTO SALES.COMPANY (companyname, companydescription) values('First company', 'Sales bananas');
 INSERT INTO SALES.COMPANY (companyname, companydescription) values('Second company', 'Sales oranges');
 ```

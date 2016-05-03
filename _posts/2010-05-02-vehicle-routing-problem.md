@@ -14,15 +14,14 @@ blogger_orig_url: http://hoonzis.blogspot.com/2010/05/vehicle-routing-problem.ht
 One of my school assignments this semester was to implement some of the
 algorithms which solve the Vehicle Routing Problem.
 
-UPDATE: I have moved the source code to [GitHub. Get it or fork the
-project.](https://github.com/hoonzis/Vehical-Routing-Problem)
+UPDATE: I have moved the source code to [GitHub](https://github.com/hoonzis/Vehical-Routing-Problem)
 
 In VRP you have a depot and a set of customers. You have a fleet of
 vehicles which can serve this customers. Each customer can have an exact
 demand on quantity of goods and each vehicle can have capacity which is
 able to serve. This is easily modeled as Graph Theory Problem. The
 problem is NP hard. However there are several algorithms described for
-this problem (heuristics,genetics). To know more about variants and
+this problem (heuristics, genetic algorithms). To know more about variants and
 different solutions check [this
 source.](http://neo.lcc.uma.es/radi-aeb/WebVRP/)
 
@@ -33,11 +32,9 @@ visualize real world problems. Soon I wanted also to visualize the
 random generated graph problems so I included the GWT-INCUBATOR API to
 show some small graphs.
 
-**[Check the program
-here](http://hoonzis.github.io/Vehical-Routing-Problem/vrp/)**
+**[Check the program here](http://hoonzis.github.io/Vehical-Routing-Problem/vrp/)**
 
 ### Basic functions
-
 -   Compute the routes using Clark & Wright or Sweep algorithm
 -   Generate random VRP - including distance matrix, node positions and
     demands of each node
@@ -77,8 +74,6 @@ tab all the routes network connecting all the cities has been
 visualized:
 
 [![image](http://lh5.ggpht.com/-uEinipUqU4Q/T94ePNTSYiI/AAAAAAAAAT8/DpBQvJhR1ik/image_thumb.png?imgmax=800 "image")](http://lh5.ggpht.com/-xUXWVSwBDxE/T94eOYpx7jI/AAAAAAAAAT0/AKSKjPURtJs/s1600-h/image%25255B2%25255D.png)
-
-
 
 Now you need to modify the input - more specifically modify the amounts
 of goods requested by each city. The DEPOT is always in the first city,

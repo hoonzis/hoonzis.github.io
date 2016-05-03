@@ -67,8 +67,6 @@ public void SubmitDocument(XmlDocument doc)
 }
 ```
 
-
-
 In this method first we initialize the **XMLNamespaceManager**. To this
 manager we will have to add 2 namespace. First one is the namespace of
 the data source of the InfoPath document. This one we can find out in
@@ -93,19 +91,12 @@ int amount = Convert.ToInt32(nAmount.InnerText);
 
 Now in the following part I will just show a simple example of method which would store some data to the Access database.
 
-### Preparing the Accesss database connection
-
+### Preparing the Access database connection
 To connect to Access database you can use the OLE DB Provider, exactly
 the .NET Framework OLE DB provider, in the namespace
 **System.Data.OleDB**. First you need to specify the connection string
 to your database. Because we are using web service it is good idea to
-store it in the **Web.config** file. Add the following to the Web.config
-file.
-
-```
-
-```
-
+store it in the **Web.config** file.
 
 Later, already in the code of your Web Service you can prepare yourself
 a property which will provide you this connection string (just not to
@@ -117,8 +108,6 @@ public String ConStr
   get { return ConfigurationManager.ConnectionStrings["myDB"].ConnectionString; }
 }
 ```
-
-
 The following is a simple implementation of a method which stores the
 data in the database. You can made this method part of your Web Service
 directly or build yourself some data access class.
@@ -157,7 +146,6 @@ That is all about the Web Service now you need to go back and configure
 the InfoPath form to connect to the Web Service.
 
 ### Connecting the InfoPath form to the Web Service
-
 OK now lets go back to the InfoPath form design. To submit the document to this web service you will have to **add new data source** select **submit data -&gt; to Web Service**. Than localize you web service and find the method that, you just created and than finally in the Data Connection Wizard select submit **Entire form**.
 
 [![](http://4.bp.blogspot.com/_fmvjrARTMYo/S_JI_j9RQpI/AAAAAAAAAFI/rzD2R2B0AU8/s320/new_data_connection.PNG)](http://4.bp.blogspot.com/_fmvjrARTMYo/S_JI_j9RQpI/AAAAAAAAAFI/rzD2R2B0AU8/s1600/new_data_connection.PNG)
