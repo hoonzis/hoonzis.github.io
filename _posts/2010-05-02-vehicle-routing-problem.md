@@ -43,7 +43,7 @@ here](http://hoonzis.github.io/Vehical-Routing-Problem/vrp/)**
     demands of each node
 -   Compute distance matrix from real world data using Google MAPS API
 
-**Basic usage*
+#### Basic usage
 The input for this utility to compute the vehicle rows has to be
 specified as follows:
 
@@ -67,9 +67,9 @@ You can visualize the output either on Graph or on MAP - if you working
 with real world cities and addresses than you visualize on map. If you
 are working just with sample data the you can visualize on the graph.
 
-
 [![](http://2.bp.blogspot.com/_fmvjrARTMYo/S93laQpp6YI/AAAAAAAAADo/2x8mJ8X7tEs/s320/startup_clark.PNG)](http://2.bp.blogspot.com/_fmvjrARTMYo/S93laQpp6YI/AAAAAAAAADo/2x8mJ8X7tEs/s1600/startup_clark.PNG)
-**Generating distance matrix for real world cities*
+
+#### Generating distance matrix for real world cities
 To generate the distance for several cities for which you know only the
 addresses u will enter in the INPUT box on each line one city and then
 click on "Generate distance matrix". Also you can see that on the MAP
@@ -96,7 +96,8 @@ the following output:
 Now you can visualize these routes in the MAP.
 
 [![](http://3.bp.blogspot.com/_fmvjrARTMYo/S93thngx90I/AAAAAAAAAEw/RxT6p-OSRmM/s320/slark_computed_map.PNG)](http://3.bp.blogspot.com/_fmvjrARTMYo/S93thngx90I/AAAAAAAAAEw/RxT6p-OSRmM/s1600/slark_computed_map.PNG)
-**Generating and visualizing random problem*
+
+#### Generating and visualizing random problem
 To generate random GRAPH VPR Problem you have to specify:
 
 - Number of nodes.
@@ -118,7 +119,8 @@ Now because this is randomly generated problem it is good to visualize
 it in the GRAPH:
 
 [![](http://1.bp.blogspot.com/_fmvjrARTMYo/S93s52ZWphI/AAAAAAAAAEo/kc5Fv6My3gQ/s320/graph_sweep_out.PNG)](http://1.bp.blogspot.com/_fmvjrARTMYo/S93s52ZWphI/AAAAAAAAAEo/kc5Fv6My3gQ/s1600/graph_sweep_out.PNG)
-**THE ISSUES*
+
+#### Current issues
 The clear method of the canvas to visualize the points is not working
 fine - generating new VRP problem will not erase the points of the old
 VRP problem. The main issue is that this application uses the GWT
@@ -136,13 +138,10 @@ the situation about GWT and plugins:
 
 So  what to do now? I have kept the code as it is: using maps v2 and the
 ancient Canvas project. If anyone feels motivated for moving the
-application to GWT 3 (changing Canvas and Maps binding) [just fork it
-away on GitHub.](https://github.com/hoonzis/Vehical-Routing-Problem)
+application to GWT 3 (changing Canvas and Maps binding) [just fork it away on GitHub.](https://github.com/hoonzis/Vehical-Routing-Problem)
 
 ### About the source code
-
-[On GitHub you can currently download two
-packages](https://github.com/hoonzis/Vehical-Routing-Problem):
+The source code is available on [GitHub ](https://github.com/hoonzis/Vehical-Routing-Problem). It contains two parts:
 
 -   Java-only package. That is a basic library and executable program
     which can solve the VRP without the visualization.

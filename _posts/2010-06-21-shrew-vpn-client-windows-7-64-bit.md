@@ -15,15 +15,12 @@ connect to our network. First Cisco didn't support 64 bit, now they do
 support, but I am unable to install the 64bit client. I get this error
 during the installation:
 
-**Installation ended prematurely because of an error.*
+**Installation ended prematurely because of an error.**
 
-Well I am using **Shrew VPN Client** which is freeware and allows to
-import the Cisco Client **pcf** configuration files.
+Well I am using **Shrew VPN Client** which is freeware and allows to import the Cisco Client **pcf** configuration files.
 
-After the import and first try to connect it ended up just with
-**"bringing up tunnel ..."**.
-I had to make one more manual step: Uncheck and Check again the **Shrew
-Soft Lightweight Filter** on the connection properties tab. (Configure
+After the import and first try to connect it ended up just with **"bringing up tunnel ..."**.
+I had to make one more manual step: Uncheck and Check again the **Shrew Soft Lightweight Filter** on the connection properties tab. (Configure
 the connection which connects you to internet).
 
 [![](http://4.bp.blogspot.com/_fmvjrARTMYo/TB9vLL82RvI/AAAAAAAAAFo/4N826L85h-U/s320/shrew_properties.PNG)](http://4.bp.blogspot.com/_fmvjrARTMYo/TB9vLL82RvI/AAAAAAAAAFo/4N826L85h-U/s1600/shrew_properties.PNG)

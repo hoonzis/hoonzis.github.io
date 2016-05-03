@@ -1,6 +1,6 @@
 ---
 layout: post
-title: FSharp.Data and Unit Testing issues
+title: FSharp.Data and Unit Testing
 date: '2015-01-27T04:53:00.001-08:00'
 author: Jan Fajfr
 tags:

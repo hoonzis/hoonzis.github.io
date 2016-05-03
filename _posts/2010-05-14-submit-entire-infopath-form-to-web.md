@@ -30,10 +30,7 @@ So I decided to submit "**the entire form**" and than parse it on the
 web service side. Here is a short example of how to do this.
 
 ### Preparing the InfoPath form
-
-
-First let's create simple InfoPath form with one repeating table (eg.
-list of products)
+First let's create simple InfoPath form with one repeating table (eg. list of products)
 
 [![](http://3.bp.blogspot.com/_fmvjrARTMYo/S_JCNvVoQTI/AAAAAAAAAE4/QH0Mh4JSTmA/s320/table.PNG)](http://3.bp.blogspot.com/_fmvjrARTMYo/S_JCNvVoQTI/AAAAAAAAAE4/QH0Mh4JSTmA/s1600/table.PNG)
 
@@ -44,33 +41,29 @@ XML representing the InfoPath form.
 [![](http://4.bp.blogspot.com/_fmvjrARTMYo/S_JCoBU3YII/AAAAAAAAAFA/21llrJgBHCs/s320/data_sources.PNG)](http://4.bp.blogspot.com/_fmvjrARTMYo/S_JCoBU3YII/AAAAAAAAAFA/21llrJgBHCs/s1600/data_sources.PNG)
 
 ### Creating the Web Service
+In the web service you will need a method which takes **XmlDocument** and will parse this XML document representing the InfoPath form and store it's values to the database.
 
 
-In the web service you will need a method which takes **XmlDocument**
-and will parse this XML document representing the InfoPath form and
-store it's values to the database.
-
-
-```
+```csharp
 [WebMethod]
 public void SubmitDocument(XmlDocument doc)
 {           
-XmlNamespaceManager nsManager = new XmlNamespaceManager(doc.NameTable);
-nsManager .AddNamespace(formNamespace, formURI);
-nsManager .AddNamespace("dfs",
-"http://schemas.microsoft.com/office/infopath/2003/dataFormSolution");
+  XmlNamespaceManager nsManager = new XmlNamespaceManager(doc.NameTable);
+  nsManager .AddNamespace(formNamespace, formURI);
+  nsManager .AddNamespace("dfs",
+  "http://schemas.microsoft.com/office/infopath/2003/dataFormSolution");
 
-XmlNode root = doc.DocumentElement;
-XmlNodeList list = root.SelectNodes("/dfs:IPDocument/my:myFields/my:prodList/my:product", nsManager);
+  XmlNode root = doc.DocumentElement;
+  XmlNodeList list = root.SelectNodes("/dfs:IPDocument/my:myFields/my:prodList/my:product", nsManager);
 
-foreach (XmlNode node in list)
-{
-string name = node.SelectSingleNode("/dfs:IPDocument/my:myFields/my:prodList/my:product/my:name", nsManager).InnerText;
-string price = node.SelectSingleNode("/dfs:IPDocument/my:myFields/my:prodList/my:product/my:price", nsManager).InnerText;
-string amount = node.SelectSingleNode("/dfs:IPDocument/my:myFields/my:prodList/my:product/my:amount", nsManager).InnerText;
+  foreach (XmlNode node in list)
+  {
+    string name = node.SelectSingleNode("/dfs:IPDocument/my:myFields/my:prodList/my:product/my:name", nsManager).InnerText;
+    string price = node.SelectSingleNode("/dfs:IPDocument/my:myFields/my:prodList/my:product/my:price", nsManager).InnerText;
+    string amount = node.SelectSingleNode("/dfs:IPDocument/my:myFields/my:prodList/my:product/my:amount", nsManager).InnerText;
 
-SubmitToDataBase(name,price, amount);
-}
+    SubmitToDataBase(name,price, amount);
+  }
 }
 ```
 
@@ -87,13 +80,13 @@ namespace to the document marked as: **dfs** with the url
 and you need to add the namespace to your namespace manager.
 
 
-```
+```csharp
 nsManager .AddNamespace("dfs", "http://schemas.microsoft.com/office/infopath/2003/dataFormSolution");
 ```
 
 Then to get value of certain field in the **XmlDocument** we need to know the **XPath** which leads directly to the desired **XmlNode**. We can get the XPath by the **Copy XPath** option, which can be found in the context menu of desired field in the "Data Sources" tab in your InfoPath client. For example to get the "amount" XmlNode and later the string representing a number inside this node we can use the following code:
 
-```
+```csharp
 XmlNode nAmount = node.SelectSingleNode("/dfs:IPDocument/my:myFields/my:prodList/my:product/my:amount", nsManager);
 int amount = Convert.ToInt32(nAmount.InnerText);
 ```
@@ -118,10 +111,10 @@ Later, already in the code of your Web Service you can prepare yourself
 a property which will provide you this connection string (just not to
 write too long lines of code).
 
-```
+```csharp
 public String ConStr
 {
-get { return ConfigurationManager.ConnectionStrings["myDB"].ConnectionString; }
+  get { return ConfigurationManager.ConnectionStrings["myDB"].ConnectionString; }
 }
 ```
 
@@ -130,30 +123,29 @@ The following is a simple implementation of a method which stores the
 data in the database. You can made this method part of your Web Service
 directly or build yourself some data access class.
 
-```
+```csharp
 public void SubmitToDataBase(String name, String price, String amount)
 {
-OleDbConnection con = new OleDbConnection(ConStr);
+  OleDbConnection con = new OleDbConnection(ConStr);
 
-String cmd = "INSERT INTO products(name,price,amount)values(?,?,?)";
-OleDbCommand command = new OleDbCommand(cmd, con);
+  String cmd = "INSERT INTO products(name,price,amount)values(?,?,?)";
+  OleDbCommand command = new OleDbCommand(cmd, con);
 
-OleDbParameter pName = new OleDbParameter();
-pName.Value = name;
-command.Parameters.Add(pName);
+  OleDbParameter pName = new OleDbParameter();
+  pName.Value = name;
+  command.Parameters.Add(pName);
 
-OleDbParameter pPrice = new OleDbParameter();
-pPrice.Value = Convert.ToInt32(price);
-command.Parameters.Add(pName);
+  OleDbParameter pPrice = new OleDbParameter();
+  pPrice.Value = Convert.ToInt32(price);
+  command.Parameters.Add(pName);
 
-OleDbParameter pAmount = new OleDbParameter();
-pAmount.Value = Convert.ToInt32(amount);
-command.Parameters.Add(pAmount);
+  OleDbParameter pAmount = new OleDbParameter();
+  pAmount.Value = Convert.ToInt32(amount);
+  command.Parameters.Add(pAmount);
 
-con.Open();
-command.ExecuteNonQuery();
-con.Close();
-
+  con.Open();
+  command.ExecuteNonQuery();
+  con.Close();
 }
 ```
 
@@ -172,7 +164,7 @@ OK now lets go back to the InfoPath form design. To submit the document to this 
 
 Now just to give you a complete idea, here is the XML which is submitted to the web service. However if the document is saved as XML later (eg. in the SharePoint document library), the **dfs** namespace is not presented.
 
-```
+```xml
 <dfs:IPDocument xmlns:dfs="http://schemas.microsoft.com/office/infopath/2003/dataFormSolution"><?mso-infoPathSolution solutionVersion="1.0.0.4" productVersion="12.0.0" PIVersion="1.0.0.0" href="file:///C:\Users\fajfr\AppData\Local\Microsoft\InfoPath\Designer2\23fae1f325544a92\manifest.xsf" ?><?mso-application progid="InfoPath.Document" versionProgid="InfoPath.Document.2"?>
 <my:myFields xmlns:my="http://schemas.microsoft.com/office/infopath/2003/myXSD/2010-05-18T07:21:28" xml:lang="en-us">
 <my:prodList>
