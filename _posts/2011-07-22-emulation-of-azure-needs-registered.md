@@ -20,7 +20,7 @@ Here is a good blog which describes hot to diagnose this error:
 At the core the issue was:
 
 **Handler "PageHandlerFactory-Integrated" has a bad module
-"ManagedPipelineHandler" in its module list*
+"ManagedPipelineHandler" in its module list**
 
 I quickly found out what was the issue. Later to perform some testing I
 have uninstalled ASP.NET 4 extensions from my IIS and kept just the 3.5

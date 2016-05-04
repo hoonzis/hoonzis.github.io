@@ -7,9 +7,6 @@ tags:
 - Java
 - WCF
 modified_time: '2014-06-27T03:16:50.639-07:00'
-thumbnail: http://4.bp.blogspot.com/-Yli21ev2fgI/TgdPxAh6YFI/AAAAAAAAAMI/4Na-cg7zLIU/s72-c/fidler_cookie.PNG
-blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-291252293214641586
-blogger_orig_url: http://hoonzis.blogspot.com/2011/07/consuming-wcf-services-with-java-client.html
 ---
 Here is the state of my latest project: I have a Silverlight application
 which talks to traditional WCF services in backend. The services have so
@@ -27,8 +24,7 @@ the backend side, since these services are hosted by IIS 7.
 Here I want to describe how to configure WCF services to be consumed by
 JAVA clients.
 The second part which describes how to keep using Forms Authentication
-is described in [my other
-post]({{site.baseurl}}{post_url2011-07-08-aspnet-forms-authentication-and-java}\)
+is described in [previous post](www.hoonzis.com/2011-07-08-aspnet-forms-authentication-and-java).
 
 To expose the services for JAVA client, we have two options:
 
@@ -45,7 +41,6 @@ expose these services using REST approach.
 
 
 ### Changing WCF configuration
-
 The first step is to start changing WCF configuration which is presented
 in "web.config" file (at least in the case of service hosted in IIS).
 
@@ -71,7 +66,7 @@ change the binding to **basicHttpBinding**.
     <binaryMessageEncoding />
     <httpTransport />
 </binding>
-    
+
 <service name="Octo.Bank.Web.WCFServices.WCFUserService" behaviorConfiguration="NeutralBehavior">
     <endpoint address="" binding="BinaryOverHTTPBinding" contract="MyProject.WCFUserService"/>
     <endpoint address="mex" binding="mexHttpBinding" contract="IMetadataExchange"/>
@@ -84,7 +79,7 @@ Replace the binding configuration in the **endpoint** definition.
 ```
 Just to completed the image here, the **service** is configured to user "NeutralBehavior".
 
-``` 
+```xml
 <behavior name="NeutralBehavior">
   <serviceMetadata httpGetEnabled="true"/>
   <serviceDebug includeExceptionDetailInFaults="false"/>
@@ -100,7 +95,6 @@ Now that is the bare minimum to be able to connect to this
 WCFUserService with Java client.
 
 ### Defining the namespaces and ports
-
 While WCF Client, or Silverlight Client do not have a problem to
 generate a stub client for the defined service, when you will try to
 generate the client in java, you will obtain an exception saying that
@@ -154,7 +148,7 @@ to make calls to other already protected services.
 MyServiceLocator locator = new MyServiceLocator();
 WCFUserService client = locator.getBasicHttpBinding_WCFUserService();
 ((Stub)client)._setProperty(Call.SESSION_MAINTAIN_PROPERTY,new Boolean(true));
-((Stub)client)._setProperty(HTTPConstants.HEADER_COOKIE, ".ASPXAUTH=" + 
+((Stub)client)._setProperty(HTTPConstants.HEADER_COOKIE, ".ASPXAUTH=" +
 cookie);
 Object data = client.GetSecuredData(myParam);
 ```
@@ -199,19 +193,19 @@ try {
   // Service
   ServiceFactory factory = ServiceFactory.newInstance();
   Service service =  factory.createService(wsdlLocation,serviceName);
-  
+
   //Add the handler to the handler chain
   HandlerRegistry hr = service.getHandlerRegistry();
   HandlerInfo hi = new HandlerInfo();
   hi.setHandlerClass(SimpleHandler.class);
   handlerChain.add(hi);
-  
+
   QName  portName = new QName("http://localhost:49830/WCFServices/WCFUserService.svc?wsdl", "BasicHttpBinding_AuthService");
   List handlerChain = hr.getHandlerChain(portName);
-  
+
   QName operationName = new QName("http://localhost:49830/WCFServices/WCFUserService.svc?wsdl", "Login");
   Call call = service.createCall(portName,operationName);
-  
+
   //call the operation
   Object resp = call.invoke(new java.lang.Object[] {"login","pass"});
 }
@@ -225,9 +219,9 @@ added to the HTTP handler chain
 
 ```java
 public class SimpleHandler extends GenericHandler {
- 
+
   HandlerInfo hi;
- 
+
   public void init(HandlerInfo info) {
     hi = info;
   }
@@ -238,36 +232,36 @@ public class SimpleHandler extends GenericHandler {
 
   public boolean handleResponse(MessageContext context) {
     try {
-     
+
      //Iterate over all properties - did not find the cookie there :(
      Iterator properties = context.getPropertyNames();
         while(properties.hasNext()){
          Object property = properties.next();
          System.out.println(property.toString());
         }
-        
-      //examine the response header - did not find the cookie there either :( 
+
+      //examine the response header - did not find the cookie there either :(
       if(context.containsProperty("response")){
        Object response = context.getProperty("response");
        HttpResponse httpResponse = (HttpResponse)response;
-       
+
        Header[] headers = httpResponse.getAllHeaders();
        for(Header header:headers){
         System.out.println(header.toString());
        }
       }
-     
+
      //here is how to get the SOAP headers - they do not serve - we need pure HTTP response
       // get the soap header
       SOAPMessageContext smc = (SOAPMessageContext) context;
       SOAPMessage message = smc.getMessage();
-      
+
     } catch (Exception e) {
       throw new JAXRPCException(e);
     }
     return true;
   }
-  public boolean handleRequest(MessageContext context) { 
+  public boolean handleRequest(MessageContext context) {
     return true;
   }
 }
@@ -284,7 +278,7 @@ client to connect to these secured services.
 To expose the service as RESTfull we will have to define another
 endpoint for the service.
 
-```xml 
+```xml
 <service behaviorConfiguration="NeutralBehavior" name="MyServic">
   <endpoint address="json" binding="webHttpBinding"  behaviorConfiguration="jsonBehavior" contract="Octo.Bank.Web.WCFServices.WCFAccountService" name="JsonEndpoint"/>
   <endpoint address="soap" binding="basicHttpBinding" .../>
@@ -327,7 +321,6 @@ itself. If we would have a method which posts data, it would be decorated with
 \[WebInvoke\] attribute.
 
 ### Summary
-
 I have shown how to change the configuration to publish WCF Service
 using SOAP protocol and consume this services with JAVA client. At the
 end I just showed how to expose the service using REST approach.

@@ -15,10 +15,7 @@ This posts talks about a tool which can help you convert lines in raster
 maps to a set of locations which later can be visualized using
 Silverlight Bing Maps (or some other mapping framework).
 
-I call the application **Silverlight Map Creator** :) and it is
-disponible at:
-<http://mapcreator.codeplex.com/>.
-
+I call the application **Silverlight Map Creator** and it is available at [http://mapcreator.codeplex.com/](http://mapcreator.codeplex.com/)
 
 This application can help you a bit when you have an existing map in a
 bitmap picture format (png, jpeg) and you would like to use the route
@@ -26,11 +23,10 @@ lines from this map in your application.
 
 Then you have two options:
 
-
 -   Use MapCruncher. MapCruncher is tool from MS which allows you to
     create your own Tiles source from existing map. OK, if you never
     heard of Tiles:
-    
+
     When using a map component (Google Maps, Bing Maps or any other) the
     entire map is composed of several tiles, each tile, when you zoom in
     is again composed of "smaller tiles" (they are of the same size, but
@@ -39,12 +35,12 @@ Then you have two options:
     tiles based on the raster image. Later you can use this new map and
     "put it over" the standard Bing/Google/Open map - thus showing the
     additional information.
-    
+
     This however has one disadvantage - the map is quite static - it is
     just a bunch of pixel on top of your the classic map - you are for
     example not able to get the total length of the route on the map.
 -   You need to obtain the geo-data which specify the route lines - in
-    other words coordinations of the route points. To obtain this data
+    other words coordinates of the route points. To obtain this data
     from predefined image you would need to first set the correspondence
     between the image and the map and than analyze the image to get all
     the points of your map.
@@ -55,22 +51,14 @@ Then you have two options:
 Here is a screen shot of the Map Creator tool which will help you
 accomplish it:
 
-
-
-
 [![](http://4.bp.blogspot.com/-OWat90XDXOI/Te6rdb5WY-I/AAAAAAAAALQ/ArDO4OjD7Gw/s320/map_creator_view.PNG)](http://4.bp.blogspot.com/-OWat90XDXOI/Te6rdb5WY-I/AAAAAAAAALQ/ArDO4OjD7Gw/s1600/map_creator_view.PNG)
-
-
-
 
 
 If you are wondering in the screenshot I am converting a map of a
 ski-race (www.jiz50.cz) to a set of points. In the left part you can see
 the map (jpg image) and in the right part the resulting route.
 
-
 ### Converting raster image to map
-
 The task of converting raster image to map data is composed of the
 following parts:
 
@@ -82,30 +70,21 @@ following parts:
 -   Press Start and hope to get some results
 -   Perform some changes to the route
 -   Add the route which you have obtained to the "result" set
-    -&gt; result set defines the data which is used to generate the
+    -> result set defines the data which is used to generate the
     XML.
-    -&gt; also this is the data which is saved any time, that you press
+    -> also this is the data which is saved any time, that you press
     save
 -   Generate XML data for your maps
 
 To accomplish all of that the application has a simple menu:
 
-
-
 [![](http://4.bp.blogspot.com/-O3lmZzFGSBw/Te6rvXPC68I/AAAAAAAAALY/sNLJ49jLVVs/s320/map_creator_menu.PNG)](http://4.bp.blogspot.com/-O3lmZzFGSBw/Te6rvXPC68I/AAAAAAAAALY/sNLJ49jLVVs/s1600/map_creator_menu.PNG)
 
-
-
-
-
-
 Here are some details to the parts which are not straightforward:
-
-
 ### Setting correspondences
 
 
-**Technical background*
+**Technical background**
 Generally to set correspondences between two coordination systems you
 need to determine if there is a transformation which could transform the
 coordinates of one point from the resource to the resulting coordination
@@ -124,39 +103,40 @@ translation, for example skewing is not allowed.
 The relation between the two coordination systems can be specified using
 the following equation:
 
-sx = c00\*rx + c01\*ry + c02
-sy = c10\*rx + c11\*ry + c12
+```
+sx = c00*rx + c01*ry + c02
+sy = c10*rx + c11*ry + c12
+```
 
-(rx, ry) - coordinates in resource coordination system (so lets say
+**(rx, ry)** - coordinates in resource coordination system (so lets say
 pixels in the image)
-(sx,sy) - coordinates in the resulting system (so lets say longitude and
+**(sx,sy)** - coordinates in the resulting system (so lets say longitude and
 latitude)
 
 So we need 6 parameters. For each point we have 2 equations, so we need
 3 points to have 6 equations for 6 parameters. In matrix notation we can
 write it like this.
 
-\[c00 c01 c02\] \[x1 x2 x3\] \[u1 u2 u3\]
-\[c10 c11 c12\] \[y1 y2 y3\] = \[v1 v2 v3\]
-\[ 1 1 1\]
+```
+[c00 c01 c02] [x1 x2 x3] [u1 u2 u3]
+[c10 c11 c12] [y1 y2 y3] = [v1 v2 v3]
+[ 1 1 1]
+```
 
-**In Map Creator*
+**In Map Creator**
 Just select the "Correspondences" radio button. Then every time you
 click "Right" on the image, a new point is added to a list, when you
 select the point and click right on the map a correspondence will be
 set.
 
 
-Select colors of the route
---------------------------
-
+### Select colors of the route
 Just select the "Color selection" radio button. Than when you click
 right button the mouse in the picture the color will be selected (and
 added to the list).
 
 
 ### Set the parameters
-
 There are 4 parameters which somehow change the why the resulting route
 is going to look like:
 **1)Search Range** - basically it says what is the minimal distance in
@@ -173,22 +153,20 @@ part (RGB).
 represented separately. This parameter sets the minimal points for each
 route. If there is a route with less points that this parameter sets, it
 will not be added to the result.
-**Distance to connect**After the analysis, some routes which should be
+**Distance to connect**
+After the analysis, some routes which should be
 connected are will not be. Typical example are the side routes. There
 will always be a little space between the main route and the side
 routes. This parameter sets what is the maximal distance between to
 routes which should be connected.
 
-
 ### Performing changes to the resulting route
-
 There are two possible changes that you can do:
-1) Remove the point by clicking the right button
-2) Change the position of the point by dragging it
+- Remove the point by clicking the right button
+- Change the position of the point by dragging it
 
 
 ### Adding the route the the results
-
 Generally a map is composed of several routes. The basic idea behind
 this tool is that once you have finished working on a route, you can add
 it to the result (pressing the button on the list of colors). When the
@@ -197,31 +175,21 @@ again.
 
 
 ### Saving your work
-
 By pressing "Save" button you can save your work. Saved will be the list
 of correspondences and the routes in the "result" set. This why the next
 time you can continue working on existing map.
 
 
 ### Generating XML
-
 The main idea is to use the data which you have generated in your
 application. The "Generate XML" button simply serializes the "result"
-set to XML.
-As said before: Map is a collection of routes. Route is a collection of
+set to XML. As said before: Map is a collection of routes. Route is a collection of
 lines. Line is a collection of locations.
-OK, in C\# or Java or whichever language it is something like this:
-
-
-``` 
-List<List<List<Location>>> result
-```
-
 
 When you serialize this object to XML (here just using the standard C\#
 serializer you will obtain XML with following structure:
 
-``` 
+```xml
 <?xml version="1.0" encoding="utf-16"?>
 <arrayofarrayofarrayoflocation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <arrayofarrayoflocation>
@@ -243,13 +211,10 @@ serializer you will obtain XML with following structure:
 </ArrayOfArrayOfArrayOfLocation>
 ```
 
-
 OK, I agree - it is too verbose and not optimized and for most ugly, but
 I did not have time to implement my own format.
 
-
 ### Future
-
 So that's it. I am not sure that this tool will be useful to anyone, if
 you think that you might use it, if you have a suggestion or a bug, just
 leave me a note here...(ok not for the bugs, there is too many of them

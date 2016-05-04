@@ -9,23 +9,20 @@ modified_time: '2014-06-26T14:52:34.291-07:00'
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-2193220764597818623
 blogger_orig_url: http://hoonzis.blogspot.com/2011/07/provide-jsonp-with-your-wcf-services.html
 ---
-This post contains a small correction to MS provided example for returning JSONP with over WCF. The example is awailable [here](https://msdn.microsoft.com/en-us/library/cc716898(v=vs.90).aspx) and works in most cases correctly, except the case when you are returning a raw JSON, that is you are not returning object which is serialized in to JSON, but rather returning a Stream which represents this JSON.
+This post contains a small correction to MS provided example for returning JSONP with over WCF. The example is available [here](https://msdn.microsoft.com/en-us/library/cc716898(v=vs.90).aspx) and works in most cases correctly, except the case when you are returning a raw JSON, that is you are not returning object which is serialized in to JSON, but rather returning a Stream which represents this JSON.
 
-Such case might occur if you are building the JSON dynamically and not just serializing objects. The exception which you might obtain will be something allong these lines:
+Such case might occur if you are building the JSON dynamically and not just serializing objects. The exception which you might obtain will be something along these lines:
 
 ```
 Encountered invalid root element name 'Binary'. 'root' is the only allowed root element name.
-
 ```
 
 ### About JSONP
-
 JSON with Padding is a transport format, which uses the ability of *script* tag to execute scripts from different domains to overcome the cross-domain access issue. Generally the returned JSON is wrapped by JavaScript function which can be executed cross-domain.
 
 So before we start - JSONP support is already added to .NET 4 so the services can be configured to use JSONP only by adding the *CrossDomainScriptAccessEnabled* attribute.
 
 ### When the problem occurs
-
 However I am stuck with NET 3.5 - so I needed to provide JSONP manually. Actually that is not that hard because MS provides this functionality in the WCF-WF example package ([Downloadable
 here](http://msdn.microsoft.com/en-us/library/cc716898(v=vs.90).aspx)).
 
@@ -38,7 +35,7 @@ blog.](http://jasonkelly.net/2009/05/using-jquery-jsonp-for-cross-domain-ajax-wi
 So basically to enable JSONP you just need to add JSONPBehavior attribute to your service. In fact this behavior uses JSONPEncoderFactory class, which defines an encoder (JSONPEncoder) which
 converts the messages to JSONP. The encoding takes place in the override WriteMessage method. Let's take a look at the method provided in the MS example.
 
-```
+```csharp
 public override ArraySegment&ltbyte> WriteMessage(Message message, int maxMessageSize, BufferManager bufferManager, int messageOffset)
 {
     MemoryStream stream = new MemoryStream();
@@ -94,7 +91,6 @@ to create reasonable Json object.
 
 
 ### Solution
-
 The solution to the problem is following:
 
 -   Check the format of the message (if it Json or Raw Stream)
@@ -102,7 +98,7 @@ The solution to the problem is following:
     bytes
 -   If it is Json, than use the same procedure as before
 
-```
+```csharp
 public override ArraySegment&ltbyte> WriteMessage(Message message, int maxMessageSize, BufferManager bufferManager, int messageOffset)
 {
     WebContentFormat messageFormat = this.GetMessageContentFormat(message);
@@ -168,7 +164,7 @@ blog post is a great source of information regarding customization of
 WCF Service, definitely worth checking.
 
 
-```
+```csharp
 private WebContentFormat GetMessageContentFormat(Message message)
 {
     WebContentFormat format = WebContentFormat.Default;

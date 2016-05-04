@@ -11,7 +11,7 @@ blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-29193757941579515
 blogger_orig_url: http://hoonzis.blogspot.com/2011/05/bing-maps-bindable-tileslayer.html
 ---
 
-Specifying secondary tiles source allows you to cover parts of the map with you another layer. This layer might contain some additional information, such as new routes or points or any other geolocated information. In Silverlight you can use secondary tiles source by using the <b>TilesLayer</b> and <b>LocationRectTileSource</b> elements.
+Specifying secondary tiles source allows you to cover parts of the map with you another layer. This layer might contain some additional information, such as new routes or points or any other geolocated information. In Silverlight you can use secondary tiles source by using the **TilesLayer** and **LocationRectTileSource** elements.
 
 With Bing Maps and Silverlight you would basically do it like this:
 
@@ -25,12 +25,12 @@ With Bing Maps and Silverlight you would basically do it like this:
 And in codebehind:
 
 ```csharp
-layer.TileSources.Clear();
-LocationRectTileSource source = new LocationRectTileSource();
-source.UriFormat = viewModel.TilesURL;
-source.BoundingRectangle = new LocationRect(viewModel.leftCorner, viewModel.rightCorner);
-source.ZoomRange = new Range<double>(10, 18);
-layer.TileSources.Add(source);
+  layer.TileSources.Clear();
+  LocationRectTileSource source = new LocationRectTileSource();
+  source.UriFormat = viewModel.TilesURL;
+  source.BoundingRectangle = new LocationRect(viewModel.leftCorner, viewModel.rightCorner);
+  source.ZoomRange = new Range<double>(10, 18);
+  layer.TileSources.Add(source);
 ```
 
 That works just fine, nevertheless it would be nice to do all of this in xml markup, in other words use data binding to populate UriFormat and Bounding Rectangle properties.
@@ -39,8 +39,7 @@ However some properties in the Bing Maps framework are not defined as Dependency
 
 When you try to bind whatever string to this property, than you will obtain XML parsing error during run-time.
 
-The similar situation happens for example for Stroke property of MapPolyline, which is probably more common issue. Here is a [fine solution for that one](http://geekswithblogs.net/bdiaz/archive/2010/02/27/bing-maps-data-binding-issues---
-cant-bind-to-stroke.aspx)
+The similar situation happens for example for Stroke property of MapPolyline, which is probably more common issue. Here is a [fine solution for that one](http://geekswithblogs.net/bdiaz/archive/2010/02/27/bing-maps-data-binding-issues---cant-bind-to-stroke.aspx)
 
 But back to the LocationRectTileSource. When there is property which is
 not DependencyProperty and you would still like to bind data to this

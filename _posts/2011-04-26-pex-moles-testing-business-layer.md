@@ -14,8 +14,7 @@ blogger_orig_url: http://hoonzis.blogspot.com/2011/04/pex-moles-testing-business
 The question is fairly simple: Should I use Pex to generate unit tests
 for my business layer?
 
-Code examples related to this post are available at [this GitHub
-repository.](https://github.com/hoonzis/PexMolesAndFakes)
+Code examples related to this post are available at [this GitHub repository.](https://github.com/hoonzis/PexMolesAndFakes)
 
 In this post I would like to cover two parts:
 
@@ -32,14 +31,11 @@ In this post I would like to cover two parts:
 
 
 ### Pex and Moles basics
-
 Pex is a testing tool which helps you generate unit tests. Moles is a
 framework which enables you to isolate parts which are tested from other
 application layers.
 
-Pex basics
-----------
-
+### Pex basics
 Pex is a tool which can help you generate inputs for your unit tests. To
 use Pex you have to be writing **Parametrized Unit Tests**. Parametrized
 Unit Tests are simple tests which accept parameters and Pex could help
@@ -48,7 +44,7 @@ you generate these parameters.
 Lets take a look at a first example, here is a simple method which you
 would like to test:
 
-``` 
+```csharp
 public static string SomeDumbMethod(int i, int j)
 {
  if (i > j )
@@ -70,7 +66,7 @@ cover all the branches of the method, thus cover all the possible
 outputs (that is not a generic rule). But instead of that we will write
 a unit test which accepts the possible inputs as parameters.
 
-``` 
+```csharp
 [PexClass(typeof(Utils))]
 [TestClass]
 public partial class UtilsTest
@@ -90,15 +86,9 @@ generate unit tests. So now to ask Pex to generate the inputs, click
 right on the body of the method and select **Run Pex Explorations**. Pex
 will generate 3 unit tests, which you can review in the Pex Window.
 
-
-
 [![](http://4.bp.blogspot.com/-jGyZ_e-2ax0/Ta4P7sdJPeI/AAAAAAAAAKU/fbPU0gC_neQ/s320/pex2.PNG)](http://4.bp.blogspot.com/-jGyZ_e-2ax0/Ta4P7sdJPeI/AAAAAAAAAKU/fbPU0gC_neQ/s1600/pex2.PNG)
 
-
-
-How does Pex work
------------------
-
+### How does Pex work
 Pex is using static analysis of your code, to determine which inputs
 will achieve the maximal coverage of exposed method. Pex does not
 randomly pick values to use as inputs, instead of that Pex is using an
@@ -109,7 +99,6 @@ The main force of Pex is above all the ability to generate parameters
 which would allow to cover all the branches of tested method.
 
 ### Moles basics
-
 Moles is a stubbing framework. It allows you to isolate the parts of the
 code which you want to test from other layers. Several other stubbing or
 mocking frameworks (RhinoMock, NMock) are out there for free or not, so
@@ -134,7 +123,7 @@ use these moles in your tests.
 Instead of complicated descriptions, here is a simple method, which
 checks the actual date and outputs a string based on the date:
 
-``` 
+```csharp
 public static String GetMessage()
 {
  if (DateTime.Now.DayOfYear == 1)
@@ -153,15 +142,11 @@ NowGet, which gets called when asked for DateTime.Now. To be able to use
 **MDateTime** you have to add the moles assemblies by right clicking the
 References in your project.
 
-
-
 [![](http://4.bp.blogspot.com/-odL1eEO2Q5g/Ta4OspA13PI/AAAAAAAAAKE/6JE3k4LgcrM/s320/add_moles.png)](http://4.bp.blogspot.com/-odL1eEO2Q5g/Ta4OspA13PI/AAAAAAAAAKE/6JE3k4LgcrM/s1600/add_moles.png)
-
-
 
 After that you can write your method as follows:
 
-``` 
+```csharp
 [PexMethod]
 public string GetMessage(bool newyear)
 {
@@ -185,11 +170,7 @@ the executed brunch is by generating parameters. So I add a bool
 parameter to the test method, which I will ask Pex to generate. Here is
 the result which I get:
 
-
-
 [![](http://2.bp.blogspot.com/-dw4FichE0ZY/Ta4PjRJg1QI/AAAAAAAAAKM/T2iwY7oLdM0/s320/pex1.PNG)](http://2.bp.blogspot.com/-dw4FichE0ZY/Ta4PjRJg1QI/AAAAAAAAAKM/T2iwY7oLdM0/s1600/pex1.PNG)
-
-
 
 This was a particular case, but the approach should be always the same.
 When stubs are needed for certain assembly you can always generate them
@@ -197,7 +178,6 @@ by right-clicking the reference and selecting **Add moles assembly**.
 Than you can use these stubs as any other classes in your test methods.
 
 ### Use Pex to test business layer
-
 So you are probably thinking that all that is nice, but it does not
 really serve in real projects? That is what I am sometimes thinking
 also, so here I would like to present an attempt to use Pex to test
@@ -210,7 +190,7 @@ In this example I introduce an **AccountService** class, which depends
 on two repositories: **AccountRepository** and **OperationRepository**.
 Here are the definitions of the repositories:
 
-``` 
+```csharp
 public interface IOperationRepository
 {
  void CreateOperation(Operation o);
@@ -230,7 +210,7 @@ dependend on these two repositories. To test just AccountServices class
 I will mock these repositories (but about that later).
 Here is AccountServices class:
 
-``` 
+```csharp
 public class AccountService
 {
  private IAccountRepository _accountRepository;
@@ -257,7 +237,7 @@ Now to test these methods we have to stub or mock OperationRepository
 and AccountRepository.
 Let's start with **MakeTransfer** method.
 
-``` 
+```csharp
 public void MakeTransfer(Account creditAccount, Account debitAccount, decimal amount)
 {
  if (creditAccount == null)
@@ -301,7 +281,7 @@ Moles to the constructor of AccountServices class.
 In the following example SIAccountRepository and SIOperationRepository
 are stubs generated by Moles.
 
-``` 
+```csharp
 [PexMethod, PexAllowedException("SimpleBank", "SimpleBank.AccountServiceException")]
 public void MakeTransfer(Account creditAccount,Account debitAccount,decimal amount)
 {
@@ -314,11 +294,7 @@ public void MakeTransfer(Account creditAccount,Account debitAccount,decimal amou
 
 Let's take a look at Pex's output after running the Pex Test.
 
-
-
 [![](http://2.bp.blogspot.com/-ysVhq1WdxaE/TbSKnhs1vjI/AAAAAAAAAKs/N8FQDGoRNWA/s320/make_transfer.PNG)](http://2.bp.blogspot.com/-ysVhq1WdxaE/TbSKnhs1vjI/AAAAAAAAAKs/N8FQDGoRNWA/s1600/make_transfer.PNG)
-
-
 
 That is not bad, so Pex generated for me 6 unit tests, which normally I
 would have to write and also discovered Overflow exception which I did
@@ -330,7 +306,7 @@ would be. If we wish to check whether the methods were called, we have
 to implement this on our own.
 Now let's take a look at **GetCustomersForAdvisor**.
 
-``` 
+```csharp
 public List<operation> GetOperationsForAccount(int accountID)
 {
  Account account = _accountRepository.GetAccount(accountID);
@@ -355,7 +331,7 @@ GetAccount method. In the following snippet of code I use
 SIAccountRepository stub generated by Moles and I specify the value
 which should be return after callin GetAccount(int x) method.
 
-``` 
+```csharp
 [PexMethod]
 public List<Operation> GetOperationsForAccount(int accountID)
 {
@@ -388,10 +364,7 @@ operations. Than I set the delegate of GetAccount method of the
 SIAccountRepository stub to search in the list by the account id. Now
 let's run Pex and see the result.
 
-
-
 [![](http://3.bp.blogspot.com/-tDeBoQSzJPY/TbZ_QSSd_AI/AAAAAAAAAK0/TaQvwe5-4i0/s320/getoperations.PNG)](http://3.bp.blogspot.com/-tDeBoQSzJPY/TbZ_QSSd_AI/AAAAAAAAAK0/TaQvwe5-4i0/s1600/getoperations.PNG)
-
 
 
 So Pex basically tried the two ID's of the accounts in the predefined
@@ -400,12 +373,12 @@ that is the fact, that I have to define my own list of accounts to stub
 the account repository, on the other hand I do it only once and also the
 way the stub is of the GetAccount method is defined is quite
 straight-forward; I only tell Pex to search in the list, and I do not
-have to specify exactely which ID will provide me with which account.
+have to specify exactly which ID will provide me with which account.
 The last method is **ComputeInterest**, which should compute the monthly
 interest computed on annual basis (note that this is here just for
 demonstration).
 
-``` 
+```csharp
 public decimal ComputeInterest(Account account, double annualRate, int months)
 {
  if (account == null)
@@ -417,7 +390,7 @@ public decimal ComputeInterest(Account account, double annualRate, int months)
  double monthInterest = yearInterest / 12;
 
  return (decimal)(monthInterest * months);
- 
+
 }
 ```
 
@@ -425,7 +398,7 @@ This method takes the balance of the account, computes the annual
 interest and gives a value for one month(yes it is completely non-real
 life method). Now lets take a look at the test for this method.
 
-``` 
+```csharp
 [PexMethod, PexAllowedException(typeof(AccountServiceException))]
 public decimal ComputeInterest(Account account,double annualRate,int months)
 {
@@ -459,11 +432,7 @@ provide an account with different balance, than we have to use
 pointer exception in the test for which Pex generates null account. Now
 let's take a look at the result:
 
-
-
 [![](http://3.bp.blogspot.com/-GlOFpTMUTx0/TbaAqgxA22I/AAAAAAAAAK8/JNQxS5lFMGY/s320/interest.PNG)](http://3.bp.blogspot.com/-GlOFpTMUTx0/TbaAqgxA22I/AAAAAAAAAK8/JNQxS5lFMGY/s1600/interest.PNG)
-
-
 
 So here Pex generates only two cases - but that is exactly sufficient to
 cover all the code blocks. What is interesting is that we do not obtain
@@ -472,7 +441,6 @@ result in double values and the later conversion to decimal does not
 throw OverflowException.
 
 ### Summary
-
 Pex is a great tool when it comes to code coverage. It will exercise all
 the paths in your code to look for errors or exceptions.
 However sometimes you will have to generate the data for your test by
@@ -503,4 +471,3 @@ PexAssert or cooperation of Pex and CodeContracts.
 PS: If someone has another approach or some additional advices on how to
 use Pex it would be great to share them, I have wrote this post
 partially because I would like to get some feedback on the subject.
-

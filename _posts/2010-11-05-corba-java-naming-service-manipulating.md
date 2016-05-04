@@ -15,7 +15,6 @@ This is a short post describing how to implement simple tool to manage
 CORBA Naming Service.
 
 ### Corba
-
 The aim of this paragraph is not to describe CORBA, but just to explain
 little bit how it works, so that later I can explain what is and how
 works Naming Service - which is part of the CORBA architecture.
@@ -97,17 +96,17 @@ local machine, than the parametrs that you will submit to this method
 will be: 1234,localhost. Note that the variable **rootContext** and
 **orb** are defined on top of the static class.
 
-``` 
-public static void init(String port, String initialHost) throws Exception{ 
-  String[] args = new String[4]; 
-  args[0] = "-ORBInitialPort"; 
-  args[1] = port; 
-  args[2] = "-ORBInitialHost"; 
-  args[3] = initialHost; 
- 
-  orb = ORB.init(args,null); 
-  rootContext = NamingContextExtHelper.narrow(orb.resolve_initial_references("NameService")); 
-} 
+```
+public static void init(String port, String initialHost) throws Exception{
+  String[] args = new String[4];
+  args[0] = "-ORBInitialPort";
+  args[1] = port;
+  args[2] = "-ORBInitialHost";
+  args[3] = initialHost;
+
+  orb = ORB.init(args,null);
+  rootContext = NamingContextExtHelper.narrow(orb.resolve_initial_references("NameService"));
+}
 ```
 
 ### Exploring the Naming Service tree
@@ -119,12 +118,12 @@ classes which I called Entry.
 Entry is a simple class which has a name and can have multiple childern
 in its ArrayList entries.
 
-``` 
+```
 public class Entry {
  public ArrayList entries;
- 
+
  public String name;
- 
+
  public Entry(String n){
   name = n;
   entries = new ArrayList();
@@ -136,29 +135,29 @@ The structure of Entry classes will be later used to visualise the
 content in JTree. OK now the method **explore** which recursivelly
 traverses the naming context.
 
-``` 
+```
 public static Entry explore(String contextName,NamingContext context,int treeDepth) throws InvalidName, NotFound, CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName{
-  
+
   BindingListHolder blh = new BindingListHolder();
   BindingIteratorHolder bih = new BindingIteratorHolder();
-  
+
   context.list(0,blh, bih);
-  
+
   Entry entry = new Entry(contextName);
-  
-     System.out.println(contextName); 
+
+     System.out.println(contextName);
   //binding iterator
   BindingIterator bit = bih.value;
-  
+
   boolean remains = true;
   while(remains){
    BindingHolder biholder = new BindingHolder();
    remains = bit.next_one(biholder);
    Binding binding = biholder.value;
-   
+
    NameComponent[] name = binding.binding_name;
-   
-   
+
+
    if(binding.binding_type == BindingType.nobject){
     if(name.length == 1){
      System.out.println("ID: " + name[0].id + " KIND: " + name[0].kind + " Depth: " + treeDepth);
@@ -197,9 +196,9 @@ will just add new Entry which will represent this reference.
 
 Creating the context is quite straight forward.
 
-``` 
+```
 public static void createContext(String name) throws org.omg.CosNaming.NamingContextPackage.InvalidName, NotFound, CannotProceed, AlreadyBound{
-  
+
   NameComponent[] contextName = rootContext.to_name(name);
   NamingContext newContext = rootContext.new_context();
   rootContext.bind_context(contextName,newContext);
@@ -212,15 +211,15 @@ method, which will destroy all the children of context and than the
 context can be destroyed.
 
 
-``` 
+```
 public static void deleteContext(String name) throws org.omg.CosNaming.NamingContextPackage.InvalidName, NotFound, CannotProceed, NotEmpty{
   NameComponent[] contextName = rootContext.to_name(name);
   NamingContext context = NamingContextHelper.narrow(rootContext.resolve(contextName));
-  
+
   BindingListHolder blh = new BindingListHolder();
   BindingIteratorHolder bih = new BindingIteratorHolder();
   context.list(Integer.MAX_VALUE, blh, bih);
-  
+
   for(Binding binding:blh.value){
    NameComponent[] componentName = binding.binding_name;
    if(binding.binding_type == BindingType.ncontext){
@@ -230,7 +229,7 @@ public static void deleteContext(String name) throws org.omg.CosNaming.NamingCon
     NSAdmin.deleteObjectReference(name + "/" + componentName[0].id);
    }
   }
-  
+
   context.destroy();
   rootContext.unbind(contextName);
  }
@@ -246,8 +245,8 @@ tree and a client application can use just the name to obtain the
 reference.
 
 
-``` 
-public static void createObjectReference(String ior,String context,String objectName) 
+```
+public static void createObjectReference(String ior,String context,String objectName)
  throws org.omg.CosNaming.NamingContextPackage.InvalidName, NotFound, CannotProceed, AlreadyBound{
   org.omg.CORBA.Object reference=orb.string_to_object(ior);
   NameComponent[] componentName = rootContext.to_name(context + objectName);

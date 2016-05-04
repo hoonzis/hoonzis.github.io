@@ -8,9 +8,6 @@ tags:
 - Java
 - WCF
 modified_time: '2014-06-26T14:59:05.450-07:00'
-thumbnail: http://4.bp.blogspot.com/-Yli21ev2fgI/TgdPxAh6YFI/AAAAAAAAAMI/4Na-cg7zLIU/s72-c/fidler_cookie.PNG
-blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-5837908066316981280
-blogger_orig_url: http://hoonzis.blogspot.com/2011/07/aspnet-forms-authentication-and-java.html
 ---
 This post describes my later situation. I have a Silverlight application
 which talks to traditional WCF services in backend. The services have so
@@ -33,18 +30,17 @@ consumed by JAVA client is described in [my other
 post.]({{site.baseurl}}{post_url2011-07-08-consuming-wcf-services-with-java-client}\)
 
 ### IIS 7 buid-in Authentication Service
-
 I was using the build-in authentication service in order to authenticate
 the client, which is just a basic service, which offers methods such as
 Login, Logout etc.
 This service can be enabled on IIS server using the following
 configuration:
 
-``` 
-&ltsystem.web.extensions>
-  &ltscripting>
-    &ltwebServices>
-      &ltauthenticationService enabled="true" requireSSL="false"/>
+```xml
+<system.web.extensions>
+  <scripting>
+    <webServices>
+      <authenticationService enabled="true" requireSSL="false"/>
     </webServices>
   </scripting>
 </system.web.extensions>
@@ -52,10 +48,10 @@ configuration:
 
 And we also need to expose this service:
 
-``` 
-&ltservice behaviorConfiguration="NeutralBehavior" name="System.Web.ApplicationServices.AuthenticationService">
-    &ltendpoint address="" binding="basicHttpBinding" contract="System.Web.ApplicationServices.AuthenticationService" />
-    &ltendpoint address="mex" binding="mexHttpBinding" contract="IMetadataExchange" />
+```xml
+<service behaviorConfiguration="NeutralBehavior" name="System.Web.ApplicationServices.AuthenticationService">
+    <endpoint address="" binding="basicHttpBinding" contract="System.Web.ApplicationServices.AuthenticationService" />
+    <endpoint address="mex" binding="mexHttpBinding" contract="IMetadataExchange" />
 </service>
 ```
 
@@ -67,13 +63,13 @@ So for the non-Silverlight client I needed to write my own
 Authentication service. That is actually prety easy using the
 **FormsAuthentication** static class.
 
-``` 
+```csharp
 [OperationContract]
 public Login(String login, String password)
 {
     //your way to auth the user againts DB or whatever
     var user = UserService.AuthenticateUser(login, password);
-    
+
     if (user != null)
     {
         FormsAuthentication.SetAuthCookie(login, true);
@@ -92,19 +88,18 @@ Let me continue.
 
 
 ### Services secured using PrincipalPermission
-
 I use FormsAuthentication, because it allows me to secure all service
 just by adding the **PrincipalPermission** attribute over each Service
 method. So my WCFUserService can look like this:
 
-``` 
+```csharp
 public class WCFTagService
 {
   public WCFTagService()
   {
       Thread.CurrentPrincipal = HttpContext.Current.User;
   }
-  
+
   [OperationContract]
   [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
   public Object GetSecuredData(int param)
@@ -125,11 +120,10 @@ the **User** static class with the correct identity.
 
 
 ### Adding one more authentication service for Java Clients
-
 This is definitely not correct but it is the only way I was able to get
 it to work. Basically when I call
 
-``` 
+```csharp
 FormsAuthentication.SetAuthCookie(login, true);
 ```
 
@@ -139,7 +133,7 @@ describe the approach I took lower, but I just did not get the cookie
 from the response. So I decided to build one more service which will
 just return the authentication token (or cookie if you will).
 
-``` 
+```csharp
 [OperationContract]
 public String LoginCookie(String login, String password)
 {
@@ -155,9 +149,7 @@ public String LoginCookie(String login, String password)
 
 Ok that's it, we are done. We can almost switch to JAVA.
 
-
 ### Accessing Authentication Service using the Axis generated client
-
 Before we start, we need to generated the client, either you can use the
 build in tool in Eclipse ("New -&gt; Other -&gt; Web Service Client") or
 you can use the commander line "WSDLtoJava" utility. In both cases you
@@ -165,7 +157,7 @@ have to enter just the URL of the WSDL.
 When the client is ready, you can see that there is quite a lot of
 code(10kLines) generated for you.
 
-``` 
+```csharp
 MyServiceLocator locator = new MyServiceLocator();
 AuthService client = locator.getBasicHttpBinding_AuthService();
 String cookie = client.LoginCookie("login","password");
@@ -177,11 +169,11 @@ before which gives me the authentication cookie. Remember that this
 Now when we have the cookie, we can use it to make calls to other
 already protected services.
 
-``` 
+```csharp
 MyServiceLocator locator = new MyServiceLocator();
 WCFUserService client = locator.getBasicHttpBinding_WCFUserService();
 ((Stub)client)._setProperty(Call.SESSION_MAINTAIN_PROPERTY,new Boolean(true));
-((Stub)client)._setProperty(HTTPConstants.HEADER_COOKIE, ".ASPXAUTH=" + 
+((Stub)client)._setProperty(HTTPConstants.HEADER_COOKIE, ".ASPXAUTH=" +
 cookie);
 Object data = client.GetSecuredData(myParam);
 ```
@@ -197,11 +189,7 @@ out in what exact form should I send the cookie, finally
 Silverlight client to see what exactly he is sending and I just did the
 same.
 
-
-
 [![](http://4.bp.blogspot.com/-Yli21ev2fgI/TgdPxAh6YFI/AAAAAAAAAMI/4Na-cg7zLIU/s320/fidler_cookie.PNG)](http://4.bp.blogspot.com/-Yli21ev2fgI/TgdPxAh6YFI/AAAAAAAAAMI/4Na-cg7zLIU/s1600/fidler_cookie.PNG)
-
-
 
 What is little bit said is the fact, that we have to create a special
 method to be called by the Java client which returns the authentication
@@ -215,7 +203,6 @@ I will show an attempt which I did - but did not succeed.
 
 
 ### Creating the client dynamically
-
 The **java.rmi** namespace provides classes which will the creation of
 web service client on the fly (without generation). This has some
 advantages, specially that you can create a **javax.rmi.xml.Service**
@@ -236,26 +223,26 @@ I will provide here a conception of my solution - maybe someone will be
 able to finalize and obtain the cookie from the response of the
 authentication service.
 
-``` 
+```csharp
 try {
   QName serviceName = new QName("http://mynamespace","AuthService");
   URL wsdlLocation = new URL("http://localhost:49830/WCFServices/WCFUserService.svc?wsdl");
   // Service
   ServiceFactory factory = ServiceFactory.newInstance();
   Service service =  factory.createService(wsdlLocation,serviceName);
-  
+
   //Add the handler to the handler chain
   HandlerRegistry hr = service.getHandlerRegistry();
   HandlerInfo hi = new HandlerInfo();
   hi.setHandlerClass(SimpleHandler.class);
   handlerChain.add(hi);
-  
+
   QName  portName = new QName("http://localhost:49830/WCFServices/WCFUserService.svc?wsdl", "BasicHttpBinding_AuthService");
   List handlerChain = hr.getHandlerChain(portName);
-  
+
   QName operationName = new QName("http://localhost:49830/WCFServices/WCFUserService.svc?wsdl", "Login");
   Call call = service.createCall(portName,operationName);
-  
+
   //call the operation
   Object resp = call.invoke(new java.lang.Object[] {"login","pass"});
 }
@@ -267,11 +254,11 @@ these easily in the WSDL definition.
 Here follows the definition of the SimpleHandler which is added to the
 handler chain
 
-``` 
+```csharp
 public class SimpleHandler extends GenericHandler {
- 
+
   HandlerInfo hi;
- 
+
   public void init(HandlerInfo info) {
     hi = info;
   }
@@ -282,46 +269,42 @@ public class SimpleHandler extends GenericHandler {
 
   public boolean handleResponse(MessageContext context) {
     try {
-     
+
      //Iterate over all properties - did not find the cookie there :(
      Iterator properties = context.getPropertyNames();
         while(properties.hasNext()){
          Object property = properties.next();
          System.out.println(property.toString());
         }
-        
-      //examine the response header - did not find the cookie there either :( 
+
+      //examine the response header - did not find the cookie there either :(
       if(context.containsProperty("response")){
        Object response = context.getProperty("response");
        HttpResponse httpResponse = (HttpResponse)response;
-       
+
        Header[] headers = httpResponse.getAllHeaders();
        for(Header header:headers){
         System.out.println(header.toString());
        }
       }
-     
+
      //here is how to get the SOAP headers - they do not serve - we need pure HTTP response
       // get the soap header
       SOAPMessageContext smc = (SOAPMessageContext) context;
       SOAPMessage message = smc.getMessage();
-      
+
     } catch (Exception e) {
       throw new JAXRPCException(e);
     }
     return true;
   }
-  public boolean handleRequest(MessageContext context) { 
+  public boolean handleRequest(MessageContext context) {
     return true;
   }
 }
 ```
 
-
-
-
 ### Alternative approach using WCF Inspectors
-
 When looking into this problem, I found one alternative approach that
 you can use when dealing with Security and WCF Service.
 The solution is basic:
@@ -338,7 +321,7 @@ generate and later control the Authentication ticket.
 FormsAuthentication can actually help you with this. Here is what
 happens when you call the **FormsAuthentication.GetAuthCookie**.
 
-``` 
+```csharp
 FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(1, login, DateTime.Now, DateTime.Now.AddMinutes(30), false, login);
 string encryptedTicket = FormsAuthentication.Encrypt(ticket);
 HttpCookie cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket);
@@ -347,11 +330,11 @@ HttpCookie cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encrypte
 So you can create an Inspector class, which will do the reverse of this
 process:
 
-``` 
+```csharp
 public class TestInspector : IDispatchMessageInspector
 {
     public TestInspector()  { }
-    
+
     public object AfterReceiveRequest(ref System.ServiceModel.Channels.Message request, System.ServiceModel.IClientChannel channel, System.ServiceModel.InstanceContext instanceContext)
     {
         var httpRequest = (HttpRequestMessageProperty)request.Properties[HttpRequestMessageProperty.Name];
@@ -369,13 +352,12 @@ public class TestInspector : IDispatchMessageInspector
 
     public void BeforeSendReply(ref System.ServiceModel.Channels.Message reply, object correlationState)
     {
-        
+
     }
 }
 ```
 
 ### Securing the servicing using SSL
-
 When we pass the authentication token over the wire, we want to be sure,
 that no-one can intercept this token and act in name of the user against
 the services. To prevent this situation we can use SSL to secure the
@@ -385,19 +367,17 @@ The WCF configuration which is needed is quite simple, we just have to
 alter the standard **basicHttpBinding** by adding the **security**
 mode.
 
-``` 
-&ltbasicHttpBinding>
-  &ltbinding name="SecurityByTransport">
-    &ltsecurity mode="Transport">
-      &lttransport clientCredentialType="None"/>
+```xml
+<basicHttpBinding>
+  <binding name="SecurityByTransport">
+    <security mode="Transport">
+      <transport clientCredentialType="None"/>
     </security>
   </binding>
 </basicHttpBinding>
 ```
 
-
 Than comes the infrastructure work:
-
 
 -   Be sure to publish the service on your local IIS server (you cannot
     use the build-in Visual Studio Server
@@ -409,8 +389,10 @@ Than comes the infrastructure work:
 This should be enough. Now we need to go back to the Java client - if we
 can regenerated the client using Axis. When you run the client for the
 first time, you will get the following exception:
+
 *java client unable to find valid certification path to requested
-target
+target*
+
 That is because JVM maintains its list of trusted server. If he sees
 that the certificate is signed by Certification Authority, he will add
 it to its "keystore". Because for testing you usually use Self-Signed
@@ -421,11 +403,7 @@ So: go back to the IIS 7 configuration and in the list of the
 certificates, select the certificate and on the "Details" tab page
 choose: "Copy to File".
 
-
-
 [![](http://1.bp.blogspot.com/-ouZAfq6dmq4/TgiUWA_eqdI/AAAAAAAAAMQ/Af-8ZEURtdY/s320/Capture1.PNG)](http://1.bp.blogspot.com/-ouZAfq6dmq4/TgiUWA_eqdI/AAAAAAAAAMQ/Af-8ZEURtdY/s1600/Capture1.PNG)
-
-
 
 You can leave the predefined option and just save the ".CER" wherever
 you want to.
@@ -433,17 +411,16 @@ you want to.
 Now to finish you have to run the following command in the
 JAVA-HOME\\BIN directory:
 
-    keytool.exe -import -alias localhost -file C:\myCert.cer -keystore "c:\Program Files\Java\jre6\lib\security\cacerts"
+```
+keytool.exe -import -alias localhost -file C:\myCert.cer -keystore "c:\Program Files\Java\jre6\lib\security\cacerts"
+```
 
 -   **localhost** - stands for the web server which holds the
     certificate (your local IIS).
 -   **cacerts directory** - is the store of trusted certificates.
 -   The password is "changeit".
 
-
-
 ### Summary
-
 I tried to connect to secured WCF services hosted on IIS server with
 Java client. During the process I found some issues, but at the end I
 was able to connect securely to the services. The main steps are:
