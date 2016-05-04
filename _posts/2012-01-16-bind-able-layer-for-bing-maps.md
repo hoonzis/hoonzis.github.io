@@ -47,7 +47,7 @@ public class BikeRoutesLayer : MapLayer
     }
     public static readonly DependencyProperty RoutesProperty =
         DependencyProperty.Register("Routes", typeof(List<List<LocationCollection>>), typeof(BikeRoutesLayer), new PropertyMetadata(new PropertyChangedCallback(RoutesChangedCallBack)));
-    
+
     static int i = 0;
     private static void RoutesChangedCallBack(DependencyObject sender, DependencyPropertyChangedEventArgs args)
     {

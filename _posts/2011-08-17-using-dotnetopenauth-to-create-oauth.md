@@ -92,7 +92,7 @@ public IServiceProviderRequestToken GetRequestToken(string token)
 {
 
     var foundToken = Global.AuthTokens.FirstOrDefault(t => t.Token == token && t.State != TokenAuthorizationState.AccessToken);
-    
+
     if(foundToken==null)
     {
         throw new KeyNotFoundException("Unrecognized token");
@@ -126,13 +126,13 @@ String IServiceProviderRequestToken.Token
     get { return _token; }
 }
 
-String IServiceProviderAccessToken.Token 
+String IServiceProviderAccessToken.Token
 {
     get { return _token; }
 }
 
-public String Token { 
-    set { 
+public String Token {
+    set {
         _token = value;  
     }
 }
@@ -146,9 +146,7 @@ this field.
 Basically thats it. There is much more code around but actually I just
 took most of the code comming from the official set of examples.
 
-Using NHibernate to persists Tokens, Consumer and Nonces
---------------------------------------------------------
-
+### Using NHibernate to persists Tokens, Consumer and Nonces
 In the project where I needed to implement OAuth provider, I was using
 NHibernate as my ORM with NFluent(nice framework which allows to write
 configuration of NHibernate in C\#). What I like about this combination
@@ -240,7 +238,7 @@ public class OAuthToken : IServiceProviderRequestToken, IServiceProviderAccessTo
 
     DateTime IServiceProviderRequestToken.CreatedOn
     {
-        
+
         get {
             return Token.IssueDate.ToLocalTime(); }
     }
@@ -288,7 +286,7 @@ public class OAuthToken : IServiceProviderRequestToken, IServiceProviderAccessTo
             {
                 throw new ArgumentNullException("Token does not have assigned user");
             }
-            return Token.User.Identification; 
+            return Token.User.Identification;
         }
     }
     #endregion
@@ -302,7 +300,7 @@ database as well as with wrapping the received entities.
 public class DatabaseTokenManager : IServiceProviderTokenManager
 {
   private IOAuthServices _oAuthServices;
-  
+
   public IOAuthServices OAuthServices
   {
       get {
@@ -313,7 +311,7 @@ public class DatabaseTokenManager : IServiceProviderTokenManager
           return _oAuthServices;
       }
   }
-  
+
   public IServiceProviderRequestToken GetRequestToken(string token)
   {
       var authToken = OAuthServices.GetRequestToken(token);

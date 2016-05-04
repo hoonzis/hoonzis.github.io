@@ -18,8 +18,7 @@ The problem is that Maven project has different structure thant Elicpses
 Dynamic Web Project, so finally eclipse does not know hot to package a
 WAR file and deploy it to the server.
 
-Finally I found [this
-blog](http://horrikhalid.wordpress.com/2011/01/24/you-want-to-debug-your-maven-project-with-embedded-tomcat-in-eclipse-now-its-easy/),
+Finally I found [this blog](http://horrikhalid.wordpress.com/2011/01/24/you-want-to-debug-your-maven-project-with-embedded-tomcat-in-eclipse-now-its-easy/),
 which explains the issue. This blog describes the situation when using
 Maven 2 and Eclipse Helios.
 
@@ -35,7 +34,7 @@ change the structure of your project - add the **WebContent** folder.
 added when you have changed the project structure.
 
 
-``` 
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <project-modules id="moduleCoreId" project-version="1.5.0">
 <wb-module deploy-name="ProjectName">
@@ -56,5 +55,4 @@ directory. There are parts which you can copy directly from your project
 (jsp files, web.xml) and than parts which you have to copy from the
 Maven build output (libs, classes).
 
-If you are lost, take a look at the [mentioned
-blog.](http://horrikhalid.wordpress.com/2011/01/24/you-want-to-debug-your-maven-project-with-embedded-tomcat-in-eclipse-now-its-easy/)
+If you are lost, take a look at the [mentioned blog.](http://horrikhalid.wordpress.com/2011/01/24/you-want-to-debug-your-maven-project-with-embedded-tomcat-in-eclipse-now-its-easy/)

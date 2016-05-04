@@ -15,8 +15,8 @@ Suddenly after just after adding some dependencies using Maven, I was
 not able to start the server. The exception did not give me much
 detaisl:
 
-``` 
-Grave: ContainerBase.addChild: start: 
+```
+Grave: ContainerBase.addChild: start:
 org.apache.catalina.LifecycleException: Failed to start component [StandardEngine[Catalina].StandardHost[localhost].StandardContext[/Bank]]
 at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:152)
 
@@ -42,8 +42,7 @@ I started deleting one by one and redeploying, just to find out, that it
 was ICU4J.JAR which was causing the problem. Well I was sure that I did
 not need it, so I solved the problem by declaring Maven exclusion.
 
-
-``` 
+```xml
 <dependency>
 <groupid>jaxen</groupId>
   <artifactid>jaxen</artifactId>

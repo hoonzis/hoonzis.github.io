@@ -13,10 +13,8 @@ blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-42893025710951770
 blogger_orig_url: http://hoonzis.blogspot.com/2012/01/nhibernate-nfluent-and-custom-hilo.html
 ---
 Azure SQL is not completely compatible with SQL Server. All the
-limitations are described [over
-here.](http://msdn.microsoft.com/en-us/library/windowsazure/ee336245.aspx)
-One of the limitations is that every table in Azure SQL needs CLUSTERED
-INDEX.
+limitations are described [over here.](http://msdn.microsoft.com/en-us/library/windowsazure/ee336245.aspx)
+One of the limitations is that every table in Azure SQL needs CLUSTERED INDEX.
 
 If you are using NHibernate & NFluent, than any identity mapping will
 create clustered index if it can.
@@ -25,7 +23,7 @@ If you want to use HiLo generator to get the ID's, than you need to
 configure special table for the generator. To use the generator you can
 let NHibernate to create the table.
 
-``` 
+```csharp
 Id(x => x.Id).GeneratedBy.HiLo("1000");
 ```
 
@@ -33,7 +31,7 @@ However this way it will create only one table with one ID. In a typical
 scenario you will want to use one table and store all the actual ID's in
 a particular row or column for each of the entities in the database.
 
-``` 
+```csharp
 Id(x => x.Id).GeneratedBy.HiLo("1000","hiloTable","myentity");
 ```
 
@@ -48,14 +46,13 @@ The solution which solves this two issues is to create own generator and
 base it on HiLo generator.
 Here is the mapping for using own generator
 
-``` 
-Custom%lt;UniversalHiloGenerator%gt;(
+```csharp
+Custom<UniversalHiloGenerator>(
 x => x.AddParam("table", "NH_HiLo")
 .AddParam("column", "NextHi")
 .AddParam("maxLo", "10000")
 .AddParam("where", "TableKey='BalancePoint'"));
 ```
-
 
 When overriding the NHibernate.Id.TableHiLoGenerator we have the option
 to override the script which is used for the creation of the table
@@ -64,38 +61,37 @@ SqlCreateStrings method which returns an array of Strings, which are
 executed as SQL scripts against the database.
 
 
-``` 
+```csharp
 public class UniversalHiloGenerator : NHibernate.Id.TableHiLoGenerator
-{
-public override string[] SqlCreateStrings(NHibernate.Dialect.Dialect dialect)
-{
-List commands = new List();
-var dialectName = dialect.ToString();
+  {
+  public override string[] SqlCreateStrings(NHibernate.Dialect.Dialect dialect)
+  {
+    List commands = new List();
+    var dialectName = dialect.ToString();
 
-if(dialectName != "NHibernate.Dialect.SQLiteDialect")
-commands.Add("IF OBJECT_ID('dbo.NH_HiLo', 'U') IS NOT NULL \n DROP TABLE dbo.NH_HiLo; \nGO");
+    if(dialectName != "NHibernate.Dialect.SQLiteDialect")
+    commands.Add("IF OBJECT_ID('dbo.NH_HiLo', 'U') IS NOT NULL \n DROP TABLE dbo.NH_HiLo; \nGO");
 
-commands.Add("CREATE TABLE NH_HiLo (TableKey varchar(50), NextHi int)");
+    commands.Add("CREATE TABLE NH_HiLo (TableKey varchar(50), NextHi int)");
 
-if (dialectName != "NHibernate.Dialect.SQLiteDialect")
-commands.Add("CREATE CLUSTERED INDEX NH_HiLoIndex ON NH_HiLo (TableKey)");
+    if (dialectName != "NHibernate.Dialect.SQLiteDialect")
+    commands.Add("CREATE CLUSTERED INDEX NH_HiLoIndex ON NH_HiLo (TableKey)");
 
-string[] tables = {"Operation","Account"};
+    string[] tables = {"Operation","Account"};
 
-var returnArray = commands.Concat(GetInserts(tables)).ToArray();
-return returnArray;
-}
+    var returnArray = commands.Concat(GetInserts(tables)).ToArray();
+    return returnArray;
+  }
 
-private IEnumerable GetInserts(string[] tables)
-{
-foreach (var table in tables)
-{
-yield return String.Format("insert into NH_HiLo values ('{0}',1)", table);
-}
-}
+  private IEnumerable GetInserts(string[] tables)
+  {
+    foreach (var table in tables)
+    {
+      yield return String.Format("insert into NH_HiLo values ('{0}',1)", table);
+    }
+  }
 }
 ```
-
 
 This code is quite simple. The sql scripts create the table for storing
 the ID's for all the entities in the database. In this particular case,
@@ -119,4 +115,3 @@ This way several issues are solved:
     simply just add the name of the entity into the list of tables.
 -   Clustered index is created on the entity in the case that the script
     is not run against SQL lite.
-
