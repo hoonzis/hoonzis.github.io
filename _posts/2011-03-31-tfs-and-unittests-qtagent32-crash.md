@@ -1,6 +1,6 @@
 ---
 layout: post
-title: TFS and QTagent32 crash, data.coverage used by another process
+title: TFS and crashing QTagent32
 date: '2011-03-31T01:26:00.000-07:00'
 author: Jan Fajfr
 tags:

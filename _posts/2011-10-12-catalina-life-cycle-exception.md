@@ -10,10 +10,9 @@ modified_time: '2014-06-26T14:46:34.429-07:00'
 blogger_id: tag:blogger.com,1999:blog-1710034134179566048.post-3145146715838380579
 blogger_orig_url: http://hoonzis.blogspot.com/2011/10/catalina-life-cycle-exception.html
 ---
-Last project: Tomcat and Java Web applicaiton.
-Suddenly after just after adding some dependencies using Maven, I was
-not able to start the server. The exception did not give me much
-detaisl:
+This post is about maven downloading **icu4j.jar** as transitive reference to **Jaxen** and Tomcat Catalina not correctly starting after the reference has been added.
+
+Last project: Tomcat and Java Web application. Suddenly after just after adding some dependencies using Maven, I was not able to start the server. The exception did not give me much details:
 
 ```
 Grave: ContainerBase.addChild: start:
@@ -31,16 +30,9 @@ java.lang.IllegalStateException: ContainerBase.addChild: start: org.apache.catal
 at org.apache.catalina.core.ContainerBase.addChildInternal(ContainerBase.java:816)
 ```
 
+So after checking the state of web.xml (no changes there) I started to take a look at the dependencies which I have added. Well actually I took a look at the JARs which were being downloaded automatically by Maven. I found out that when I added a dependency to Jaxen library, than several JARs war downloaded.
 
-So after checking the state of web.xml (no changes there) I started to
-take a look at te dependencies which I have added. Well actually I took
-a look at the JARs which were being donwloaded automatically by Maven.
-I found out that when I added a dependency to Jaxen library, than
-several JARs war downloaded.
-
-I started deleting one by one and redeploying, just to find out, that it
-was ICU4J.JAR which was causing the problem. Well I was sure that I did
-not need it, so I solved the problem by declaring Maven exclusion.
+I started deleting one by one and redeploying, just to find out, that it was ICU4J.JAR which was causing the problem. Well I was sure that I did not need it, so I solved the problem by declaring Maven exclusion.
 
 ```xml
 <dependency>
@@ -57,9 +49,5 @@ not need it, so I solved the problem by declaring Maven exclusion.
 </dependency>
 ```
 
-Couriously enough I needed Jaxen in order to be able to use the
-Azure4Java tools and access to Azure table storage.
-
-
-Still I do not understand the real cause of this problem, so if anyone
-finds similar issue, I hope this helps.
+Curiously enough I needed Jaxen in order to be able to use the Azure4Java tools and access to Azure table storage.
+Still I do not understand the real cause of this problem, so if anyone finds similar issue, I hope this helps.
