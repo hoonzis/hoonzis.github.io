@@ -15,7 +15,9 @@ Last time that I played with maps, google maps were pretty much the only way aro
 
 And I have also created a visualization to see the city prices by city districts, which is quite easier to create, assuming that you have
 
-![hexgrid](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/appartee/bycityparts.PNG)
+![cityParts](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/appartee/bycityparts.PNG)
+
+The whole thing can be found at [www.flatpricer.com](https://flatpricer.com/Home/CityStats?id=Praha)
 
 ### Data model
 I have gathered the data by screen-scrapping few reality servers. On the backend I was using C#, but quickly went over to F#, since *HtmlTypeProvider* and *CsvTypeProvider* helped me a lot to gather the data. Then there was a question of how to serve the data. I have decided the best would be for the server to provide already valid [geojson](http://geojson.org/) data, which would work fine with the JS frontend libraries. In order to generate such valid geojson I would have to create an F\# model mirroring the structure of the geojson format. Before we get to that, let's see how I store the flats and their locations:
