@@ -13,7 +13,7 @@ Last time that I played with maps, google maps were pretty much the only way aro
 
 ![hexgrid](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/appartee/hexmap.PNG)
 
-And I have also created a visualization to see the city prices by city districts, which is quite easier to create, assuming that you have
+And I have also created a visualization to see the city prices by city districts, which is quite easy to create, assuming that you have the geographic data of quarters (Prague has an open data service).
 
 ![cityParts](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/appartee/bycityparts.PNG)
 
@@ -62,12 +62,12 @@ type FeatureCollection = {
 }
 ```
 
-Note that if I want to provide a set of flats as geo-json I would just have to create *FeatureCollection* object and convert each flat to a *Feature*. You can see that in this model the *Properties* property of the *Feature* is of the *Flat*. I am simply adding the flat as metadata to each feature which it represents. *Properties* is just a generic JSON object and can take anything, here I have decided to type it directly to flats.
+Note that if I want to provide a set of flats as geo-json I would just have to create **FeatureCollection** object and convert each flat to a **Feature**. You can see that in this model the **Properties** field of the **Feature** is of type **Flat**. I am simply adding the flat as metadata to each feature which it represents. **Properties** is just a generic JSON object and can take anything, here I have decided to type it directly to flats here because I will always be passing the flat as metadata. One could probably create a generic record as well.
 
 ### City quarters prices
-In order to visualize the average prices per city region, one needs a geojson map of the city. Prague has an open data service which provides several different maps as geojson, one of them is the simple city regions map.
+In order to visualize the average prices per city region, one needs a geojson map of the city. Prague has an open data service which provides several different maps as geojson, one of them is the simple city regions map. The data is available on the [Geoportal](http://www.geoportalpraha.cz/cs/opendata/E9E20135-18B3-4163-B516-45613956B856#.Vy8xm1h95hE). The geojson itself is quite big 1.5Mb, because of the precision of the map. I have run it through [http://www.mapshaper.org/](http://www.mapshaper.org/) in order to make it smaller without loosing much precision.
 
-The geojson file contains some global information and then list of *Features*, each of them representing one city part. *Feature* is composed of a polygon, defined using list of location points and metadata stored aside in *properties* field.
+The geojson file contains some global information and then list of **Features**, each of them representing one city part. **Feature** is composed of a polygon, defined using list of location points and metadata stored aside in **properties** field.
 
 I am using Knockout.JS as MVVM framework to wire everything together behind the scene, but I suppose any decent JavaScript framework would do the job. I have removed all references to it from the snippets.
 
@@ -77,31 +77,31 @@ The following code would load the geo-json into memory and then specify a functi
 ```javascript
 var cityParts = //... load the city parts collection from the server
 var cityPartsLayer = L.geoJson(cityPartJson, {
-    pointToLayer: L.mapbox.marker.style,
-    style: function(feature) {
-        var partName = feature.properties.NAZEV;
+  pointToLayer: L.mapbox.marker.style,
+  style: function(feature) {
+    var partName = feature.properties.NAZEV;
 
-        var part = find(citiParts, function(p) {
-            return p.cityPart === partName;
-        });
+    var part = find(citiParts, function(p) {
+        return p.cityPart === partName;
+    });
 
-        var color = "#FFF";
-        if (part) {
-            color = partsColorScale(part.avgPms);
-            feature.properties = part;
-        }
-
-        return {
-            "fillColor": color,
-            "fillOpacity": 0.8
-        }
+    var color = "#FFF";
+    if (part) {
+        color = partsColorScale(part.avgPms);
+        feature.properties = part;
     }
+
+    return {
+        "fillColor": color,
+        "fillOpacity": 0.8
+    }
+  }
 }).addTo(map);
 ```
 
-I am using a *partsColorScale* function above which returns the appropriate color for given value. To define this function I would use standard D3.js color scale. If you know your minimal and maximal values then the scale can be defined simply as:
+I am using a **partsColorScale** function above which returns the appropriate color for given value. To define this function I would use standard D3.js color scale. If you know your minimal and maximal values then the scale can be defined simply as:
 
-Note that above I would also take the data for the city part and store them in the *properties* data of the feature, we will use them later when adding action for the click on the given feature. For that we would also need the object that we have created which is a Mapbox layer.
+Note that above I would also take the data for the city part and store them in the **properties** data of the feature, we will use them later when adding action for the click on the given feature. For that we would also need the object that we have created which is a Mapbox layer.
 
 ```javascript
 var partsColorScale = d3.scale.linear()
