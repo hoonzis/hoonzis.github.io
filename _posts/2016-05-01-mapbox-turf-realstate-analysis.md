@@ -335,3 +335,63 @@ self.getClusterAveragePms = function(cluster) {
 ```
 
 Each cluster contains either markers or child clusters. Either we take the average of the markers within the cluster or the average of the child clusters. This method has two flaws that I have omitted for now. It does not handle the case when a cluster is compose of clusters and valence markers and the average of child clusters is not weighted. The child clusters have different number of markers and so a weighted average should be used with respect to the cardinality of the cluster.
+
+### Histogram of prices
+Since we have already all the flats loaded in memory we can profit and create a histogram of the flats with respect to the price per meter squared (PMS). I have been using [D3JS](https://d3js.org/) and there is no better tool for charting. If you are interested in out-of-the-box charts you might pick one of the libraries based on D3JS, in this case, let's assume only think we have is D3.
+
+![histogram](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/appartee/histogram.PNG)
+
+#### Splitting the prices into buckets
+D3Js contains a method that will split the prices into buckets (bins), one just needs to provide the number of buckets.
+
+```javascript
+var histogramData = d3.layout.histogram()
+    .frequency(true)
+    .bins(80)(data);
+```
+
+#### Charting the buckets
+For the chart itself you just need to find a div and transform it into SVG element.
+
+```javascript
+var svg = el.append("svg")
+    .attr("width", 800)
+    .attr("height", 500)
+    .append("g")
+    .attr("transform", "translate(" + 10 + "," + 10 + ")");
+
+```
+
+One also needs to defined the X and Y scales, which are used to translate from real-world dimension to the target chart dimensions. For Y axis it will be a linear translation from the number of occurrences to the height of each bar in pixels.
+
+```javascript
+var x = d3.scale.linear().domain([0, 100]).range([0, dims.width-10]);
+var y = d3.scale.linear().domain([0, d3.max(histogramData, function(d) { return d.y; })]).range([dims.height, 0]);
+```
+
+Once we have the scales, we can define each bar of the chart. We don't draw them yet, just define the svg elements for them. Each bar is translated on the x-axis relatively to the X and Y values.
+
+```javascript
+var bar = svg.selectAll(".bar")
+   .data(histogramData)
+ .enter().append("g")
+   .attr("class", "bar")
+   .attr("transform", function (d) {
+       return "translate(" + x(d.x) + "," + y(d.y) + ")";
+   });
+```
+
+And the last step is to draw the bars. We will take the "bar" svg elements from the previous snippet and append a rectangle to each. The height of the rectangle is proportional to the number of flats in the bucket.
+
+```javascript
+bar.append("rect")
+   .attr("x", 1)
+   .attr("width",columnWidth)
+   .attr("height", function(d) {
+       return dims.height - y(d.y);
+   })
+   .attr("fill","#1f77b4")
+   .attr("opacity",0.8)
+```
+
+There is a bit more to it, like handling the mouse events, adding the legend and so on. I have been using [this template from my small charting project](https://github.com/hoonzis/KoExtensions/blob/master/Scripts/KoExtensions/Charts/histogramchart.js) for histograms, which you can customize or inspire yourself.
