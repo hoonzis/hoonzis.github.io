@@ -80,7 +80,7 @@ This was determined by Cox, Ross, & Rubinstein in the [CRR binomial pricing mode
 
 It is beyond the scope of this blog, to explain how this was determined, but note that this is only possible if the log returns of the underlying have normal distribution and if the returns of the stock are independent, (hence that introduction about share price modelization).
 
-###Implementation
+### Implementation
 I will present here two implementations both in F#, the first one is more imperative in style, since it modifies two arrays which represent the actual layer of the binomial tree. The second implementation is purely functional code, however the ratio behind is the same and it is shown on the next images:
 
 ![implementation](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/pricing/implementation.png)
@@ -92,6 +92,10 @@ The algorithm has the following steps:
 - In the case of pricing American options, the option can be exercised any time (before maturity). If so, compare in each node the price of the stock to the price of the underlying share, and determine if pre-mature exercise is worth.
 
 The price of the derivative in the end node is calculated with the **optionValue** function. For call option it would be *max(S-X,0)* for a put option *max(X-S,0)*, where *X* is the strike of the option. The following algorithm takes the number of steps in the tree as parameter and an option definition. Option has a property called **TimeToExpiry** which is the value between the purchase date of the option and the maturity in days. This time is then divided by the number of steps to obtain **deltaT** the time interval of a single step.
+
+First we will create **BinomialPricing** object which holds all the parameters of our pricing model. There parameters are calculated using the CRR model - that is up and down stock movement is calculated from the volatility, as well as the technical probabilities *p_up* and *p_down*.
+
+The technical probability (**p**) is determined as **p_up**. We have also defined **p_down** as *1-(p_up)* just to simplify the computations.
 
 ```ocaml
 let deltaT = option.TimeToExpiry/float steps
@@ -111,7 +115,13 @@ let pricing = {
     Option = option
     Ref = stock.CurrentPrice
 }
+```
 
+Now we can take a look at the actual iterative implementation. In the first part we prepare our **optionValue** function which will determine a value on option by looking into the array of stock prices over which we are going to iterate.
+
+We also have to initialize the array to it's starting values. These are the leaf values in the tree. Remember that we are walking the tree from the lowest layer (further away on the expiry of the option).
+
+```ocaml
 let prices = Array.zeroCreate pricing.Periods
 let optionValue =
     match pricing.Option.Kind with
@@ -121,18 +131,23 @@ let optionValue =
 prices.[0] <- pricing.Ref*(pricing.Down**(float pricing.Periods))
 let oValues = Array.zeroCreate pricing.Periods
 oValues.[0]<- optionValue 0
+
+// generate the initial layer - the last
 for i in 1 ..pricing.Periods-1 do
     prices.[i] <- prices.[i-1]*pricing.Up*pricing.Up
     oValues.[i]<- optionValue i
 
+```
+
+Now we can start to walk the array back to the "current time" and update the values. After we finish, the value in the first element will give us the option price "right now".
+
+```ocaml
 let counter = pricing.Periods-2
 for step = counter downto 0 do
     for j in 0 .. step do
         oValues.[j] <- (pricing.PUp*oValues.[j+1]+pricing.PDown*oValues.[j])*(1.0/pricing.Rate)
 oValues.[0]
 ```
-
-The technical probability (**p**) is determined as **p_up**. We have also defined **p_down** as *1-(p_up)* just to simplify the computations.
 
 Note that the implementation iterates and modifies 2 arrays: *oValues* which contains the prices of the derivate and *prices* which contains the prices of the stock in the current layer.
 
@@ -142,6 +157,8 @@ The previous implementation is cool but we iterate over the stock and option pri
 That can be surprisingly easy, let's define a function for single step backwards in the tree. This function would take a list of values, which are the values of the nodes in the current layer and produce another list which would contain the derivative prices in the next step. If we pass in a list with 4 items, we should get a list of 3 items, going down until we have only one item, which will be the derivative price.
 
 This is achieved thanks to **Seq.pairwise** which iterates over all consecutive values in the array - in our case the first item will be *P_up* and second *P_down*.
+
+The **BinomialPricing** option will be kept intact, our mode does not change, only the implementation does - since this is completely functional way, the model is passed to all the steps as parameter.
 
 ```ocaml
 let step (derPrice:float list) (pricing:BinomialPricing) =
