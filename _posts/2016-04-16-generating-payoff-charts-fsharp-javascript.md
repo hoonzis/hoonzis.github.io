@@ -53,7 +53,7 @@ Payoff chart, shows us how much we earn when the stock moves up or down. Bellow 
 
 ![callspread](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/optionscharts/callspread.png)
 
-Another example of a strategy: Covered Call
+Another example of a strategy: **Covered Call**
 
 - Strategy built of a cash leg and an option leg
 - I bought the stock at 100 and I want to sell at 120

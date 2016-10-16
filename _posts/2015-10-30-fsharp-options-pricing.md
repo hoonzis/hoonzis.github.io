@@ -40,19 +40,36 @@ The basic idea behind binomial pricing is the following. We assume that the shar
 
 ![tree](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/pricing/share_and_derivative_tree.png)
 
-We assume that there are constants **u** and **d** which symbolize the movements of the stock. The stock in the next time step will have value **S\*u** if it goes up or **S\*d** if it goes down.
+We assume that there are constants **u** and **d** which symbolize the movements of the stock. The stock in the next time step will have value **S\*u** if it goes up or **S\*d** if it goes down. So the price of the stock any time in the future in each node can be easily calculated by multiplying by **d** and **u** constants. It's not the case for the derivative tree. We will describe bellow what will be the formula to set the derivative price from the previous nodes.
 
-Imagine that we could create a portfolio in which we would hold a certain number of shares (usually called delta) and short position in the derivative (selling the option in the same time) and that we would figure out the exact amount of shares (delta), which would make this portfolio immune to the share price. The portfolio would not loose nor win anything if the share price changes in any way. If we find out the exact number of shares needed to hedge the option, our portfolio should hold a stable value.
+### Delta hedging
+Before we come to the formula that explains the derivative price change in the tree, we will have to describe what delta hedging is - the same idea is behind Black & Scholes model as well.
 
-As it was said before the price of the option depends on the price of the share. If the price of the derivative changes the following day, because the stock moved, then the delta will change as well, we will have to buy different number of shares to "hedge" the option that we are selling. This is practice of continuously adapting to the share and derivative price to keep neutral portfolio is called delta hedging.
+Imagine that we could create a portfolio in which we would hold a certain number of shares (usually called **delta**) and short position in the derivative (selling the option in the same time) and that we would figure out the exact amount of shares (delta), which would make this portfolio immune to the share price. The portfolio would not loose nor win anything if the share price changes in any way. If we find out the exact number of shares needed to hedge the option, our portfolio should hold a stable value.
+
+So our magic portfolio is:
+
+- long (buy) shares of stock
+- short (sell) delta number options - delta S
+
+As said before the price of the option depends on the price of the share. If the price of the derivative changes the following day, because the stock moved, then the delta will change as well, we will have to buy different number of shares to "hedge" the option that we are selling. This practice of continuously adapting to the share and derivative price to keep neutral portfolio is called delta hedging.
 
 Now back to delta, how can we figure out the exact amount of shares to hedge the option?
 
-In a world where there is no arbitrage possible, nor taxes, this portfolio should earn you exactly the neutral interest rate - because it does not move. Taking these assumptions we will try to deduce the delta (the number of shares the we need to hold):
+In a world where there is no arbitrage possible, nor taxes, this portfolio should earn you exactly the neutral interest rate - because it does not move. Taking these assumptions we will try to deduce the delta (the number of shares that we need to hold):
 
 ![delta_determination](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/pricing/delta_determination.png)
 
+In the equations above:
+
+- **delta** is the number of shares that we have to hold
+- **S** - is the price of the share now
+- **P** - is the price of the option now
+- **Su** and **Pu**- the price of the share and option if the stock goes up
+- **Sd** and **Pd**- the price of the share and option if the stock goes down
+
 We have extracted two pieces of information from the binomial tree:
+
 - the value of the portfolio should stay the same, which let's us solve for delta
 - if the stock goes up, then the value of the portfolio should be equal to the portfolio monetized with neutral interest rate.
 
