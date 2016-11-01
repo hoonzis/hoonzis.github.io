@@ -7,11 +7,14 @@ tags:
 - Maps
 modified_time: '2016-04-16T05:11:43.965-08:00'
 ---
-I have been playing with option, their pricing and pay-off charts generation for some time now. I have created a small F# library called [Pricer](https://github.com/hoonzis/Pricer) which does options pricing and few other things. In order to demonstrate what the library can do, I wanted to create a small web application. First I went for standard JavaScript client with F# backend, but then I cam across [Fable](http://fable.io/). Fable transpiles F# code into JavaScript, so you can run your F# in the browser. It will also generate map files, so that you can even debug F# in the browser and the generated JS is actually very readable so if something goes wrong you can still look to the "compiled" code. To sum it up, it's really a great project and I was amazed on how few modifications were necessary to my code to make it compile into JS. At the end I have created [Payoffcharts.com](http://www.payoffcharts.com/). The page contains different visualizations of options, payoffs and their prices - and yeah it's all F#.
+I have been playing with option, their pricing and pay-off charts generation for some time now. I have created a small F# library called [Pricer](https://github.com/hoonzis/Pricer) which does options pricing and few other things. In order to demonstrate what the library can do, I wanted to create a small web application. First I went for standard JavaScript client with F# backend, but then I cam across [Fable](http://fable.io/). At the end I have created [payoffcharts.com](http://www.payoffcharts.com/). The page contains different visualizations of options, payoffs and their prices - and yeah it's all F#.
 
-The rest of this post has two parts:
- - A bit of theory about options and F# code to model them
- - How to use Fable together with NVD3 to build nice charts
+I have already written an introduction into Fable, D3 and NVD3 charting:
+
+The rest of this post is structured as follows:
+- Introduction into options, their parameters
+- Domain model describing options
+
 
 Payoff charts of several strategies
 ![payoffcharts](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/optionscharts/payoffcharts_viz.PNG)
@@ -251,130 +254,53 @@ let strategyLine = [for stockPrice in interestingPoints do yield stockPrice,
 ]
 ```
 
-### Serving the data by WebAPI F\# controller
-
-I have used WebAPI F\# project template, event though there are probably more Fsharpy options for building web apps (SuaveIO seems to be the best candidate).
-
-Here is the WebAPI controller. It exposes a PUT http method that I later call from the JavaScript front-end. We call *getStrategyData* method which is exposed by the [Pricer](https://github.com/hoonzis/Pricer) library and returns a tuple of strategy payoff and each leg payoff. More or less what we have described previously. We then take the result and build a nice object which contains the details of each leg, payoff of each leg and the payoff of the strategy.
+### Example strategies
+As it has been shown, we can combine the options together in infinite ways and create our own custom strategies. On the other hand there are multiple strategies that are well known, usable for certain situations. The **Covered Call** strategy mentioned above is one of such examples. I have put together a short list of such strategies and included them into Pricer. The full list is available in **StrategiesExamples** file. Let's see one more example here, the **Straddle**:
 
 ```ocaml
-//given complete strategy  (stock and legs, returns the payoff chart data)
-member x.Put([<FromBody>] strategy:Strategy) : IHttpActionResult =
-    let strategyData, legsData = Options.getStrategyData strategy
-
-    let buildLines (data:(Leg*(float*float) list) seq)=
-        data |> Seq.map (fun (leg,linedata) ->
-          {
-              Linename = leg.Definition.Name
-              Values = linedata
-          })
-
-    let payoff = {
-      Legs = legsData |> Seq.map (fun (leg,_) -> leg)
-      LegPayoffs = buildLines legsData
-      StrategyPayoff =
-      {    
-          Linename = "Strategy"
-          Values = strategyData
-      }
+let straddle stock =
+    let strike,_ = testStrikes stock
+    {
+        Name = "Straddle"
+        Legs = [
+                buildOptionLeg 1.0 strike expiry Call
+                buildOptionLeg 1.0 strike expiry Put
+        ]
+        Stock = stock
     }
-    x.Ok(payoff) :> _
 ```
 
-### JavaScript front end
-I have built the front end with KnockoutJS, mainly because I know it quite well. The view models reflect quite a lot the F\# domain presented above. *StockInfo* and *Leg* are the main containers of data and information.
+Note that this is using some helper methods do get the correct strike (around the underlying) and build the legs. Similar methods are defined for other strategies and one can get them all at once as well.
 
-```javascript
-function LegViewModel(dto,parent) {
-    var self = this;
-    self.expiry = ko.observable(new Date());
-    self.strike = ko.observable();
-    self.kind = ko.observable();
-    self.style = ko.observable("European");
-    self.premium = ko.observable();
-    self.delta = ko.observable();
-}
-```
+### Charting with NVD3
+I have already written an introduction post to charting with Fable, NVD3 and D3 and there is not much more to it. In three steps:
+- configure correctly
 
-```javascript
-function StockInfoViewModel(parent,dto) {
-    var self = this;
-    self.stock = new StockViewModel();
-    self.volatility = ko.observable();
-    self.currentPrice = ko.observable();
-    self.rate = ko.observable();
-    self.busy = ko.observable(false);
-    self.message = ko.observable();
-```
+### Using Vue.js
+I have decided to use vue.js as JavaScript framework to wire up the logic behind the view, mainly for two reasons:
+- Previous version of my application was F# server, and JavaScript client based on KnockoutJS. The was VueJS works resembles a lot to knockout and makes the transition easy.
+- I wanted a framework that would already work with Fable. An example using VueJs (standard Todo MVC app) is available in Fable's repo:
 
-Strategy is just a composition of the previous two (it can have multiple legs, but just one stock). It also contains a *payoff* observable which will hold the chart and the view will bind to it.
-
-```javascript
-function StrategyViewModel(legs, stock,name,parent){
-    var self = this;
-    self.legs = ko.observableArray([]);
-    self.stock = ko.observable();
-    self.payoff = ko.observable();
-}
-```
-
-The most important part is the Ajax call to retrieve the chart. It will first serialize the strategy into single json object and this object is passed to the F\# controller described above. The controller returns all the data necessary for drawing the chart.
-
-```javascript
-self.getPayoff = function () {
-  var url = "/api/pricing/";
-  var dto = self.toDto();
-  self.isBusy(true);
-  $.ajax(url, {
-      data: JSON.stringify(dto),
-      type: "PUT",
-      contentType: "application/json",
-      error: self.handleError,
-      success: function (result) {
-        var chartData = result.legPayoffs.map(function (l) {
-          return {
-            linename: l.linename,
-            width: 2,
-            values: tools.valuesToChartData(l.values)
-          }
-        });
-
-        var strategyLine = {
-          linename: "Strategy",
-          values: tools.valuesToChartData(result.strategyPayoff.values),
-          width: 4
-        }
-
-        chartData.push(strategyLine);
-        self.payoff(chartData);
-      }
-  });
-}
-```
-A chart object is array of lines. We need one line per leg and one line per strategy. Line has name, width and set of (x,y) coordinates which are then connected. We construct the charting first by mapping the resulting legs and then we push the strategy line to the array. Then we just assign the result to the *payoff* observable. There is no imperative code here to show the chart. [KoExtensions](https://github.com/hoonzis/KoExtensions) takes care of the visualization.
-
-### Payoff charts html view
-The view contains a strategy table, with each leg as single row and the chart.
+VueJs supports two-way binding and let's you define your view in html files. So unlike React the views are specified in HTML files. Behinds the curtains VueJs is creating virtual DOM as React would do. Unlike KnockoutJs where you would need special observable properties, VueJs let's you bind directly on plain JavaScript objects. The binding syntax is quite straightforward. As an example let's look at the strategies list on the left panel:
 
 ```html
-<table class="table">
-   <tbody data-bind="foreach:legs">
-   <tr>
-	   <td><select class="form-control" data-bind="options: directions,value:direction" id="directions"></select></td>
-	   <td><select class="form-control" data-bind="options: legTypes,value:kind"></select></td>
-	   <td><input type="text" class="form-control form-control-inline" placeholder="Strike" data-bind="value: strike" id="strike"></td>
-	   <td><input type="text" class="form-control form-control-inline" placeholder="Expiry" data-bind="visible:isOption,datepicker: expiry" id="expiry"></td>
-	   <td><span data-bind="formattedValue:premium, rounding:2"></span></td>
-	   <td><span data-bind="formattedValue:delta, rounding:2"></span></td>
-	   <td>
-		   <button type="button" class="btn btn-danger btn-xs" aria-label="Left Align" data-bind="click:remove">
-			   <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-		   </button>
-	   </td>
-   </tr>
-   </tbody>
-</table>
+<ul>
+    <li v-for="strategy in strategies">
+        <a href="#" v-on:click="select(strategy)">{{ strategy.name }}</a>
+    </li>
+</ul>
+```
 
-<div id="payoffchart" data-bind="linechart: payoff,chartOptions:chartOptions">
-</div>
+We are using special **v-for** binding which will render the template for each element in the list. For each strategy we will just show the name for the strategy and we are using **v-on:click** binding to invoke the **select** method of the ViewModel, passing it the strategy itself.
+
+The ViewModel behind this view, needs the strategy list and the select method:
+
+```ocaml
+type StrategyListViewModel(examples) =
+        let mutable strategies = examples |> List.map (fun s -> new StrategyViewModel(s)) |> Array.ofList
+        let mutable selectedStrategy: StrategyViewModel option = None
+
+        member x.select strat =
+            selectedStrategy <- Some strat
+            selectedStrategy.Value.generatePayoff()
 ```
