@@ -9,7 +9,7 @@ modified_time: '2016-11-02T05:11:43.965-08:00'
 ---
 If you are F# developer, chances are you have probably already heard of [Fable](http://fable.io/). Fable transpiles F# code into JavaScript, so you can run your F# in the browser. It will also generate map files, so that you can even debug F# in the browser and the generated JS is actually very readable so if something goes wrong you can still look to the "compiled" code. To sum it up, it's really a great project and I was amazed on how few modifications were necessary to my code to make it compile into JS. I am working on a small application to visualize some financial data and I figured out it would be great to use Fable for this. So I set myself to make Fable work with [NVD3](https://github.com/novus/nvd3) and draw some interesting charts with F#.
 
-The web that I am creating is a small tool to visualize option prices and payoff charts. It is available here: http://www.payoffcharts.com and it uses Fable. The code presented here is all available inside my [Pricer](https://github.com/hoonzis/Pricer) repository, just check it out and brows for the charting code:
+[The web that I am creating](http://www.payoffcharts.com) is a small tool to visualize option prices and payoff charts and is currently built with Fable. All of it's code and all presented here is part of [Pricer](https://github.com/hoonzis/Pricer) repository on github.
 
 The aim of this tutorial will be just to generate some random data and show it in a scatter chart. But we want to do this with F# in the browser. So we want to get here:
 
