@@ -1,15 +1,18 @@
 ---
 layout: post
 title: Charting with Fable and NVD3
-date: '2016-04-16T05:25:00.000-08:00'
+date: '2016-11-02T05:25:00.000-08:00'
 author: Jan Fajfr
 tags:
-- Maps
-modified_time: '2016-04-16T05:11:43.965-08:00'
+- Fable, F#
+modified_time: '2016-11-02T05:11:43.965-08:00'
 ---
 If you are F# developer, chances are you have probably already heard of [Fable](http://fable.io/). Fable transpiles F# code into JavaScript, so you can run your F# in the browser. It will also generate map files, so that you can even debug F# in the browser and the generated JS is actually very readable so if something goes wrong you can still look to the "compiled" code. To sum it up, it's really a great project and I was amazed on how few modifications were necessary to my code to make it compile into JS. I am working on a small application to visualize some financial data and I figured out it would be great to use Fable for this. So I set myself to make Fable work with [NVD3](https://github.com/novus/nvd3) and draw some interesting charts with F#.
 
-The web that I am creating is a small tool to visualize option prices and payoff charts. It is available here: http://www.payoffcharts.com and it already uses Fable. The code presented here is all available inside my [Pricer](https://github.com/hoonzis/Pricer) repository. And 
+The web that I am creating is a small tool to visualize option prices and payoff charts. It is available here: http://www.payoffcharts.com and it uses Fable. The code presented here is all available inside my [Pricer](https://github.com/hoonzis/Pricer) repository, just check it out and brows for the charting code:
+
+The aim of this tutorial will be just to generate some random data and show it in a scatter chart:
+![scatterExample](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/optionscharts/scatterExample.PNG) or you can see it life here: http://www.payoffcharts.com/chartingTest.html.
 
 ### Installing Fable
 Fable is a compiler, so you might expect an executable. In this case it comes bundled as **npm** package, which you might want to install globally:
@@ -187,7 +190,7 @@ These are not all the types that we will need, but the rest will be much clearer
 Our drawing function takes two parameters. First the data to draw and a selector which will tell us to which element in the HTML page we should draw the chart. The content will again resemble a lot a JavaScript NVD3 [official scatter chart example](https://github.com/nvd3-community/nvd3/blob/gh-pages/examples/scatterChart.html).
 
 ```ocaml
-let drawScatter (data: Series<DateScatterValue> array) (chartSelector:string) =
+let drawScatter (data: Series<DateScatterValue> array) (chartSelector:string) xLabel yLabel =
     let colors = D3.Scale.Globals.category10()
     let chart = nv.models.scatterChart().pointRange([|10.0;800.0|]).showLegend(true).showXAxis(true).color(colors.range())
     chart.yAxis.axisLabel("Strike") |> ignore
@@ -245,7 +248,9 @@ type Axis =
 
 Writing these bindings for any library becomes very easy once you understand that your are just defining interfaces and abstract classes - no implementation. You just have to make F# compiler happy and be sure that the underlying JavaScript calls will be available.
 
-Now that's everything there is to it. You might run into some issues while writing custom bindings, and I have tried to describe those bellow, but the simple example should be working with just the code above.
+Now that's everything there is to it. Just to complete this post I wanted to added two more subjects that I have run into, so continue the read if you wish:
+- Issues with custom bindings
+- Emitting custom JavaScript
 
 ### Custom bindings possible issues - objects as functions
 In JavaScript objects are functions and thus can be invoked. Not in F# though and so it can be quite complicated for anyone writing the bindings for existing JavaScript library. For example, I wanted to use D3 Time formatting capabilities to shape the **Axis** ticks into something readable. In JavaScript you would do something like this (very straightforward):
@@ -260,7 +265,7 @@ NVD3 has **tickFormat** method available on all Axis, which in JavaScript takes 
 chart.xAxis.tickFormat(D3.Time.Globals.format("%x"))
 ```
 
-That's not really how things works since what you get is a **D3.Time.Format** object not compatible with the Object->string function. In JavaScript objects are functions, so sometimes (and it is the case of **d3.time.format("%")** you get an object that can be invoked directly as function. D3 uses this pattern a lot. Scales for instance as well are objects an functions in the same time as well.
+That's not really how things works since what you get is a **D3.Time.Format** object not compatible with the **Object->string** function signature. In JavaScript objects are functions, so sometimes (and it is the case of **d3.time.format("%")** you get an object that can be invoked directly as function. D3 uses this pattern a lot. Scales for instance as well are objects an functions in the same time as well.
 
 In F# world, one just can't invoke objects as if they would be functions, so it has to be modelled differently. The **D3.Time.Globals.fomrat("%x")** returns **D3.Time.Format** object which has **Invoke** method that takes DateTime. So you might try something like this:
 

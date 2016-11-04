@@ -1,11 +1,11 @@
 ---
 layout: post
 title: Options pricing in F#
-date: '2015-10-24T09:44:00.000-07:00'
+date: '2016-11-04T01:07:44.866-07:00'
 author: Jan Fajfr
 tags:
 - FSharp, Finance, Options
-modified_time: '2015-10-30T01:07:44.866-07:00'
+modified_time: '2016-11-04T01:07:44.866-07:00'
 ---
 
 I have recently written a small option pricing library in F# called [Pricer](https://github.com/hoonzis/Pricer) (what an original name...). It contains a set of methods for derivatives pricing, generating payoff charts, estimating volatility. Payoff charts show you the profit of an option as a function of the share price change. One can create a payoff charts of any derivative. Multiple options traded in the same time form strategies which can be used to obtain different type of protection or leverage against the movements of the underlying stock - but that is not the subject of this post.
@@ -15,7 +15,7 @@ This post is about options pricing and the way it can be implemented in F#. Ther
 - Black Scholes formula
 - Binomial pricing
 
-Black Scholes is closed-form mathematical formula for pricing European options (options that can be exercised only at the maturity). Binomial pricing is algorithmical method that can be applied to pricing of diverse financial products. Both of these methods place the same assumptions on underlying share and it's movements.
+Black Scholes is closed-form mathematical formula for pricing European options (options that can be exercised only at the maturity). Binomial pricing is generic method that can be applied to pricing of diverse financial products. Both of these methods place the same assumptions on underlying share and it's movements.
 
 There are quite a lot of examples of the Black Scholes implementation around the web. Taking into account the fact that it is a mathematical formula, besides translating it into given programming language, there is not that much to talk about. So this blog post will be about Binomial Pricing. However, for both methods it is quite important to understand how the underlying stock movements are modelized.
 
@@ -110,7 +110,7 @@ The algorithm has the following steps:
 
 The price of the derivative in the end node is calculated with the **optionValue** function. For call option it would be *max(S-X,0)* for a put option *max(X-S,0)*, where *X* is the strike of the option. The following algorithm takes the number of steps in the tree as parameter and an option definition. Option has a property called **TimeToExpiry** which is the value between the purchase date of the option and the maturity in days. This time is then divided by the number of steps to obtain **deltaT** the time interval of a single step.
 
-First we will create **BinomialPricing** object which holds all the parameters of our pricing model. There parameters are calculated using the CRR model - that is up and down stock movement is calculated from the volatility, as well as the technical probabilities *p_up* and *p_down*.
+First we will create **BinomialContext** object which holds all the parameters of our pricing model. There parameters are calculated using the CRR model - that is up and down stock movement is calculated from the volatility, as well as the technical probabilities *p_up* and *p_down*.
 
 The technical probability (**p**) is determined as **p_up**. We have also defined **p_down** as *1-(p_up)* just to simplify the computations.
 
@@ -122,7 +122,7 @@ let R = exp (stock.Rate*deltaT)
 let p_up = (R-down)/(up-down)
 let p_down = 1.0 - p_up
 
-let pricing = {
+{
     Periods = steps
     Up = up
     Down = down
@@ -134,91 +134,130 @@ let pricing = {
 }
 ```
 
+This context holds all the setting extracted from our model. It is used by the method that we will describe bellow.
+
 Now we can take a look at the actual iterative implementation. In the first part we prepare our **optionValue** function which will determine a value on option by looking into the array of stock prices over which we are going to iterate.
 
 We also have to initialize the array to it's starting values. These are the leaf values in the tree. Remember that we are walking the tree from the lowest layer (further away on the expiry of the option).
 
 ```ocaml
-let prices = Array.zeroCreate pricing.Periods
-let optionValue =
-    match pricing.Option.Kind with
-            | Call -> fun i -> max 0.0 (prices.[i] - pricing.Option.Strike)
-            | Put -> fun i -> max 0.0 (pricing.Option.Strike - prices.[i])
+// this array holds the prices of the underlying in given period
+let prices = Array.zeroCreate ctx.Periods
+let option = ctx.Option
 
-prices.[0] <- pricing.Ref*(pricing.Down**(float pricing.Periods))
-let oValues = Array.zeroCreate pricing.Periods
-oValues.[0]<- optionValue 0
+// returns a function used to calculate the option prices in the period i.
+// it looks into the underlying prices array and compares with strike
+let optionValueInPeriod =
+    match option.Kind with
+            | Call -> fun i -> max 0.0 (prices.[i] - option.Strike)
+            | Put -> fun i -> max 0.0 (option.Strike - prices.[i])
 
-// generate the initial layer - the last
-for i in 1 ..pricing.Periods-1 do
-    prices.[i] <- prices.[i-1]*pricing.Up*pricing.Up
-    oValues.[i]<- optionValue i
+// initialize the last price (the underlying wen down * period times)
+prices.[0] <- ctx.Ref*(ctx.Down**(float ctx.Periods))
+let optionValues = Array.zeroCreate ctx.Periods
 
+optionValues.[0]<- optionValueInPeriod 0
+for i in 1 ..ctx.Periods-1 do
+    prices.[i] <- prices.[i-1]*ctx.Up*ctx.Up
+    optionValues.[i]<- optionValueInPeriod i
 ```
 
 Now we can start to walk the array back to the "current time" and update the values. After we finish, the value in the first element will give us the option price "right now".
 
 ```ocaml
-let counter = pricing.Periods-2
+let counter = ctx.Periods-2
 for step = counter downto 0 do
     for j in 0 .. step do
-        oValues.[j] <- (pricing.PUp*oValues.[j+1]+pricing.PDown*oValues.[j])*(1.0/pricing.Rate)
-oValues.[0]
+        optionValues.[j] <- (ctx.PUp*optionValues.[j+1]+ctx.PDown*optionValues.[j])*(1.0/ctx.Rate)
+        if option.Style = American then
+            prices.[j] <- ctx.Down*prices.[j+1]
+            optionValues.[j] <- max optionValues.[j] (optionValueInPeriod j)
+
+buildPricingResult optionValues.[1] optionValues.[0] ctx
 ```
 
-Note that the implementation iterates and modifies 2 arrays: *oValues* which contains the prices of the derivate and *prices* which contains the prices of the stock in the current layer.
+Note that the implementation iterates and modifies 2 arrays: *optionValues* which contains the prices of the derivate and *prices* which contains the prices of the stock in the current layer.
+
+At the end we construct the result of the pricing (record which holds the Delta and the Premium):
+
+```ocaml
+let buildPricingResult previousOptionPrice optionPrice ctx =
+    let optionPriceChange = previousOptionPrice - optionPrice
+    let underlyingPriceChange = ctx.Ref*ctx.Up - ctx.Ref
+    let delta = optionPriceChange / underlyingPriceChange
+    {
+        Premium = optionPrice
+        Delta = delta
+    }
+```
+
+The premium is really on the top of our *optionValues* field. We can also calculate the delta, because we know the price of the option in the previous step as well as the underlying price change.
 
 ### Functional way
 The previous implementation is cool but we iterate over the stock and option price arrays and constantly modify their content, let's try to come up with an immutable way.
 
-That can be surprisingly easy, let's define a function for single step backwards in the tree. This function would take a list of values, which are the values of the nodes in the current layer and produce another list which would contain the derivative prices in the next step. If we pass in a list with 4 items, we should get a list of 3 items, going down until we have only one item, which will be the derivative price.
+We will need to represent the binomial tree, so we will start with creating the necessary abstractions. As we have said in the reality we keep two trees - tree of the option prices and tree of the underlying prices. We can hold all the information in the same node:
+
+```ocaml
+type BinomialNode = {
+    Stock: double
+    Option: double
+    UpParent: BinomialNode option
+    DownParent: BinomialNode option
+}
+```
+
+Creating a functional implementation can be surprisingly easy, let's define a function for single step backwards in the tree. This function would take a list of values, which are the values of the nodes in the current layer and produce another list which would contain the derivative prices in the next step. If we pass in a list with 4 items, we should get a list of 3 items, going down until we have only one item, which will be the derivative price.
 
 This is achieved thanks to **Seq.pairwise** which iterates over all consecutive values in the array - in our case the first item will be *P_up* and second *P_down*.
 
-The **BinomialPricing** option will be kept intact, our mode does not change, only the implementation does - since this is completely functional way, the model is passed to all the steps as parameter.
+The **BinomialContext** object will be kept intact, our model does not change, only the implementation does - since this is completely functional way, the context is passed to all the steps as parameter. This is single step up in the tree:
 
 ```ocaml
-let step (derPrice:float list) (pricing:BinomialPricing) =
-    derPrice  |> Seq.pairwise
-              |> Seq.map (fun (down,up)-> (pricing.PUp*up+pricing.PDown*down)*(1.0/pricing.Rate))
-              |> List.ofSeq
-
-let rec reducePrices (derPrice:float list) (pricing:BinomialPricing) =
-    match derPrice with
-            | [single] -> single
-            | prices -> reducePrices (step prices pricing) pricing
+// takes one layer of the binomial tree and generates the next layer
+let step pricing optionVal (prices:BinomialNode []) =
+    prices
+        |> Array.pairwise
+        |> Array.map (fun (downNode,upNode) -> mergeNodes downNode upNode optionVal pricing)
 ```
 
-Rewriting all in functional way would resolve into something similar to the following snippet. I have changed the algorithm a bit to keep track of the share and the option price. Now the list of prices passed from one step to another contains a tuples of share price and option price.
+So the next question is how we merge the nodes. That is the hard part, but what we really do here is, that we apply the CRR equation, and calculate the option prices in the node from the previous two nodes. The derivative price is the tricky one. The underlying price in the next node is very easy:
 
 ```ocaml
-let binomialPricingFunc (pricing:BinomialPricing) =
-  let optionVal stock =
-    match pricing.Option.Kind with
-            | Call -> max 0.0 (stock - pricing.Option.Strike)
-            | Put -> max 0.0 (pricing.Option.Strike - stock)
+let mergeNodes downNode upNode optionVal pricing =
 
-  let prices = generateEndNodePrices pricing.Ref pricing.Up pricing.Periods optionVal
+  // calculate the value of the next option, using the CRR
+  let derValue = (pricing.PUp * upNode.Option + pricing.PDown * downNode.Option)*(1.0/pricing.Rate)
 
-  let step (prices:(float*float) list) =
-      prices
-        |> Seq.pairwise
-        |> Seq.map (fun ((sDown,dDown),(sUp,dUp)) ->
-            let derValue = (pricing.PUp*dUp+pricing.PDown*dDown)*(1.0/pricing.Rate)
-            let stockValue = sUp*pricing.Down
-            let der' = if pricing.Option.Style = American then
-                            let prematureExValue = optionVal stockValue
-                            max derValue prematureExValue
-                        else derValue
-            prices' @ [stockValue,der'])[]
+  // calculate the value of the next stock - simply by raising the old stock
+  let stockValue = upNode.Stock * pricing.Down
 
-  let rec reducePrices prices =
-      match prices with
-              | [(stock,der)] -> der
-              | prs -> reducePrices (step prs)
+  // check for premature execution - if it's american option
+  let option' =
+      match pricing.Option.Style with
+          | American ->
+              let prematureExValue = optionVal stockValue
+              max derValue prematureExValue
+          | European -> derValue
 
-  reducePrices prices
+
+  {
+      Stock = stockValue
+      Option = option'
+      UpParent = Some upNode
+      DownParent = Some downNode
+  }
+```                
+
+The last part is to call this tree generation until we have only 1 node in the current layer:
+
+```ocaml
+let rec reducePrices prices =
+  match prices with
+        | [|node|] -> node.Option, node.UpParent.Value.Option
+        | prs -> reducePrices (reductionStep prs)
 ```
+
 
 Now one last remark, I am using a method call **generateEndNodePrices** which gives me the list of the prices in the last nodes. Even this function can be written in nice functional way:
 
@@ -226,12 +265,17 @@ Now one last remark, I am using a method call **generateEndNodePrices** which gi
 let generateEndNodePrices (ref:float) (up:float) (periods:int) optionVal =
   let down = 1.0 / up
   let lowestStock = ref*(down**(float periods))
-  let first = lowestStock,optionVal lowestStock
-  let values = Seq.unfold (fun (stock,der)->
-    let stock' = stock*up*up
-    let der' = optionVal stock'
-    Some ((stock,der),(stock', der'))) first
-  values |> Seq.take periods |> List.ofSeq
+  let first = { emptyNode with Stock = lowestStock; Option = optionVal lowestStock}
+  let values = Seq.unfold (fun node ->
+      let stock' = node.Stock*up*up
+      let option' = optionVal stock'
+      let nodeBellow = {
+          emptyNode with
+              Stock = stock'
+              Option = option'
+      }
+      Some (node,nodeBellow)) first
+  values |> Seq.take periods |> Seq.toArray
 ```
 
 All it takes is to have the share price (*ref*) and the multiplicator to obtain it's price in the next step if the price goes up. We can then use **unfold** to get the price list.

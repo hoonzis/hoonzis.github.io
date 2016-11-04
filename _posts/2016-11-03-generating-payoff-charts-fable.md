@@ -1,11 +1,11 @@
 ---
 layout: post
 title: Options and Stocks charts in F# and JavaScript
-date: '2016-04-16T05:25:00.000-08:00'
+date: '2016-03-16T05:25:00.000-08:00'
 author: Jan Fajfr
 tags:
-- Maps
-modified_time: '2016-04-16T05:11:43.965-08:00'
+- Fable, F#, options
+modified_time: '2016-03-16T05:11:43.965-08:00'
 ---
 I have been playing with option, their pricing and pay-off charts generation for some time now. I have created a small F# library called [Pricer](https://github.com/hoonzis/Pricer) which does options pricing and few other things. In order to demonstrate what the library can do, I wanted to create a small web application. First I went for standard JavaScript client with F# backend, but then I cam across [Fable](http://fable.io/). At the end I have created [payoffcharts.com](http://www.payoffcharts.com/). The page contains different visualizations of options, payoffs and their prices - and yeah it's all F#.
 
@@ -15,18 +15,11 @@ The rest of this post is structured as follows:
 - Introduction into options, their parameters
 - Domain model describing options
 
-
-Payoff charts of several strategies
-![payoffcharts](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/optionscharts/payoffcharts_viz.PNG)
+Payoff charts of several strategies, such as the following Condor.
+![payoffcharts](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/optionscharts/condor.PNG)
 
 Using bubble chart to compare option prices depending on strike and expiry
-![pricebubble](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/optionscharts/price_bubble_chart.PNG)
-
-Using line chart to compare option prices with same strike and different expiries
-![putexpiry](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/optionscharts/put_expiry.PNG)
-
-Comparing the American and European option price with different expiry
-![americaneuropean](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/optionscharts/american_vs_european.PNG)
+![pricebubble](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/optionscharts/option-prices.PNG)
 
 ## Payoff charts
 A bit of theory is necessary here, just to describe the domain: options and strategies. Options are financial contracts that give you the right to buy some asset in the future for agreed price. The code that I will describe in few following paragraphs is part of the [Pricer](https://github.com/hoonzis/Pricer) library.
@@ -56,7 +49,7 @@ Payoff chart, shows us how much we earn when the stock moves up or down. Bellow 
 
 ![callspread](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/optionscharts/callspread.png)
 
-Another example of a strategy: Covered Call
+Another example of a strategy: **Covered Call**
 
 - Strategy built of a cash leg and an option leg
 - I bought the stock at 100 and I want to sell at 120
@@ -304,3 +297,85 @@ type StrategyListViewModel(examples) =
             selectedStrategy <- Some strat
             selectedStrategy.Value.generatePayoff()
 ```
+
+The strategy list takes the list of strategies, wraps each of them as ViewModel and stores them in it's local list. Let's look at the strategy because that is really the ViewModel that holds the majority of the code:
+
+```ocaml
+type StrategyViewModel(strategy) =
+		let mutable legs = strategy.Legs |> List.map (fun l -> LegViewModel(l)) |> Array.ofList
+		let mutable name = strategy.Name
+		let mutable stock = new StockViewModel(strategy.Stock)
+
+		member __.addLeg(event) =
+				let  newLeg: Leg = {
+						Definition = Option {
+								Direction = 1.0
+								Strike = 100.0
+								Expiry = DateTime.Now
+								Kind = Call
+								Style = European
+								PurchaseDate = DateTime.Now
+						}
+						Pricing = None
+				}
+
+				legs <- (legs |> Array.append [|new LegViewModel(newLeg)|])
+
+		member __.removeLeg(leg:LegViewModel) =
+				legs <- (legs |> Array.filter (fun l -> l.getLeg <> leg.getLeg))
+
+		member __.generatePayoff() =
+				let newStrategy = {
+						Name = name
+						Legs = legs |> Seq.map (fun l -> l.getLeg) |> List.ofSeq
+						Stock = stock.buildStock
+				}
+				let data = payoffsGenerator.getStrategyData newStrategy
+				Charting.drawPayoff data "#payoffChart"
+```
+
+Each strategy has few things:
+- List of legs (each of them is wrapped by LegViewModel).
+- Method to add a new leg into the list
+- Method to remove a leg from a list
+- Method to generate a payoff chart
+
+In order to make Vue and F# play nice together I had to make few variables mutable. That makes since because any view model is mutable by it's definition. Having immutable objects behind your UI might be possible, but one would have to go for Redux or similar "single flow" solution and basically give up two-way binding. So don't judge me for adding those mutable fields.
+
+Adding a new leg means creating new leg object, wrapping it by the ViewModel and mutating the original list of legs.
+
+### Issues while using Vue from F#
+There are few issues that you might encounter, while using Fable & Vue, mainly because both of these are still young technos and evolve.
+
+#### Only arrays are observed
+It seems that currently only arrays are observed by Vue.js correctly as collections. Typically for each strategy has a list of legs, that I expose as a member.
+
+```ocaml
+type StrategyViewModel(strat) =
+       let mutable strategy: Strategy = strat
+       member __.legs = strategy.Legs |> List.map (fun l -> LegViewModel(l))
+```
+
+This works the first time just for rendering, but as soon as you modify the original **strategy** mutable field and add or remove leg, nothing happens. In order to force Vue.js to observe the list, cast it to array:
+
+```ocaml
+member __.legs = strategy.Legs |> List.map (fun l -> LegViewModel(l)) |> Array.ofList
+```
+
+#### Input bound values have to be string
+All the values that are bound to form inputs have to be string. For that reason I had to introduce mutable string variables (which is really horrible way of doing things). I would love to have my LegViewModel defined just like this:
+
+```ocaml
+type LegViewModel(l:Leg) =
+    let mutable leg = l
+    let mutable strike = l.strike  
+```
+
+If you don't specify the type of **strike** the compiler will infer it to float, based on it's usage, however since this is bounded input field, one will actually get string on run-time.
+
+#### Fable non supported methods
+Fable just can't compile the whole BCL to JavaScript, even though it tries and succeeds very often. I have stumbled over the following:
+
+- Cannot find replacement for sign - One could very easily emit it's own JavaScript to solve this one. Look here.
+- Cannot find replacement for System.DateTime.toString - This would be very complicated, since there are so many overloads of this method. I guess the right thing would be to use Moment JavaScript library and just write Fable bindings for it.
+- Cannot find replacement for System.Int32.parse - One can actually use **int** function instead of Int32.parse
