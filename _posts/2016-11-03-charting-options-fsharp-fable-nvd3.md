@@ -9,7 +9,7 @@ modified_time: '2016-11-03T05:11:43.965-08:00'
 ---
 I have been playing with option, their pricing and pay-off charts generation for some time now. I have created a small F# library called [Pricer](https://github.com/hoonzis/Pricer) which does options pricing and few other things. In order to demonstrate what the library can do, I wanted to create a small web application. First I went for standard JavaScript client with F# backend, but then I cam across [Fable](http://fable.io/). At the end I have created [payoffcharts.com](http://www.payoffcharts.com/). The page contains different visualizations of options, payoffs and their prices - and yeah it's all F#.
 
-I have already written an [introduction into Fable, D3 and NVD3 charting](http://www.hoonzis.com/charting-with-fable-and-nvd3/), the rest of this post is structured as follows:
+I have already written an [introduction into Fable, D3 and NVD3 charting](http://www.hoonzis.com/charting-with-fable-and-nvd3/). Check it out for the charting part. The rest of this post is structured as follows:
 
 - Introduction into options, their parameters
 - Domain model describing options

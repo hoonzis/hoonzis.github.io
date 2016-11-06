@@ -7,11 +7,12 @@ tags:
 - Fable, F#
 modified_time: '2016-11-02T05:11:43.965-08:00'
 ---
-If you are F# developer, chances are you have probably already heard of [Fable](http://fable.io/). Fable transpiles F# code into JavaScript, so you can run your F# in the browser. It will also generate map files, so that you can even debug F# in the browser and the generated JS is actually very readable so if something goes wrong you can still look to the "compiled" code. To sum it up, it's really a great project and I was amazed on how few modifications were necessary to my code to make it compile into JS. I am working on a small application to visualize some financial data and I figured out it would be great to use Fable for this. So I set myself to make Fable work with [NVD3](https://github.com/novus/nvd3) and draw some interesting charts with F#.
 
-[The web that I am creating](http://www.payoffcharts.com) is a small tool to visualize option prices and payoff charts and is currently built with Fable. I have created a small repository for this tutorial: [https://github.com/hoonzis/FabledCharting](https://github.com/hoonzis/FabledCharting). To get started you should be able just to clone it and run the fable commands shown bellow.
+If you are F# developer, chances are you have already heard of [Fable](http://fable.io/). Fable transpiles F# code into JavaScript, so you can run F# in the browser. It also generates map files, so that one can debug F# in the browser. The generated JS is very readable so if something goes wrong you can still look to the "compiled" code. It's really a great project and I was amazed on how few modifications were necessary to my code to make it compile into JS. I am working on a [small application to visualize some financial data](http://www.payoffcharts.com) and I have built it with Fable. I have used  [NVD3](https://github.com/novus/nvd3) as JavaScript charting library and this post describes how to make them work together.
 
-The aim of this tutorial will be just to generate some random data and show it in a scatter chart. But we want to do this with F# in the browser. So we want to get here:
+I have created a repository [https://github.com/hoonzis/FabledCharting](https://github.com/hoonzis/FabledCharting). To get started you should be able just to clone it and run the fable commands shown bellow.
+
+The aim of this tutorial will be just to generate some random data and show it in a scatter chart. But we want to do this with F# in the browser:
 
 ![scatterExample](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/optionscharts/scatter-example.PNG)
 
@@ -32,17 +33,19 @@ You future application will be probably composed of multiple files and multiple 
 ### Setup your Fable project
 Before you get started with any code, you have to consider few things. Fable will be just a part of your compilation chain. The chain will probably look like this:
 
-**F# Code -> Fable -> JS Files -> Bundled JS -> Injecting JS into HTML**
+```
+F# Code -> Fable -> JS Files -> Bundled JS -> Injecting JS into HTML**
+```
 
 So you will have to decide on what JS files Fable should generate and how those should be bundled into desired output. Let's go over the steps to decide:
 
-* ##### Single fsx or a project?
+#### Single fsx or a project?
 Are you going to fit everything into single F# file or you will create a project? Fable allows you to do both and in the simplest situation I can just point fable to a single fsx file, but if you plan to build something bigger, you better create F# project (F# library will work, even though you won't distribute anything as library but compile into JS instead).
 
-* ##### JavaScript modules
+#### JavaScript modules
 How the resulting JavaScript should be structured and packaged? Two most common ways of defining modules in JavaScript are AMD and CommonJS.
 
-* ##### JavaScript bundling
+#### JavaScript bundling
 Fable will create one JavaScript file per F# file, these files have to be then loaded by the browser. Depending on the module pattern (CommonJS vs AMD) you will have to bundle them together to a single JavaScript file which will be included in the html.
 
 I have chosen the following setup: F# project with multiple files. CommonJS as module system, bundled with Webpack. To go for this configuration, you will have to create the following 3 files in the root of the project folder:
@@ -157,7 +160,7 @@ The page itself will be very small - it contains only one div tag which we will 
 ### The F# application
 Let's look at the content of "main" file. The file contains a single module, with a single function that is invoked. This function will be called when the JavaScript is loaded.
 
-```ocaml
+```fsharp
 namespace FabledCharting
 
 open System
@@ -292,13 +295,13 @@ chart.xAxis.tickFormat(D3.Time.Globals.format("%x"))
 
 That's not really how things works since what you get is a **D3.Time.Format** object not compatible with the **Object->string** function signature. In JavaScript objects are functions, so sometimes (and it is the case of **d3.time.format("%")** you get an object that can be invoked directly as function. D3 uses this pattern a lot. Scales for instance as well are objects an functions in the same time as well.
 
-In F# world, one just can't invoke objects as if they would be functions, so it has to be modelled differently. The **D3.Time.Globals.fomrat("%x")** returns **D3.Time.Format** object which has **Invoke** method that takes DateTime. So you might try something like this:
+In F#, one just can't invoke objects as if they would be functions, so it has to be modelled differently. The **D3.Time.Globals.fomrat("%x")** returns **D3.Time.Format** object which has **Invoke** method that takes DateTime. So you might try something like this:
 
 ```ocaml
 chart.xAxis.tickFormat(fun x -> D3.Time.Globals.format("%x").Invoke(x))
- ```
+```
 
-Well still no luck since **Invoke** method expects DateTime and you are passing in an Object, because the signature of tickFormat is Object -> string. So you will have to cast to DateTime just to make the F# compiler happy, even though you know that the underlying JavaScript would work.
+Note that this still won't work since **Invoke** method expects DateTime and you are passing in an Object, because the signature of tickFormat is Object -> string. So you will have to cast to DateTime just to make the F# compiler happy, even though you know that the underlying JavaScript would work.
 
 ### Emitting custom JavaScript
 Fable allows you to interact with JavaScript with few different ways. One way is to define function calls that will emit specific JavaScript code. Here is the official example:
