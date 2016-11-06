@@ -8,9 +8,9 @@ tags:
 modified_time: '2016-11-02T05:11:43.965-08:00'
 ---
 
-If you are F# developer, chances are you have already heard of [Fable](http://fable.io/). Fable transpiles F# code into JavaScript, so you can run F# in the browser. It also generates map files, so that one can debug F# in the browser. The generated JS is very readable so if something goes wrong you can still look to the "compiled" code. It's really a great project and I was amazed on how few modifications were necessary to my code to make it compile into JS. I am working on a [small application to visualize some financial data](http://www.payoffcharts.com) and I have built it with Fable. I have used  [NVD3](https://github.com/novus/nvd3) as JavaScript charting library and this post describes how to make them work together.
+If you are F# developer, chances are you have already heard of [Fable](http://fable.io/). Fable transpiles F# code into JavaScript, so you can run F# in the browser. It also generates map files, so that one can debug F# in the browser. The generated JS is very readable so if something goes wrong you can still look to the "compiled" code. It's really a great project and I was amazed on how few modifications were necessary to my code to make it compile into JS. I am working on a [small application to visualize some financial data](http://www.payoffcharts.com) and I have built it with Fable and [NVD3](https://github.com/novus/nvd3) JavaScript charting library and this post describes how to make them work together.
 
-I have created a repository [https://github.com/hoonzis/FabledCharting](https://github.com/hoonzis/FabledCharting). To get started you should be able just to clone it and run the fable commands shown bellow.
+The code is available at [https://github.com/hoonzis/FabledCharting](https://github.com/hoonzis/FabledCharting).
 
 The aim of this tutorial will be just to generate some random data and show it in a scatter chart. But we want to do this with F# in the browser:
 
@@ -86,7 +86,7 @@ Notice that webpack and source-map-loader are defined as development dependencie
 #### fableconfig.json
 Fable's configuration. You have to tell fable what are his dependencies, which JavaScript module system should be used. Since I have decided to use webpack for JS files bundling, I can also ask fable to run webpack when the compilation is finished (in post-build).
 
-I am pointing fable to single F# project file and tell Fable to generate the source maps, so that you can debug F# in chrome's console.
+I am pointing fable to single F# project file and asking him to generate source maps, so that you can debug F# in chrome's console.
 
 Note that things might get more complicated when you have multiple F# projects and you will built them with Fable and reference each other, but I will cover that in future post.
 
@@ -160,7 +160,7 @@ The page itself will be very small - it contains only one div tag which we will 
 ### The F# application
 Let's look at the content of "main" file. The file contains a single module, with a single function that is invoked. This function will be called when the JavaScript is loaded.
 
-```fsharp
+```ocaml
 namespace FabledCharting
 
 open System
