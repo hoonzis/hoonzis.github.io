@@ -9,13 +9,11 @@ modified_time: '2016-11-02T05:11:43.965-08:00'
 ---
 If you are F# developer, chances are you have probably already heard of [Fable](http://fable.io/). Fable transpiles F# code into JavaScript, so you can run your F# in the browser. It will also generate map files, so that you can even debug F# in the browser and the generated JS is actually very readable so if something goes wrong you can still look to the "compiled" code. To sum it up, it's really a great project and I was amazed on how few modifications were necessary to my code to make it compile into JS. I am working on a small application to visualize some financial data and I figured out it would be great to use Fable for this. So I set myself to make Fable work with [NVD3](https://github.com/novus/nvd3) and draw some interesting charts with F#.
 
-[The web that I am creating](http://www.payoffcharts.com) is a small tool to visualize option prices and payoff charts and is currently built with Fable. All of it's code and all presented here is part of [Pricer](https://github.com/hoonzis/Pricer) repository on github.
+[The web that I am creating](http://www.payoffcharts.com) is a small tool to visualize option prices and payoff charts and is currently built with Fable. I have created a small repository for this tutorial: [https://github.com/hoonzis/FabledCharting](https://github.com/hoonzis/FabledCharting). To get started you should be able just to clone it and run the fable commands shown bellow.
 
 The aim of this tutorial will be just to generate some random data and show it in a scatter chart. But we want to do this with F# in the browser. So we want to get here:
 
 ![scatterExample](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/optionscharts/scatter-example.PNG)
-
-You can see it life here: [http://www.payoffcharts.com/chartingTest.html](http://www.payoffcharts.com/chartingTest.html).
 
 ### Installing Fable
 Fable is a compiler, so you might expect an executable. In this case it comes bundled as **npm** package, which you might want to install globally (since you might use it over multiple projects). Note that you will need NodeJs, but once you have it you can just type:
@@ -31,7 +29,7 @@ fable myApp.fsx
 ```
 You future application will be probably composed of multiple files and multiple JavaScript files will be generated, so in order to get started there is a bit of configuration.
 
-### Setup the Fable project
+### Setup your Fable project
 Before you get started with any code, you have to consider few things. Fable will be just a part of your compilation chain. The chain will probably look like this:
 
 **F# Code -> Fable -> JS Files -> Bundled JS -> Injecting JS into HTML**
@@ -61,7 +59,7 @@ Notice that webpack and source-map-loader are defined as development dependencie
 ```json
 {
   "private": false,
-  "name": "fabled-pricer",
+  "name": "fabled-charting",
   "version": "1.0.0",
   "main": "index.js",
   "author": "Jan Fajfr",
@@ -83,7 +81,7 @@ Notice that webpack and source-map-loader are defined as development dependencie
 ```
 
 #### fableconfig.json
-Fable's configuration. You have to tell fable what are his dependencies, which JavaScript module system should be used. Since I have decided to use webpack for JS files bundling, I can also ask fable to run webpack when the compilation is finished (in postbuild).
+Fable's configuration. You have to tell fable what are his dependencies, which JavaScript module system should be used. Since I have decided to use webpack for JS files bundling, I can also ask fable to run webpack when the compilation is finished (in post-build).
 
 I am pointing fable to single F# project file and tell Fable to generate the source maps, so that you can debug F# in chrome's console.
 
@@ -93,8 +91,8 @@ Note that things might get more complicated when you have multiple F# projects a
 {
   "module":  "commonjs",
   "sourceMaps": true,
-  "projFile": "Pricer.Fabled.fsproj",
-  "outDir": "CompiledJs/Pricer.Fabled",
+  "projFile": "FabledCharting.fsproj",
+  "outDir": "compiledjs",
   "scripts": {
     "postbuild": "webpack"
   },
@@ -114,7 +112,7 @@ Webpack's config. We will have to tell fable where the JS files are (generated b
 ```javascript
 module.exports = {
     entry: {
-        chartingTest: "./CompiledJs/Pricer.Fabled/ChartingTest"
+        chartingTest: "./compiledjs/ChartingTest"
     },
     output: {
         filename: "[name].bundle.js",
@@ -160,7 +158,7 @@ The page itself will be very small - it contains only one div tag which we will 
 Let's look at the content of "main" file. The file contains a single module, with a single function that is invoked. This function will be called when the JavaScript is loaded.
 
 ```ocaml
-namespace Pricer.Fabled
+namespace FabledCharting
 
 open System
 
@@ -195,7 +193,7 @@ module ChartingTest =
 
 All we are doing here is preparing the data for the charting. We will generate an array of items for the scatter chart. Each item has three properties (x,y,size). Then we will wrap all the data into two series and pass to the drawing function. Note that nothing is said here about the types of the values, but the standard NVD3 JavaScript code would look very similar. You can look at the [official scatter chart example](https://github.com/nvd3-community/nvd3/blob/gh-pages/examples/scatterChart.html). We will look into the details of **drawScatter** method later.
 
-### Defining NVD3 types
+### Writing NVD3 types
 In the previous snippet we have created an array of "Series" with two Series of random data. The shape of the series reflects what NVD3 is expecting, but since we are compiling from F# we have to define the types that would resemble to what NVD3 is expecting. That is really not that hard, these 2 records will do:
 
 ```ocaml
@@ -220,20 +218,20 @@ Our drawing function takes two parameters. First the data to draw and a selector
 let drawScatter (data: Series<DateScatterValue> array) (chartSelector:string) xLabel yLabel =
     let colors = D3.Scale.Globals.category10()
     let chart = nv.models.scatterChart().pointRange([|10.0;800.0|]).showLegend(true).showXAxis(true).color(colors.range())
-    chart.yAxis.axisLabel("Strike") |> ignore
-    chart.xAxis.axisLabel("Expiry") |> ignore
+    chart.yAxis.axisLabel(yLabel) |> ignore
+    chart.xAxis.axisLabel(xLabel) |> ignore
     let chartElement = D3.Globals.select(selector);
     chartElement.html("") |> ignore
     chartElement.style("height","500px") |> ignore
     chartElement.datum(data).call(chart) |> ignore
 ```
 
-This function calls two libraries: NVD3 and D3 itself. There is however a small difference. For any NVD3 code that we call, we have to define the F# types, so that F# compiler is not confused, and Fable "knows" that it can just output the code itself.
+This function calls two libraries: NVD3 and D3 itself. There is however a small difference. For any NVD3 code that we call, we have to write the F# bindings, so that F# compiler is not confused, and Fable "knows" that it can just output the code itself.
 
-For D3 however we can use the [Fable D3 Bindings](https://www.npmjs.com/package/fable-import-d3) which are available as npm package. That basically means that for instance **D3.Scale.Globals.category10** has been defined in the D3 bindings DLL and Fable knows that the correct JavaScript output is **d3.scale.category10()**, without us telling him.
+For D3 we can use the [Fable D3 Bindings](https://www.npmjs.com/package/fable-import-d3) which are available as npm package. That basically means that for instance **D3.Scale.Globals.category10** has been defined in the D3 bindings DLL and Fable knows that the correct JavaScript output is **d3.scale.category10()**. These bindings are provided by Fable contributors.
 
-### Creating custom bindigs for NVD3
-For NVD3, we have to defined the bindings manually. So let's start with the call to **nv.models.scatterChart**
+### Writing custom bindings for NVD3
+For NVD3, we have to defined the bindings manually. So let's start with the call to **nv.models.scatterChart**.
 
 ```ocaml
 module nv =
@@ -244,7 +242,7 @@ type ChartModels =
     abstract scatterChart: unit -> ScatterChart
 ```
 
-So we have defined **nv** model with **models** field, this will make F# compiler happy. And fable will just output the same code in JavaScript. ChartModels is a type that provides all the charts. Our example is using only **scatterChart** but I have defined also **lineChart** just to let you know the whole idea behind this:
+So we have defined **nv** module with **models** field, this will make F# compiler happy. And Fable will just output the same code in JavaScript. ChartModels is a type that provides all the charts. Our example is using only **scatterChart** but I have defined also **lineChart** just to show you the whole idea behind:
 
 ```ocaml
 [<AbstractClass>]
@@ -333,4 +331,4 @@ The resulting JavaScript will just look like this:
 var myDate = new Date(1238985);
 ```
 
-Now of course the other way around is to do a PR on Fable and fix this issue which after all should not be that hard and I guess thats what I should do instead of continuing this already quite long post.
+Now of course the other way around is to do a PR on Fable and fix this issue which after all should not be that hard and I guess that is what I should do instead of continuing this already quite long post.

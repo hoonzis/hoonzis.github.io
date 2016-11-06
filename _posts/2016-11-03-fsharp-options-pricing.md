@@ -8,16 +8,18 @@ tags:
 modified_time: '2016-11-04T01:07:44.866-07:00'
 ---
 
-I have recently written a small option pricing library in F# called [Pricer](https://github.com/hoonzis/Pricer) (what an original name...). It contains a set of methods for derivatives pricing, generating payoff charts, estimating volatility. Payoff charts show you the profit of an option as a function of the share price change. One can create a payoff charts of any derivative. Multiple options traded in the same time form strategies which can be used to obtain different type of protection or leverage against the movements of the underlying stock - but that is not the subject of this post.
+I have recently written a small pricing library in F# [Pricer](https://github.com/hoonzis/Pricer). It contains a set of methods for derivatives pricing, generating payoff charts, estimating volatility. Payoff charts show you the profit of an option as a function of the share price. This post is about options pricing and the way it can be implemented in F#.
 
-This post is about options pricing and the way it can be implemented in F#. There are generally two methods to price options:
+There are generally two methods to price options:
 
 - Black Scholes formula
-- Binomial pricing
+- Tree based models - binomial or trinomial trees
+- Monte carlo methods
+- Finite difference methods
 
-Black Scholes is closed-form mathematical formula for pricing European options (options that can be exercised only at the maturity). Binomial pricing is generic method that can be applied to pricing of diverse financial products. Both of these methods place the same assumptions on underlying share and it's movements.
+Black Scholes is closed-form mathematical formula for pricing European options (options that can be exercised only at the maturity). Binomial pricing is generic method that can be applied to pricing of diverse financial products. All the methods above place the same assumptions on underlying share and it's movements (which I will describe later)
 
-There are quite a lot of examples of the Black Scholes implementation around the web. Taking into account the fact that it is a mathematical formula, besides translating it into given programming language, there is not that much to talk about. So this blog post will be about Binomial Pricing. However, for both methods it is quite important to understand how the underlying stock movements are modelized.
+There are quite a lot of examples of the Black Scholes implementation around the web. Taking into account the fact that it is a mathematical formula, besides translating it into given programming language, there is not that much to talk about. This blog post will be about Binomial Pricing. However, before we got to the code, it's quite important to understand how the underlying stock movements are modelized.
 
 ### Share price and it's movements
 In order to determine the price of the option, one has to guess how the shares will move in the future. That is not possible but we can assume two facts:
