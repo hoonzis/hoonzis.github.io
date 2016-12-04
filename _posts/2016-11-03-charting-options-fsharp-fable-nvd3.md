@@ -1,18 +1,20 @@
 ---
 layout: post
-title: Charting options with F#, Fable and NVD3
+title: Charting options with Fable, VueJs and NVD3
 date: '2016-11-03T05:25:00.000-08:00'
 author: Jan Fajfr
 tags:
-- Fable, F#, options
+- Fable, F#, options, VueJs
 modified_time: '2016-11-03T05:11:43.965-08:00'
 ---
-I have been playing with option, their pricing and pay-off charts generation for some time now. I have created a small F# library called [Pricer](https://github.com/hoonzis/Pricer) which does options pricing and few other things. In order to demonstrate what the library can do, I wanted to create a small web application. First I went for standard JavaScript client with F# backend, but then I cam across [Fable](http://fable.io/). At the end I have created [payoffcharts.com](http://www.payoffcharts.com/). The page contains different visualizations of options, payoffs and their prices - and yeah it's all F#.
+I have been playing with options, their pricing and pay-off charts generation for some time now. I have created a small F# library called [Pricer](https://github.com/hoonzis/Pricer) which does options pricing and few other things. In order to demonstrate what the library can do, I wanted to create a small web application. First I went for standard JavaScript client with F# backend, but then I came across [Fable](http://fable.io/) and at the end created [payoffcharts.com](http://www.payoffcharts.com/). This small application contains different visualizations of options, payoffs and their prices - and yeah it's all F#.
 
-I have already written an [introduction into Fable, D3 and NVD3 charting](http://www.hoonzis.com/charting-with-fable-and-nvd3/). Check it out for the charting part. The rest of this post is structured as follows:
+I have previously written an [introduction into Fable, D3 and NVD3 charting](http://www.hoonzis.com/charting-with-fable-and-nvd3/). Check it out for the charting part. The rest of this post is structured as follows:
 
 - Introduction into options, their parameters
 - Domain model describing options
+- Generating charts with NVD3
+- Using VueJs with Fable to create a single page application
 
 Payoff charts of several strategies, such as the following Condor.
 ![payoffcharts](https://raw.githubusercontent.com/hoonzis/hoonzis.github.io/master/images/optionscharts/condor.PNG)
@@ -265,8 +267,11 @@ let straddle stock =
 Note that this is using some helper methods do get the correct strike (around the underlying) and build the legs. Similar methods are defined for other strategies and one can get them all at once as well.
 
 ### Charting with NVD3
-I have already written an introduction post to charting with Fable, NVD3 and D3 and there is not much more to it. In three steps:
-- configure correctly
+I have already written an [introduction post to charting with Fable, NVD3 and D3](http://www.hoonzis.com/charting-with-fable-and-nvd3/) and there is not much more to it. Quick summary:
+- Add D3 and NVD3 as npm dependencies
+- Import the [D3 fable bindings](https://libraries.io/npm/fable-import-d3)
+- Write custom bindings for NVD3
+- Draw your chart just like if you would be writing JavaScript code
 
 ### Using Vue.js
 I have decided to use vue.js as JavaScript framework to wire up the logic behind the view, mainly for two reasons:
@@ -343,11 +348,11 @@ In order to make Vue and F# play nice together I had to make few variables mutab
 
 Adding a new leg means creating new leg object, wrapping it by the ViewModel and mutating the original list of legs.
 
-### Issues while using Vue from F#
-There are few issues that you might encounter, while using Fable & Vue, mainly because both of these are still young technos and evolve.
+### Issues while using VueJs from F#
+There are few issues that you might encounter, while using Fable & Vue, mainly because both are still quite young and evolve.
 
 #### Only arrays are observed
-It seems that currently only arrays are observed by Vue.js correctly as collections. Typically for each strategy has a list of legs, that I expose as a member.
+It seems that currently only arrays are observed by Vue.js correctly as collections. For instance in my case each strategy has a list of legs that I expose as a member (using F# list this time).
 
 ```ocaml
 type StrategyViewModel(strat) =
@@ -355,7 +360,7 @@ type StrategyViewModel(strat) =
        member __.legs = strategy.Legs |> List.map (fun l -> LegViewModel(l))
 ```
 
-This works the first time just for rendering, but as soon as you modify the original **strategy** mutable field and add or remove leg, nothing happens. In order to force Vue.js to observe the list, cast it to array:
+This works the first time just for rendering, but as soon as you modify the original **strategy** mutable field and add or remove leg, nothing happens. In order to force Vue.js to observe the list, one has to cast it to array:
 
 ```ocaml
 member __.legs = strategy.Legs |> List.map (fun l -> LegViewModel(l)) |> Array.ofList
@@ -375,6 +380,9 @@ If you don't specify the type of **strike** the compiler will infer it to float,
 #### Fable non supported methods
 Fable just can't compile the whole BCL to JavaScript, even though it tries and succeeds very often. I have stumbled over the following:
 
-- Cannot find replacement for sign - One could very easily emit it's own JavaScript to solve this one. Look here.
+- Cannot find replacement for sign - One could very easily emit it's own JavaScript to solve this one.
 - Cannot find replacement for System.DateTime.toString - This would be very complicated, since there are so many overloads of this method. I guess the right thing would be to use Moment JavaScript library and just write Fable bindings for it.
-- Cannot find replacement for System.Int32.parse - One can actually use **int** function instead of Int32.parse
+- Cannot find replacement for System.Int32.parse - One can actually use **int** function instead of Int32.parse.
+
+### Summary
+Overall this was quite nice experience. Even though Fable is quite new I was able to tweak the VueJs example that is part of the Github repository to create pretty cool application.
